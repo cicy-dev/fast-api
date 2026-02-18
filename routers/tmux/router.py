@@ -286,6 +286,33 @@ async def update_pane(pane_id: str, request: Request, payload: dict):
     finally:
         conn.close()
 
+@router.get("/panes/{pane_id}")
+async def get_pane(pane_id: str, request: Request):
+    """Get pane details"""
+    import pymysql
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=MYSQL_PASSWORD, 
+                          database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with conn.cursor() as c:
+            c.execute("SELECT pane_id, title, ttyd_port, ttyd_token, url, workspace, init_script, tg_token, tg_chat_id, tg_enable FROM ttyd_config WHERE pane_id=%s", (pane_id,))
+            row = c.fetchone()
+            if not row:
+                raise HTTPException(status_code=404, detail=f"Pane {pane_id} not found")
+            return format_response({
+                "pane_id": row["pane_id"],
+                "title": row.get("title"),
+                "ttyd_port": row["ttyd_port"],
+                "ttyd_token": row["ttyd_token"],
+                "url": row.get("url"),
+                "workspace": row.get("workspace"),
+                "init_script": row.get("init_script"),
+                "tg_token": row.get("tg_token"),
+                "tg_chat_id": row.get("tg_chat_id"),
+                "tg_enable": row.get("tg_enable", False)
+            }, request)
+    finally:
+        conn.close()
+
 @router.delete("/sessions/{session}/windows/{window}")
 async def delete_window(session: str, window: str, request: Request):
     """Delete window"""
