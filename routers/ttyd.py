@@ -19,7 +19,7 @@ MYSQL_USER = os.getenv("MYSQL_USER", "root")
 MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "tts_bot")
 
-TTYD_PORT_RANGE_DEV = os.getenv("TTYD_PORT_RANGE_DEV", "16100-16200")
+TTYD_PORT_RANGE_DEV = os.getenv("TTYD_PORT_RANGE_DEV", "15100-15300")
 TTYD_PORT_RANGE_PROD = os.getenv("TTYD_PORT_RANGE_PROD", "15100-15300")
 
 TMUX_SOCKET = os.getenv("TMUX_SOCKET", "/home/w3c_offical/.tmux/default")
