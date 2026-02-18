@@ -1,0 +1,23 @@
+services:
+  fast-api:
+    build: .
+    container_name: fast-api
+    env_file:
+      - .env
+    environment:
+      - USER=w3c_offical
+    ports:
+      - "14444:14444"
+    volumes:
+      - .:/app
+      - /home/w3c_offical/personal:/home/w3c_offical/personal:ro
+      - /home/w3c_offical/.kiro:/home/w3c_offical/.kiro:ro
+      - /home/w3c_offical/global.json:/home/w3c_offical/global.json:ro
+      - /home/w3c_offical/workers:/home/w3c_offical/workers:rw
+      - /home/w3c_offical/tools:/home/w3c_offical/tools:ro
+      - /home/w3c_offical/projects:/home/w3c_offical/projects:ro
+      - /home/w3c_offical/.tmux:/home/w3c_offical/.tmux
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    network_mode: host
+    privileged: true

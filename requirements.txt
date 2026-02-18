@@ -1,0 +1,7 @@
+fastapi==0.129.0
+pydantic==2.12.5
+pydantic_core==2.41.5
+PyMySQL==1.0.2
+PyYAML==6.0.1
+requests==2.31.0
+uvicorn==0.40.0
