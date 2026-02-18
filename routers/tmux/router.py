@@ -313,6 +313,44 @@ async def get_pane(pane_id: str, request: Request):
     finally:
         conn.close()
 
+@router.delete("/panes/{pane_id}")
+async def delete_pane(pane_id: str, request: Request):
+    """Delete pane - kill tmux pane and remove database record"""
+    import pymysql
+    
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=MYSQL_PASSWORD, 
+                          database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with conn.cursor() as c:
+            c.execute("SELECT ttyd_port FROM ttyd_config WHERE pane_id=%s", (pane_id,))
+            row = c.fetchone()
+            if row:
+                port = row.get("ttyd_port")
+                if port:
+                    import socket
+                    try:
+                        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                        sock.settimeout(1)
+                        if sock.connect_ex(('127.0.0.1', port)) == 0:
+                            for line in os.popen(f"lsof -ti:{port}").readlines():
+                                try:
+                                    os.kill(int(line.strip()), 9)
+                                except:
+                                    pass
+                    except:
+                        pass
+                c.execute("DELETE FROM ttyd_config WHERE pane_id=%s", (pane_id,))
+                conn.commit()
+        
+        try:
+            run_tmux(["kill-pane", "-t", pane_id])
+        except:
+            pass
+            
+        return format_response({"success": True, "pane_id": pane_id, "message": "Pane deleted"}, request)
+    finally:
+        conn.close()
+
 @router.delete("/sessions/{session}/windows/{window}")
 async def delete_window(session: str, window: str, request: Request):
     """Delete window"""
