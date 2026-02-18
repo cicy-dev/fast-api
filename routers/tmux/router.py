@@ -188,6 +188,11 @@ async def create_window(data: WindowCreate, request: Request):
                      (pane_id, title, port, token, url))
         conn.commit()
         
+        # Set tmux dark theme colors
+        run_tmux(["set-option", "-g", "status-style", "bg=#1e1e1e,fg=#888888"])
+        run_tmux(["set-option", "-g", "window-status-current-style", "fg=#ffffff,bg=#2d2d2d"])
+        run_tmux(["set-option", "-g", "pane-active-border-style", "fg=#4a9eff"])
+        
         # Start ttyd in background with log redirection
         ttyd_cmd = f"nohup ttyd -W -p {port} -c user:{token} tmux attach -t {pane_id} > /tmp/ttyd_{port}.log 2>&1 &"
         run_tmux(["send-keys", "-t", pane_id, ttyd_cmd, "Enter"])
