@@ -23,6 +23,7 @@ TTYD_PORT_RANGE_DEV = os.getenv("TTYD_PORT_RANGE_DEV", "16100-16200")
 TTYD_PORT_RANGE_PROD = os.getenv("TTYD_PORT_RANGE_PROD", "15100-15300")
 
 TMUX_SOCKET = os.getenv("TMUX_SOCKET", "/home/w3c_offical/.tmux/default")
+TTYD_BASE_URL = os.getenv("TTYD_BASE_URL", "")
 
 def get_db():
     return pymysql.connect(

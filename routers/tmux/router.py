@@ -20,6 +20,7 @@ MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "tts_bot")
 
 TTYD_PORT_RANGE_DEV = os.getenv("TTYD_PORT_RANGE_DEV", "16100-16200")
 TTYD_PORT_RANGE_PROD = os.getenv("TTYD_PORT_RANGE_PROD", "15100-15300")
+TTYD_BASE_URL = os.getenv("TTYD_BASE_URL", "")
 
 def parse_port_range(port_range: str):
     start, end = port_range.split("-")
@@ -185,7 +186,10 @@ async def create_window(data: WindowCreate, request: Request):
                 raise HTTPException(status_code=400, detail="Port range exhausted")
             
             token = secrets.token_urlsafe(32)
-            url = f"http://user:{token}@{pub_ip}:{port}/"
+            if TTYD_BASE_URL:
+                url = f"{TTYD_BASE_URL}/ttyd/{pane_id}/?token={token}"
+            else:
+                url = f"http://user:{token}@{pub_ip}:{port}/"
             title = data.title or pane_id
             c.execute("""INSERT INTO ttyd_config 
                 (pane_id, title, ttyd_port, ttyd_token, url, workspace, init_script, tg_token, tg_chat_id, tg_enable) 
