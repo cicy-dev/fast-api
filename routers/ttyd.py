@@ -70,6 +70,11 @@ async def start_ttyd(pane_id: str, request: Request):
             port = row["ttyd_port"]
             token = row["ttyd_token"]
             title = row.get("title", pane_id)
+            workspace = row.get("workspace")
+            init_script = row.get("init_script")
+            tg_token = row.get("tg_token")
+            tg_chat_id = row.get("tg_chat_id")
+            tg_enable = row.get("tg_enable", False)
             
             if is_port_listening(port):
                 return format_response({
@@ -77,6 +82,12 @@ async def start_ttyd(pane_id: str, request: Request):
                     "title": title,
                     "port": port,
                     "token": token,
+                    "url": row.get("url"),
+                    "workspace": workspace,
+                    "init_script": init_script,
+                    "tg_token": tg_token,
+                    "tg_chat_id": tg_chat_id,
+                    "tg_enable": tg_enable,
                     "status": "running"
                 }, request)
             
@@ -87,6 +98,12 @@ async def start_ttyd(pane_id: str, request: Request):
                 "title": title,
                 "port": port,
                 "token": token,
+                "url": row.get("url"),
+                "workspace": workspace,
+                "init_script": init_script,
+                "tg_token": tg_token,
+                "tg_chat_id": tg_chat_id,
+                "tg_enable": tg_enable,
                 "status": "started"
             }, request)
     finally:

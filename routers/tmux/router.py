@@ -37,6 +37,9 @@ class WindowCreate(BaseModel):
     init_script: str = "pwd"
     use_local_ip: bool = False
     title: Optional[str] = None
+    tg_token: Optional[str] = None
+    tg_chat_id: Optional[str] = None
+    tg_enable: bool = False
     
     @field_validator('win_name')
     @classmethod
@@ -184,8 +187,11 @@ async def create_window(data: WindowCreate, request: Request):
             token = secrets.token_urlsafe(32)
             url = f"http://user:{token}@{pub_ip}:{port}/"
             title = data.title or pane_id
-            c.execute("INSERT INTO ttyd_config (pane_id, title, ttyd_port, ttyd_token, url) VALUES (%s, %s, %s, %s, %s)",
-                     (pane_id, title, port, token, url))
+            c.execute("""INSERT INTO ttyd_config 
+                (pane_id, title, ttyd_port, ttyd_token, url, workspace, init_script, tg_token, tg_chat_id, tg_enable) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                (pane_id, title, port, token, url, data.workspace, data.init_script, 
+                 data.tg_token, data.tg_chat_id, data.tg_enable))
         conn.commit()
         
         # Set tmux dark theme colors
@@ -244,6 +250,11 @@ async def create_window(data: WindowCreate, request: Request):
             "window": data.win_name,
             "pane_id": pane_id,
             "title": title,
+            "workspace": data.workspace,
+            "init_script": data.init_script,
+            "tg_token": data.tg_token,
+            "tg_chat_id": data.tg_chat_id,
+            "tg_enable": data.tg_enable,
             "ttyd_port": port,
             "ttyd_token": token,
             "url": url
@@ -251,18 +262,27 @@ async def create_window(data: WindowCreate, request: Request):
     finally:
         conn.close()
 
-@router.patch("/panes/{pane_id}/title")
-async def update_pane_title(pane_id: str, request: Request, payload: dict):
-    """Update pane title"""
+@router.patch("/panes/{pane_id}")
+async def update_pane(pane_id: str, request: Request, payload: dict):
+    """Update pane fields"""
     import pymysql
-    title = payload.get('title', '')
+    
+    allowed_fields = ['title', 'workspace', 'init_script', 'tg_token', 'tg_chat_id', 'tg_enable']
+    updates = {k: v for k, v in payload.items() if k in allowed_fields}
+    
+    if not updates:
+        return format_response({"success": False, "error": "No valid fields to update"}, request)
+    
     conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=MYSQL_PASSWORD, 
                           database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor)
     try:
         with conn.cursor() as c:
-            c.execute("UPDATE ttyd_config SET title=%s WHERE pane_id=%s", (title, pane_id))
+            set_clause = ", ".join([f"{k}=%s" for k in updates.keys()])
+            values = list(updates.values())
+            values.append(pane_id)
+            c.execute(f"UPDATE ttyd_config SET {set_clause} WHERE pane_id=%s", values)
         conn.commit()
-        return format_response({"success": True, "pane_id": pane_id, "title": title}, request)
+        return format_response({"success": True, "pane_id": pane_id, "updated": updates}, request)
     finally:
         conn.close()
 
