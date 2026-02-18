@@ -58,7 +58,7 @@ def run_tmux(cmd, check_session=False):
     """Execute tmux command using host socket
     If check_session=True, returns None for "no server/session" errors instead of raising
     """
-    socket_path = os.getenv("TMUX_SOCKET", "/tmp/tmux-1001/default")
+    socket_path = os.getenv("TMUX_SOCKET", "/home/w3c_offical/.tmux/default")
     result = subprocess.run(["tmux", "-S", socket_path] + cmd, capture_output=True, text=True)
     if result.returncode != 0:
         err = result.stderr.strip().lower()
