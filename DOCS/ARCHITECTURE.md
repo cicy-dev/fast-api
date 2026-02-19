@@ -7,7 +7,7 @@ fast-api 是整个系统的核心后端服务，负责：
 - ttyd 进程的端口分配、启动、重启、销毁
 - 所有 pane 配置的持久化（MySQL）
 - 英文纠错、bot 列表、local services 注册等通用 API
-- 作为 ttyd-proxy-v1 server 的上游数据源（`/api/ttyd/by-name/{id}`）
+- 作为 ttyd-proxy server 的上游数据源（`/api/ttyd/by-name/{id}`）
 
 ## 2. 整体架构
 
@@ -216,7 +216,7 @@ while elapsed < 30:
 ### 6.5 认证
 
 ```python
-# ~/global.json 中读取 api_token（与 ttyd-proxy-v1 server 共用同一 token）
+# ~/global.json 中读取 api_token（与 ttyd-proxy server 共用同一 token）
 AUTH_TOKEN = load_token()  # 64 字符 hex 字符串
 security = HTTPBearer()
 

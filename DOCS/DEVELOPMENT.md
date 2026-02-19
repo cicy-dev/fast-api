@@ -191,7 +191,7 @@ run_tmux(["run-shell", (
 ### 4.1 健康检查
 
 ```bash
-TOKEN="6568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1"
+TOKEN="$(cat ~/global.json | python3 -c 'import sys,json; print(json.load(sys.stdin)["api_token"])')"
 
 # 无认证健康检查
 curl http://localhost:14444/health
@@ -199,13 +199,13 @@ curl http://localhost:14444/health
 
 # 认证验证
 curl -H "Authorization: Bearer $TOKEN" http://localhost:14444/api/auth/verify
-# 期望: {"valid": true, "token": "6568a729..."}
+# 期望: {"valid": true, "token": "xxxxxxxx..."}
 ```
 
 ### 4.2 tmux API 测试
 
 ```bash
-TOKEN="6568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1"
+TOKEN="$(cat ~/global.json | python3 -c 'import sys,json; print(json.load(sys.stdin)["api_token"])')"
 
 # 列出所有会话
 curl -H "Authorization: Bearer $TOKEN" http://localhost:14444/api/tmux/sessions
