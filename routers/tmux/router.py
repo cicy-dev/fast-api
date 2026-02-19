@@ -358,6 +358,106 @@ async def delete_pane(pane_id: str, request: Request):
     finally:
         conn.close()
 
+@router.post("/panes/{pane_id}/restart")
+async def restart_pane(pane_id: str, request: Request):
+    """Restart pane - kill ttyd, delete pane, recreate tmux window and ttyd"""
+    import pymysql
+    
+    # Get current config before deleting
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=MYSQL_PASSWORD, 
+                          database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with conn.cursor() as c:
+            c.execute("SELECT ttyd_port, workspace, init_script, title, proxy FROM ttyd_config WHERE pane_id=%s", (pane_id,))
+            row = c.fetchone()
+            if not row:
+                return format_response({"success": False, "error": "Pane not found"}, request)
+            
+            workspace = row.get("workspace")
+            init_script = row.get("init_script") or "pwd"
+            title = row.get("title") or pane_id
+            proxy = row.get("proxy")
+            
+            # Kill ttyd process
+            port = row.get("ttyd_port")
+            if port:
+                import socket
+                try:
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    sock.settimeout(1)
+                    if sock.connect_ex(('127.0.0.1', port)) == 0:
+                        for line in os.popen(f"lsof -ti:{port}").readlines():
+                            try:
+                                os.kill(int(line.strip()), 9)
+                            except:
+                                pass
+                except:
+                    pass
+            
+            # Delete pane from db
+            c.execute("DELETE FROM ttyd_config WHERE pane_id=%s", (pane_id,))
+            conn.commit()
+    finally:
+        conn.close()
+    
+    # Kill tmux pane
+    try:
+        run_tmux(["kill-pane", "-t", pane_id])
+    except:
+        pass
+    
+    # Parse session and window name from pane_id
+    parts = pane_id.split(":")
+    if len(parts) != 2:
+        return format_response({"success": False, "error": "Invalid pane_id format"}, request)
+    
+    session_name = parts[0]
+    win_name = parts[1].split(".")[0]
+    
+    # Recreate tmux window and ttyd using same logic as create
+    port_range = parse_port_range(TTYD_PORT_RANGE_PROD)
+    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=MYSQL_PASSWORD, 
+                          database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with conn.cursor() as c:
+            # Find available port
+            available_port = None
+            for p in port_range:
+                c.execute("SELECT 1 FROM ttyd_config WHERE ttyd_port=%s", (p,))
+                if not c.fetchone():
+                    available_port = p
+                    break
+            
+            if not available_port:
+                return format_response({"success": False, "error": "No available port"}, request)
+            
+            import secrets
+            token = secrets.token_urlsafe(32)
+            url = f"http://user:{token}@127.0.0.1:{available_port}/"
+            
+            # Create tmux window
+            run_tmux(["new-window", "-t", session_name, "-n", win_name])
+            
+            # Save to db
+            c.execute("""INSERT INTO ttyd_config 
+                (pane_id, title, ttyd_port, ttyd_token, url, workspace, init_script, proxy) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+                (pane_id, title, available_port, token, url, workspace, init_script, proxy))
+            conn.commit()
+            
+            # Run init_script
+            if init_script:
+                run_tmux(["send-keys", "-t", pane_id, init_script, "Enter"])
+            
+            return format_response({
+                "success": True, 
+                "message": "Pane restarted", 
+                "new_pane_id": pane_id,
+                "port": available_port
+            }, request)
+    finally:
+        conn.close()
+
 @router.delete("/sessions/{session}/windows/{window}")
 async def delete_window(session: str, window: str, request: Request):
     """Delete window"""
