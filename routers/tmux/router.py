@@ -38,6 +38,7 @@ class WindowCreate(BaseModel):
     init_script: str = "pwd"
     use_local_ip: bool = False
     title: Optional[str] = None
+    proxy: Optional[str] = None
     tg_token: Optional[str] = None
     tg_chat_id: Optional[str] = None
     tg_enable: bool = False
@@ -192,9 +193,9 @@ async def create_window(data: WindowCreate, request: Request):
                 url = f"http://user:{token}@{pub_ip}:{port}/"
             title = data.title or pane_id
             c.execute("""INSERT INTO ttyd_config 
-                (pane_id, title, ttyd_port, ttyd_token, url, workspace, init_script, tg_token, tg_chat_id, tg_enable) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                (pane_id, title, port, token, url, data.workspace, data.init_script, 
+                (pane_id, title, ttyd_port, ttyd_token, url, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                (pane_id, title, port, token, url, data.workspace, data.init_script, data.proxy,
                  data.tg_token, data.tg_chat_id, data.tg_enable))
         conn.commit()
         
@@ -256,6 +257,7 @@ async def create_window(data: WindowCreate, request: Request):
             "title": title,
             "workspace": data.workspace,
             "init_script": data.init_script,
+            "proxy": data.proxy,
             "tg_token": data.tg_token,
             "tg_chat_id": data.tg_chat_id,
             "tg_enable": data.tg_enable,
@@ -271,7 +273,7 @@ async def update_pane(pane_id: str, request: Request, payload: dict):
     """Update pane fields"""
     import pymysql
     
-    allowed_fields = ['title', 'workspace', 'init_script', 'tg_token', 'tg_chat_id', 'tg_enable']
+    allowed_fields = ['title', 'workspace', 'init_script', 'proxy', 'tg_token', 'tg_chat_id', 'tg_enable']
     updates = {k: v for k, v in payload.items() if k in allowed_fields}
     
     if not updates:
@@ -298,7 +300,7 @@ async def get_pane(pane_id: str, request: Request):
                           database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor)
     try:
         with conn.cursor() as c:
-            c.execute("SELECT pane_id, title, ttyd_port, ttyd_token, url, workspace, init_script, tg_token, tg_chat_id, tg_enable FROM ttyd_config WHERE pane_id=%s", (pane_id,))
+            c.execute("SELECT pane_id, title, ttyd_port, ttyd_token, url, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable FROM ttyd_config WHERE pane_id=%s", (pane_id,))
             row = c.fetchone()
             if not row:
                 raise HTTPException(status_code=404, detail=f"Pane {pane_id} not found")
@@ -310,6 +312,7 @@ async def get_pane(pane_id: str, request: Request):
                 "url": row.get("url"),
                 "workspace": row.get("workspace"),
                 "init_script": row.get("init_script"),
+                "proxy": row.get("proxy"),
                 "tg_token": row.get("tg_token"),
                 "tg_chat_id": row.get("tg_chat_id"),
                 "tg_enable": row.get("tg_enable", False)

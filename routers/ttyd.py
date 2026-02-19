@@ -73,6 +73,7 @@ async def start_ttyd(pane_id: str, request: Request):
             title = row.get("title", pane_id)
             workspace = row.get("workspace")
             init_script = row.get("init_script")
+            proxy = row.get("proxy")
             tg_token = row.get("tg_token")
             tg_chat_id = row.get("tg_chat_id")
             tg_enable = row.get("tg_enable", False)
@@ -86,6 +87,7 @@ async def start_ttyd(pane_id: str, request: Request):
                     "url": row.get("url"),
                     "workspace": workspace,
                     "init_script": init_script,
+                    "proxy": proxy,
                     "tg_token": tg_token,
                     "tg_chat_id": tg_chat_id,
                     "tg_enable": tg_enable,
@@ -102,6 +104,7 @@ async def start_ttyd(pane_id: str, request: Request):
                 "url": row.get("url"),
                 "workspace": workspace,
                 "init_script": init_script,
+                "proxy": proxy,
                 "tg_token": tg_token,
                 "tg_chat_id": tg_chat_id,
                 "tg_enable": tg_enable,
