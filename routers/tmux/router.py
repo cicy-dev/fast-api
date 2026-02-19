@@ -296,11 +296,18 @@ async def restart_pane(pane_id: str, request: Request):
             proxy = row["proxy"]
 
             # 2️⃣ 杀 ttyd（通过 tmux run-shell 在 host 上执行，绕过 docker PID 隔离）
-            if port:
-                try:
-                    run_tmux(["run-shell", f"kill $(lsof -ti:{port} 2>/dev/null) 2>/dev/null; true"])
-                except:
-                    pass
+            # 同时按端口（已绑定）和 pane_id（未绑定的孤儿进程）杀，kill -9 确保立即退出
+            try:
+                run_tmux(["run-shell", (
+                    # 按端口杀（已绑定的）
+                    f"kill -9 $(lsof -ti:{port} 2>/dev/null) 2>/dev/null; "
+                    # 按 pane_id 杀（未绑定的孤儿 ttyd 进程）
+                    f"pkill -9 -f 'tmux attach -t {pane_id}' 2>/dev/null; "
+                    # 等待端口释放（最多 2 秒）
+                    f"for i in $(seq 1 20); do lsof -ti:{port} >/dev/null 2>&1 || break; sleep 0.1; done; true"
+                )])
+            except:
+                pass
 
             # 3️⃣ 删 DB
             c.execute(
@@ -498,7 +505,7 @@ async def delete_pane(pane_id: str, request: Request):
                 if port:
                     # 通过 tmux run-shell 在 host 上杀进程，绕过 docker PID 隔离
                     try:
-                        run_tmux(["run-shell", f"kill $(lsof -ti:{port} 2>/dev/null) 2>/dev/null; true"])
+                        run_tmux(["run-shell", f"kill -9 $(lsof -ti:{port} 2>/dev/null) 2>/dev/null; true"])
                     except:
                         pass
                 c.execute("DELETE FROM ttyd_config WHERE pane_id=%s", (pane_id,))
