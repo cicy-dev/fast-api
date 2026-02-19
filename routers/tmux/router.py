@@ -295,13 +295,12 @@ async def restart_pane(pane_id: str, request: Request):
             title = row["title"] or pane_id
             proxy = row["proxy"]
 
-            # 2️⃣ 杀 ttyd
+            # 2️⃣ 杀 ttyd（通过 tmux run-shell 在 host 上执行，绕过 docker PID 隔离）
             if port:
-                for line in os.popen(f"lsof -ti:{port}").readlines():
-                    try:
-                        os.kill(int(line.strip()), 9)
-                    except:
-                        pass
+                try:
+                    run_tmux(["run-shell", f"kill $(lsof -ti:{port} 2>/dev/null) 2>/dev/null; true"])
+                except:
+                    pass
 
             # 3️⃣ 删 DB
             c.execute(
@@ -497,16 +496,9 @@ async def delete_pane(pane_id: str, request: Request):
             if row:
                 port = row.get("ttyd_port")
                 if port:
-                    import socket
+                    # 通过 tmux run-shell 在 host 上杀进程，绕过 docker PID 隔离
                     try:
-                        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                        sock.settimeout(1)
-                        if sock.connect_ex(('127.0.0.1', port)) == 0:
-                            for line in os.popen(f"lsof -ti:{port}").readlines():
-                                try:
-                                    os.kill(int(line.strip()), 9)
-                                except:
-                                    pass
+                        run_tmux(["run-shell", f"kill $(lsof -ti:{port} 2>/dev/null) 2>/dev/null; true"])
                     except:
                         pass
                 c.execute("DELETE FROM ttyd_config WHERE pane_id=%s", (pane_id,))
