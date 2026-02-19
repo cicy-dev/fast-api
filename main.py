@@ -215,3 +215,112 @@ def delete_service(port: int, request: Request, token: str = Depends(verify_toke
         return format_response({"success": True}, request)
     finally:
         conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Migrated from ttyd-proxy-v1 server/src/index.ts
+# ---------------------------------------------------------------------------
+
+import subprocess as _subprocess
+import re as _re
+import requests as _requests
+from routers.tmux.router import run_tmux
+
+
+@app.post("/api/tmux")
+async def tmux_send(request: Request, token: str = Depends(verify_token)):
+    """Send text to tmux pane (compat with old server endpoint).
+    Body: {"text": "...", "target": "session:window.pane"}
+    """
+    body = await request.json()
+    text = body.get("text", "")
+    target = body.get("target", "")
+    if not target:
+        return format_response({"success": False, "error": "target required"}, request)
+    if text:
+        run_tmux(["send-keys", "-t", target, text, "Enter"])
+    return format_response({"success": True}, request)
+
+
+@app.get("/api/bots")
+def get_bots(request: Request, token: str = Depends(verify_token)):
+    """Load bot list via docker exec tts-bot."""
+    try:
+        out = _subprocess.check_output(
+            ["docker", "exec", "tts-bot", "python3", "/tmp/load_bots.py"],
+            timeout=8, stderr=_subprocess.DEVNULL
+        ).decode().strip()
+        return format_response(json.loads(out), request)
+    except Exception as e:
+        return format_response({"error": str(e), "bots": []}, request)
+
+
+@app.get("/api/tmux-list")
+def tmux_list(request: Request, token: str = Depends(verify_token)):
+    """Return tree view of tmux sessions/windows/panes (mirrors ~/tools/tre logic)."""
+    try:
+        sessions_out = run_tmux(["list-sessions", "-F", "#{session_name}"])
+        sessions = [s for s in sessions_out.strip().split("\n") if s]
+    except Exception:
+        return format_response({"success": True, "output": "没有运行中的 session"}, request)
+
+    lines = []
+    for i, s in enumerate(sessions):
+        ls = i == len(sessions) - 1
+        lines.append(f"{'└──' if ls else '├──'} {s}")
+        try:
+            wo = run_tmux(["list-windows", "-t", s, "-F", "#{window_index} #{window_name}"])
+            ws = [w for w in wo.strip().split("\n") if w]
+        except Exception:
+            ws = []
+        for j, w in enumerate(ws):
+            parts = w.split(None, 1)
+            if len(parts) < 2:
+                continue
+            lw = j == len(ws) - 1
+            ind = "    " if ls else "│   "
+            lines.append(f"{ind}{'└──' if lw else '├──'} {parts[0]} {parts[1]}")
+            try:
+                po = run_tmux(["list-panes", "-t", f"{s}:{parts[0]}", "-F", "#{pane_index}"])
+                ps = [x for x in po.strip().split("\n") if x]
+            except Exception:
+                ps = []
+            for k, pn in enumerate(ps):
+                lp = k == len(ps) - 1
+                pi = "    " if lw else "│   "
+                lines.append(f"{ind}{pi}{'└──' if lp else '├──'} {s}:{parts[1]}.{pn}")
+
+    return format_response({"success": True, "output": "\n".join(lines)}, request)
+
+
+def _fallback_correct(text: str) -> str:
+    text = _re.sub(r'\br\s+you\b', 'are you', text, flags=_re.IGNORECASE)
+    text = _re.sub(r'\bhow old a you\b', 'how old are you', text, flags=_re.IGNORECASE)
+    text = _re.sub(r'\bu\b', 'you', text, flags=_re.IGNORECASE)
+    text = _re.sub(r'\br\b', 'are', text, flags=_re.IGNORECASE)
+    return text[0].upper() + text[1:] if text else text
+
+
+@app.post("/api/correctEnglish")
+async def correct_english(request: Request, token: str = Depends(verify_token)):
+    """Correct English text via HuggingFace, with regex fallback."""
+    body = await request.json()
+    text = body.get("text", "")
+    if not text:
+        return format_response({"success": False, "error": "no text"}, request)
+    try:
+        resp = _requests.post(
+            "https://api-inference.huggingface.co/models/facebook/bart-large-cnn",
+            json={"inputs": f"Correct this English text: {text}",
+                  "parameters": {"max_length": 200, "min_length": 10}},
+            timeout=10
+        )
+        if resp.status_code == 200:
+            result = resp.json()
+            corrected = (result[0].get("summary_text") or result[0].get("generated_text") or text)
+            corrected = _re.sub(r'^Correct this English text:\s*', '', corrected, flags=_re.IGNORECASE)
+            corrected = corrected.strip('"\'').strip()
+            return format_response({"success": True, "correctedText": corrected}, request)
+    except Exception:
+        pass
+    return format_response({"success": True, "correctedText": _fallback_correct(text)}, request)
