@@ -84,6 +84,122 @@ def format_response(data: dict, request: Request):
         yaml_str = yaml.dump(data, default_flow_style=False, allow_unicode=True, sort_keys=False)
         return PlainTextResponse(yaml_str, media_type="application/yaml")
     return data
+def create_ttyd_pane_common(
+    pane_id: str,
+    session_name: str,
+    win_name: str,
+    workspace: str,
+    init_script: str,
+    proxy: str,
+    title: str,
+    dev: bool = False,
+    tg_token: str = None,
+    tg_chat_id: str = None,
+    tg_enable: bool = False,
+    clear_after_init: bool = False,
+):
+    import pymysql
+    import secrets
+    import socket
+    import time
+
+    conn = pymysql.connect(
+        host=MYSQL_HOST,
+        port=MYSQL_PORT,
+        user=MYSQL_USER,
+        password=MYSQL_PASSWORD,
+        database=MYSQL_DATABASE,
+        cursorclass=pymysql.cursors.DictCursor
+    )
+
+    try:
+        with conn.cursor() as c:
+
+            # 1️⃣ 分配端口
+            port_range = parse_port_range(
+                TTYD_PORT_RANGE_DEV if dev else TTYD_PORT_RANGE_PROD
+            )
+
+            port = None
+            for p in port_range:
+                c.execute(
+                    "SELECT 1 FROM ttyd_config WHERE ttyd_port=%s",
+                    (p,)
+                )
+                if not c.fetchone():
+                    port = p
+                    break
+
+            if not port:
+                raise Exception("No available port")
+
+            # 2️⃣ token + url
+            token = secrets.token_urlsafe(32)
+            url = f"https://g-ttyd.cicy.de5.net/?token={token}&bot_name={pane_id}"
+
+            # 3️⃣ 写入 DB
+            c.execute("""
+                INSERT INTO ttyd_config
+                (pane_id, title, ttyd_port, ttyd_token, url, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            """, (
+                pane_id,
+                title,
+                port,
+                token,
+                url,
+                workspace,
+                init_script,
+                proxy,
+                tg_token,
+                tg_chat_id,
+                tg_enable,
+            ))
+
+            conn.commit()
+
+        # 4️⃣ 启动 ttyd
+        ttyd_cmd = (
+            f"nohup ttyd -W -p {port} "
+            f"-c user:{token} "
+            f"tmux attach -t {pane_id} "
+            f"> /tmp/ttyd_{port}.log 2>&1 &"
+        )
+
+        run_tmux(["send-keys", "-t", pane_id, ttyd_cmd, "Enter"])
+
+        # 5️⃣ init_script
+        if init_script:
+            run_tmux(["send-keys", "-t", pane_id, init_script, "Enter"])
+
+        # 6️⃣ 可选：sleep + clear（create 时使用）
+        if clear_after_init:
+            time.sleep(1)
+            run_tmux(["send-keys", "-t", pane_id, "clear", "Enter"])
+
+        # 7️⃣ 等待 ttyd ready
+        max_wait = 30
+        elapsed = 0
+
+        while elapsed < max_wait:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1)
+            if sock.connect_ex(("127.0.0.1", port)) == 0:
+                sock.close()
+                return {
+                    "port": port,
+                    "token": token,
+                    "url": url
+                }
+            sock.close()
+            time.sleep(0.5)
+            elapsed += 0.5
+
+        raise Exception("ttyd start timeout")
+
+    finally:
+        conn.close()
+
 
 @router.get("/sessions")
 async def list_sessions(request: Request):
@@ -133,25 +249,131 @@ async def list_windows(session: str, request: Request):
             windows.append({"index": int(index), "name": name, "active": active == "1"})
     return format_response({"session": session, "windows": windows}, request)
 
+@router.post("/panes/{pane_id}/restart")
+async def restart_pane(pane_id: str, request: Request):
+    """
+    Restart pane:
+    1. 查配置
+    2. 杀 ttyd
+    3. 删 DB
+    4. 删 tmux pane
+    5. 调用 create 公用逻辑重建
+    """
+
+    import pymysql
+    import os
+    import socket
+
+    # 1️⃣ 读取旧配置
+    conn = pymysql.connect(
+        host=MYSQL_HOST,
+        port=MYSQL_PORT,
+        user=MYSQL_USER,
+        password=MYSQL_PASSWORD,
+        database=MYSQL_DATABASE,
+        cursorclass=pymysql.cursors.DictCursor
+    )
+
+    try:
+        with conn.cursor() as c:
+            c.execute("""
+                SELECT ttyd_port, workspace, init_script, title, proxy
+                FROM ttyd_config
+                WHERE pane_id=%s
+            """, (pane_id,))
+
+            row = c.fetchone()
+            if not row:
+                return format_response(
+                    {"success": False, "error": "Pane not found"},
+                    request
+                )
+
+            port = row["ttyd_port"]
+            workspace = row["workspace"]
+            init_script = row["init_script"] or "pwd"
+            title = row["title"] or pane_id
+            proxy = row["proxy"]
+
+            # 2️⃣ 杀 ttyd
+            if port:
+                for line in os.popen(f"lsof -ti:{port}").readlines():
+                    try:
+                        os.kill(int(line.strip()), 9)
+                    except:
+                        pass
+
+            # 3️⃣ 删 DB
+            c.execute(
+                "DELETE FROM ttyd_config WHERE pane_id=%s",
+                (pane_id,)
+            )
+            conn.commit()
+
+    finally:
+        conn.close()
+
+    # 4️⃣ 杀 tmux pane
+    try:
+        run_tmux(["kill-pane", "-t", pane_id])
+    except:
+        pass
+
+    # 5️⃣ 解析 pane_id
+    parts = pane_id.split(":")
+    if len(parts) != 2:
+        return format_response(
+            {"success": False, "error": "Invalid pane_id"},
+            request
+        )
+
+    session_name = parts[0]
+    win_name = parts[1].split(".")[0]
+
+    # 6️⃣ 创建新 tmux window，再调用公用创建逻辑
+    try:
+        run_tmux(["new-window", "-t", session_name, "-n", win_name, "-c", workspace or os.path.expanduser("~")])
+
+        result = create_ttyd_pane_common(
+            pane_id=pane_id,
+            session_name=session_name,
+            win_name=win_name,
+            workspace=workspace,
+            init_script=init_script,
+            proxy=proxy,
+            title=title,
+            dev=False,
+        )
+
+        return format_response({
+            "success": True,
+            "message": "Pane restarted",
+            "pane_id": pane_id,
+            "port": result["port"],
+            "url": result["url"]
+        }, request)
+
+    except Exception as e:
+        return format_response({
+            "success": False,
+            "error": str(e)
+        }, request)
+
+
+
 @router.post("/create")
 async def create_window(data: WindowCreate, request: Request):
     """Create tmux window and start ttyd (sync - wait for ttyd to start)"""
-    import pymysql
-    import secrets
-    import requests
     import os
-    import subprocess
-    import time
-    import socket
-    
+
     host_home = os.getenv("HOST_HOME", os.path.expanduser("~"))
     workspace = data.workspace if data.workspace else f"{host_home}/workers/{data.win_name}"
     workspace_expanded = os.path.expanduser(workspace)
-    
+
     os.makedirs(workspace_expanded, exist_ok=True)
-    
+
     session_check = run_tmux(["has-session", "-t", data.session_name], check_session=True)
-    
+
     if session_check is None:
         run_tmux(["new-session", "-d", "-s", data.session_name, "-n", data.win_name, "-c", workspace_expanded])
     else:
@@ -159,114 +381,55 @@ async def create_window(data: WindowCreate, request: Request):
         if windows_output and data.win_name in windows_output.split('\n'):
             raise HTTPException(status_code=400, detail=f"Window '{data.win_name}' already exists in session '{data.session_name}'")
         run_tmux(["new-window", "-t", data.session_name, "-n", data.win_name, "-c", workspace_expanded], check_session=False)
-    
+
     pane_id = f"{data.session_name}:{data.win_name}.0"
-    
-    if data.use_local_ip:
-        pub_ip = "127.0.0.1"
-    else:
-        try:
-            pub_ip = requests.get("https://api.myip.com", timeout=3).json()["ip"]
-        except:
-            pub_ip = "localhost"
-    
-    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=MYSQL_PASSWORD, 
-                          database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor)
+    title = data.title or pane_id
+
+    # Set tmux dark theme colors
+    run_tmux(["set-option", "-g", "status-style", "bg=#1e1e1e,fg=#888888"])
+    run_tmux(["set-option", "-g", "window-status-current-style", "fg=#ffffff,bg=#2d2d2d"])
+    run_tmux(["set-option", "-g", "pane-active-border-style", "fg=#4a9eff"])
+
     try:
-        with conn.cursor() as c:
-            port_range = parse_port_range(TTYD_PORT_RANGE_DEV) if data.dev else parse_port_range(TTYD_PORT_RANGE_PROD)
-            port = None
-            for p in port_range:
-                c.execute("SELECT 1 FROM ttyd_config WHERE ttyd_port=%s", (p,))
-                if c.fetchone():
-                    continue
-                port = p
-                break
-            
-            if not port:
-                raise HTTPException(status_code=400, detail="Port range exhausted")
-            
-            token = secrets.token_urlsafe(32)
-            if TTYD_BASE_URL:
-                url = f"{TTYD_BASE_URL}/ttyd/{pane_id}/?token={token}"
-            else:
-                url = f"http://user:{token}@{pub_ip}:{port}/"
-            title = data.title or pane_id
-            c.execute("""INSERT INTO ttyd_config 
-                (pane_id, title, ttyd_port, ttyd_token, url, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                (pane_id, title, port, token, url, data.workspace, data.init_script, data.proxy,
-                 data.tg_token, data.tg_chat_id, data.tg_enable))
-        conn.commit()
-        
-        # Set tmux dark theme colors
-        run_tmux(["set-option", "-g", "status-style", "bg=#1e1e1e,fg=#888888"])
-        run_tmux(["set-option", "-g", "window-status-current-style", "fg=#ffffff,bg=#2d2d2d"])
-        run_tmux(["set-option", "-g", "pane-active-border-style", "fg=#4a9eff"])
-        
-        # Start ttyd in background with log redirection
-        ttyd_cmd = f"nohup ttyd -W -p {port} -c user:{token} tmux attach -t {pane_id} > /tmp/ttyd_{port}.log 2>&1 &"
-        run_tmux(["send-keys", "-t", pane_id, ttyd_cmd, "Enter"])
-
-        if data.init_script:
-            run_tmux(["send-keys", "-t", pane_id, data.init_script, "Enter"])
-        
-        time.sleep(1)
-        run_tmux(["send-keys", "-t", pane_id, "clear", "Enter"])
-
-        
-        # run_tmux(["send-keys", "-t", pane_id, f"ttyd -W -p {port} -c user:{token} tmux attach -t {pane_id} &", "Enter"])
-        
-        # Wait for ttyd to be ready (max 30 seconds)
-        max_wait = 30
-        wait_interval = 0.5
-        elapsed = 0
-        ttyd_ready = False
-        
-        while elapsed < max_wait:
-            try:
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.settimeout(1)
-                result = sock.connect_ex(('127.0.0.1', port))
-                sock.close()
-                if result == 0:
-                    ttyd_ready = True
-                    break
-            except:
-                pass
-            time.sleep(wait_interval)
-            elapsed += wait_interval
-        
-        if not ttyd_ready:
-            return format_response({
-                "success": False,
-                "session": data.session_name,
-                "window": data.win_name,
-                "pane_id": pane_id,
-                "ttyd_port": port,
-                "ttyd_token": token,
-                "url": url,
-                "error": "ttyd failed to start within 30 seconds"
-            }, request)
-        
+        result = create_ttyd_pane_common(
+            pane_id=pane_id,
+            session_name=data.session_name,
+            win_name=data.win_name,
+            workspace=data.workspace or workspace_expanded,
+            init_script=data.init_script,
+            proxy=data.proxy,
+            title=title,
+            dev=data.dev,
+            tg_token=data.tg_token,
+            tg_chat_id=data.tg_chat_id,
+            tg_enable=data.tg_enable,
+            clear_after_init=True,
+        )
+    except Exception as e:
         return format_response({
-            "success": True,
+            "success": False,
             "session": data.session_name,
             "window": data.win_name,
             "pane_id": pane_id,
-            "title": title,
-            "workspace": data.workspace,
-            "init_script": data.init_script,
-            "proxy": data.proxy,
-            "tg_token": data.tg_token,
-            "tg_chat_id": data.tg_chat_id,
-            "tg_enable": data.tg_enable,
-            "ttyd_port": port,
-            "ttyd_token": token,
-            "url": url
+            "error": str(e)
         }, request)
-    finally:
-        conn.close()
+
+    return format_response({
+        "success": True,
+        "session": data.session_name,
+        "window": data.win_name,
+        "pane_id": pane_id,
+        "title": title,
+        "workspace": data.workspace,
+        "init_script": data.init_script,
+        "proxy": data.proxy,
+        "tg_token": data.tg_token,
+        "tg_chat_id": data.tg_chat_id,
+        "tg_enable": data.tg_enable,
+        "ttyd_port": result["port"],
+        "ttyd_token": result["token"],
+        "url": result["url"]
+    }, request)
 
 @router.patch("/panes/{pane_id}")
 async def update_pane(pane_id: str, request: Request, payload: dict):
@@ -358,105 +521,6 @@ async def delete_pane(pane_id: str, request: Request):
     finally:
         conn.close()
 
-@router.post("/panes/{pane_id}/restart")
-async def restart_pane(pane_id: str, request: Request):
-    """Restart pane - kill ttyd, delete pane, recreate tmux window and ttyd"""
-    import pymysql
-    
-    # Get current config before deleting
-    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=MYSQL_PASSWORD, 
-                          database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor)
-    try:
-        with conn.cursor() as c:
-            c.execute("SELECT ttyd_port, workspace, init_script, title, proxy FROM ttyd_config WHERE pane_id=%s", (pane_id,))
-            row = c.fetchone()
-            if not row:
-                return format_response({"success": False, "error": "Pane not found"}, request)
-            
-            workspace = row.get("workspace")
-            init_script = row.get("init_script") or "pwd"
-            title = row.get("title") or pane_id
-            proxy = row.get("proxy")
-            
-            # Kill ttyd process
-            port = row.get("ttyd_port")
-            if port:
-                import socket
-                try:
-                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    sock.settimeout(1)
-                    if sock.connect_ex(('127.0.0.1', port)) == 0:
-                        for line in os.popen(f"lsof -ti:{port}").readlines():
-                            try:
-                                os.kill(int(line.strip()), 9)
-                            except:
-                                pass
-                except:
-                    pass
-            
-            # Delete pane from db
-            c.execute("DELETE FROM ttyd_config WHERE pane_id=%s", (pane_id,))
-            conn.commit()
-    finally:
-        conn.close()
-    
-    # Kill tmux pane
-    try:
-        run_tmux(["kill-pane", "-t", pane_id])
-    except:
-        pass
-    
-    # Parse session and window name from pane_id
-    parts = pane_id.split(":")
-    if len(parts) != 2:
-        return format_response({"success": False, "error": "Invalid pane_id format"}, request)
-    
-    session_name = parts[0]
-    win_name = parts[1].split(".")[0]
-    
-    # Recreate tmux window and ttyd using same logic as create
-    port_range = parse_port_range(TTYD_PORT_RANGE_PROD)
-    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=MYSQL_PASSWORD, 
-                          database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor)
-    try:
-        with conn.cursor() as c:
-            # Find available port
-            available_port = None
-            for p in port_range:
-                c.execute("SELECT 1 FROM ttyd_config WHERE ttyd_port=%s", (p,))
-                if not c.fetchone():
-                    available_port = p
-                    break
-            
-            if not available_port:
-                return format_response({"success": False, "error": "No available port"}, request)
-            
-            import secrets
-            token = secrets.token_urlsafe(32)
-            url = f"http://user:{token}@127.0.0.1:{available_port}/"
-            
-            # Create tmux window
-            run_tmux(["new-window", "-t", session_name, "-n", win_name])
-            
-            # Save to db
-            c.execute("""INSERT INTO ttyd_config 
-                (pane_id, title, ttyd_port, ttyd_token, url, workspace, init_script, proxy) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
-                (pane_id, title, available_port, token, url, workspace, init_script, proxy))
-            conn.commit()
-            
-            # Run init_script
-            if init_script:
-                run_tmux(["send-keys", "-t", pane_id, init_script, "Enter"])
-            
-            return format_response({
-                "success": True, 
-                "message": "Pane restarted", 
-                "new_pane_id": pane_id,
-                "port": available_port
-            }, request)
-    finally:
-        conn.close()
 
 @router.delete("/sessions/{session}/windows/{window}")
 async def delete_window(session: str, window: str, request: Request):
