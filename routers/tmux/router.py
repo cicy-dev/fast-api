@@ -32,7 +32,6 @@ class SessionCreate(BaseModel):
 
 class WindowCreate(BaseModel):
     win_name: str
-    session_name: str = "worker"
     dev: bool = False
     workspace: Optional[str] = None
     init_script: str = "pwd"
@@ -291,7 +290,7 @@ async def restart_pane(pane_id: str, request: Request):
     1. 查配置
     2. 杀 ttyd
     3. 删 DB
-    4. 删 tmux pane
+    4. 删 tmux session
     5. 调用 create 公用逻辑重建
     """
 
@@ -299,7 +298,6 @@ async def restart_pane(pane_id: str, request: Request):
     import os
     import socket
 
-    # 1️⃣ 读取旧配置
     conn = pymysql.connect(
         host=MYSQL_HOST,
         port=MYSQL_PORT,
@@ -330,21 +328,15 @@ async def restart_pane(pane_id: str, request: Request):
             title = row["title"] or pane_id
             proxy = row["proxy"]
 
-            # 2️⃣ 杀 ttyd（通过 tmux run-shell 在 host 上执行，绕过 docker PID 隔离）
-            # 同时按端口（已绑定）和 pane_id（未绑定的孤儿进程）杀，kill -9 确保立即退出
             try:
                 run_tmux(["run-shell", (
-                    # 按端口杀（已绑定的）
                     f"kill -9 $(lsof -ti:{port} 2>/dev/null) 2>/dev/null; "
-                    # 按 pane_id 杀（未绑定的孤儿 ttyd 进程）
                     f"pkill -9 -f 'tmux attach -t {pane_id}' 2>/dev/null; "
-                    # 等待端口释放（最多 2 秒）
                     f"for i in $(seq 1 20); do lsof -ti:{port} >/dev/null 2>&1 || break; sleep 0.1; done; true"
                 )])
             except:
                 pass
 
-            # 3️⃣ 删 DB
             c.execute(
                 "DELETE FROM ttyd_config WHERE pane_id=%s",
                 (pane_id,)
@@ -354,13 +346,6 @@ async def restart_pane(pane_id: str, request: Request):
     finally:
         conn.close()
 
-    # 4️⃣ 杀 tmux pane
-    try:
-        run_tmux(["kill-pane", "-t", pane_id])
-    except:
-        pass
-
-    # 5️⃣ 解析 pane_id
     parts = pane_id.split(":")
     if len(parts) != 2:
         return format_response(
@@ -369,16 +354,21 @@ async def restart_pane(pane_id: str, request: Request):
         )
 
     session_name = parts[0]
-    win_name = parts[1].split(".")[0]
 
-    # 6️⃣ 创建新 tmux window，再调用公用创建逻辑
     try:
-        run_tmux(["new-window", "-t", session_name, "-n", win_name, "-c", workspace or os.path.expanduser("~")])
+        run_tmux(["kill-session", "-t", session_name])
+    except:
+        pass
+
+    workspace_expanded = os.path.expanduser(workspace or os.path.expanduser("~"))
+
+    try:
+        run_tmux(["new-session", "-d", "-s", session_name, "-n", "main", "-c", workspace_expanded])
 
         result = create_ttyd_pane_common(
             pane_id=pane_id,
             session_name=session_name,
-            win_name=win_name,
+            win_name="main",
             workspace=workspace,
             init_script=init_script,
             proxy=proxy,
@@ -404,7 +394,7 @@ async def restart_pane(pane_id: str, request: Request):
 
 @router.post("/create")
 async def create_window(data: WindowCreate, request: Request):
-    """Create tmux window and start ttyd (sync - wait for ttyd to start)"""
+    """Create tmux session and start ttyd (each pane has its own unique session)"""
     import os
 
     host_home = os.getenv("HOST_HOME", os.path.expanduser("~"))
@@ -413,20 +403,18 @@ async def create_window(data: WindowCreate, request: Request):
 
     os.makedirs(workspace_expanded, exist_ok=True)
 
-    session_check = run_tmux(["has-session", "-t", data.session_name], check_session=True)
+    unique_session = data.win_name
 
-    if session_check is None:
-        run_tmux(["new-session", "-d", "-s", data.session_name, "-n", data.win_name, "-c", workspace_expanded])
-    else:
-        windows_output = run_tmux(["list-windows", "-t", data.session_name, "-F", "#{window_name}"], check_session=False)
-        if windows_output and data.win_name in windows_output.split('\n'):
-            raise HTTPException(status_code=400, detail=f"Window '{data.win_name}' already exists in session '{data.session_name}'")
-        run_tmux(["new-window", "-t", data.session_name, "-n", data.win_name, "-c", workspace_expanded], check_session=False)
+    session_check = run_tmux(["has-session", "-t", unique_session], check_session=True)
 
-    pane_id = f"{data.session_name}:{data.win_name}.0"
-    title = data.title or pane_id
+    if session_check is not None:
+        raise HTTPException(status_code=400, detail=f"Session '{unique_session}' already exists")
 
-    # Set tmux dark theme colors
+    run_tmux(["new-session", "-d", "-s", unique_session, "-n", "main", "-c", workspace_expanded])
+
+    pane_id = f"{unique_session}:main.0"
+    title = data.title or unique_session
+
     run_tmux(["set-option", "-g", "status-style", "bg=#1e1e1e,fg=#888888"])
     run_tmux(["set-option", "-g", "window-status-current-style", "fg=#ffffff,bg=#2d2d2d"])
     run_tmux(["set-option", "-g", "pane-active-border-style", "fg=#4a9eff"])
@@ -434,8 +422,8 @@ async def create_window(data: WindowCreate, request: Request):
     try:
         result = create_ttyd_pane_common(
             pane_id=pane_id,
-            session_name=data.session_name,
-            win_name=data.win_name,
+            session_name=unique_session,
+            win_name="main",
             workspace=data.workspace or workspace_expanded,
             init_script=data.init_script,
             proxy=data.proxy,
@@ -447,18 +435,22 @@ async def create_window(data: WindowCreate, request: Request):
             clear_after_init=True,
         )
     except Exception as e:
+        try:
+            run_tmux(["kill-session", "-t", unique_session])
+        except:
+            pass
         return format_response({
             "success": False,
-            "session": data.session_name,
-            "window": data.win_name,
+            "session": unique_session,
+            "window": "main",
             "pane_id": pane_id,
             "error": str(e)
         }, request)
 
     return format_response({
         "success": True,
-        "session": data.session_name,
-        "window": data.win_name,
+        "session": unique_session,
+        "window": "main",
         "pane_id": pane_id,
         "title": title,
         "workspace": data.workspace,
@@ -524,7 +516,7 @@ async def get_pane(pane_id: str, request: Request):
 
 @router.delete("/panes/{pane_id}")
 async def delete_pane(pane_id: str, request: Request):
-    """Delete pane - kill tmux pane and remove database record"""
+    """Delete pane - kill tmux session and remove database record"""
     import pymysql
     
     conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=MYSQL_PASSWORD, 
@@ -536,7 +528,6 @@ async def delete_pane(pane_id: str, request: Request):
             if row:
                 port = row.get("ttyd_port")
                 if port:
-                    # 通过 tmux run-shell 在 host 上杀进程，绕过 docker PID 隔离
                     try:
                         run_tmux(["run-shell", f"kill -9 $(lsof -ti:{port} 2>/dev/null) 2>/dev/null; true"])
                     except:
@@ -544,8 +535,9 @@ async def delete_pane(pane_id: str, request: Request):
                 c.execute("DELETE FROM ttyd_config WHERE pane_id=%s", (pane_id,))
                 conn.commit()
         
+        session_name = pane_id.split(":")[0] if ":" in pane_id else pane_id
         try:
-            run_tmux(["kill-pane", "-t", pane_id])
+            run_tmux(["kill-session", "-t", session_name])
         except:
             pass
             
