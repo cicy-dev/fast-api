@@ -17,19 +17,17 @@ from typing import Optional
 # Import routers
 from routers.tmux import router as tmux_router
 from routers import ttyd
+from routers import groups as groups_module
 
 app = FastAPI(title="Local Services API", version="1.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"], allow_credentials=True)
 
-# Helper for YAML/JSON response
+# Helper for YAML/JSON response (default: JSON; optional: Accept: application/yaml)
 def is_yaml(request: Request) -> bool:
-    accept = request.headers.get("accept", "")
-    if "application/json" in accept.lower():
-        return False
-    return True
+    return "application/yaml" in request.headers.get("accept", "").lower()
 
-def format_response(data: dict, request: Request):
-    if is_yaml(request):
+def format_response(data: dict, request: Request = None):
+    if request and is_yaml(request):
         yaml_str = yaml.dump(data, default_flow_style=False, allow_unicode=True, sort_keys=False)
         return PlainTextResponse(yaml_str, media_type="application/yaml")
     return data
@@ -71,6 +69,7 @@ def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
 # Include routers with authentication
 app.include_router(tmux_router, dependencies=[Depends(verify_token)])
 app.include_router(ttyd.router, dependencies=[Depends(verify_token)])
+app.include_router(groups_module.router, dependencies=[Depends(verify_token)])
 
 def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
     if cred.credentials != AUTH_TOKEN:

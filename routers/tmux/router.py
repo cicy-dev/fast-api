@@ -74,16 +74,24 @@ def run_tmux(cmd, check_session=False):
     return result.stdout.strip()
 
 def is_yaml(request: Request) -> bool:
-    accept = request.headers.get("accept", "")
-    if "application/json" in accept.lower():
-        return False
-    return True
+    return "application/yaml" in request.headers.get("accept", "").lower()
 
 def format_response(data: dict, request: Request):
     if is_yaml(request):
         yaml_str = yaml.dump(data, default_flow_style=False, allow_unicode=True, sort_keys=False)
         return PlainTextResponse(yaml_str, media_type="application/yaml")
     return data
+def _load_api_token() -> str:
+    import json as _json
+    for path in ["/home/w3c_offical/global.json", os.path.expanduser("~/global.json")]:
+        try:
+            with open(path) as f:
+                return _json.load(f).get("api_token", "")
+        except Exception:
+            pass
+    return ""
+
+
 def create_ttyd_pane_common(
     pane_id: str,
     session_name: str,
@@ -99,7 +107,6 @@ def create_ttyd_pane_common(
     clear_after_init: bool = False,
 ):
     import pymysql
-    import secrets
     import socket
     import time
 
@@ -133,20 +140,19 @@ def create_ttyd_pane_common(
             if not port:
                 raise Exception("No available port")
 
-            # 2️⃣ token + url
-            token = secrets.token_urlsafe(32)
+            # 2️⃣ token (global) + url
+            token = _load_api_token()
             url = f"https://g-ttyd.cicy.de5.net/?token={token}&bot_name={pane_id}"
 
             # 3️⃣ 写入 DB
             c.execute("""
                 INSERT INTO ttyd_config
-                (pane_id, title, ttyd_port, ttyd_token, url, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                (pane_id, title, ttyd_port, url, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             """, (
                 pane_id,
                 title,
                 port,
-                token,
                 url,
                 workspace,
                 init_script,
@@ -158,26 +164,50 @@ def create_ttyd_pane_common(
 
             conn.commit()
 
-        # 4️⃣ 启动 ttyd
+        # 4️⃣ 启动 ttyd (run-shell runs on host, bypassing docker PID isolation;
+        #    send-keys fails from Python subprocess with "no current client")
+        socket_path = os.getenv("TMUX_SOCKET", "/home/w3c_offical/.tmux/default")
         ttyd_cmd = (
             f"nohup ttyd -W -p {port} "
             f"-c user:{token} "
-            f"tmux attach -t {pane_id} "
+            f"tmux -S {socket_path} attach -t {pane_id} "
             f"> /tmp/ttyd_{port}.log 2>&1 &"
         )
 
-        run_tmux(["send-keys", "-t", pane_id, ttyd_cmd, "Enter"])
+        run_tmux(["run-shell", ttyd_cmd])
 
-        # 5️⃣ init_script
+        # 5️⃣ proxy env vars (applied before init_script)
+        if proxy:
+            proxy_cmd = (
+                f"export http_proxy='{proxy}' https_proxy='{proxy}' "
+                f"HTTP_PROXY='{proxy}' HTTPS_PROXY='{proxy}' ALL_PROXY='{proxy}'"
+            )
+            run_tmux(["send-keys", "-t", pane_id, proxy_cmd, "Enter"])
+
+        # 6️⃣ init_script (multi-step: sleep:N delays, key:X sends key without Enter, regular lines → Enter)
         if init_script:
-            run_tmux(["send-keys", "-t", pane_id, init_script, "Enter"])
+            for line in init_script.splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                if line.startswith('sleep:'):
+                    try:
+                        secs = float(line.split(':', 1)[1])
+                        time.sleep(secs)
+                    except (ValueError, IndexError):
+                        pass
+                elif line.startswith('key:'):
+                    key_val = line.split(':', 1)[1]
+                    run_tmux(["send-keys", "-t", pane_id, key_val])
+                else:
+                    run_tmux(["send-keys", "-t", pane_id, line, "Enter"])
 
-        # 6️⃣ 可选：sleep + clear（create 时使用）
+        # 7️⃣ 可选：sleep + clear（create 时使用）
         if clear_after_init:
             time.sleep(1)
             run_tmux(["send-keys", "-t", pane_id, "clear", "Enter"])
 
-        # 7️⃣ 等待 ttyd ready
+        # 8️⃣ 等待 ttyd ready
         max_wait = 30
         elapsed = 0
 
@@ -210,6 +240,9 @@ async def list_sessions(request: Request):
         for line in output.split('\n'):
             if line:
                 name, windows, created = line.split('|')
+                # Skip internal linked sessions (v_*) and auto sessions
+                if name.startswith('v_') or name.startswith('auto'):
+                    continue
                 sessions.append({"name": name, "windows": int(windows), "created": int(created)})
         return format_response({"sessions": sessions}, request)
     except HTTPException as e:
@@ -433,7 +466,6 @@ async def create_window(data: WindowCreate, request: Request):
         "tg_chat_id": data.tg_chat_id,
         "tg_enable": data.tg_enable,
         "ttyd_port": result["port"],
-        "ttyd_token": result["token"],
         "url": result["url"]
     }, request)
 
@@ -469,7 +501,7 @@ async def get_pane(pane_id: str, request: Request):
                           database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor)
     try:
         with conn.cursor() as c:
-            c.execute("SELECT pane_id, title, ttyd_port, ttyd_token, url, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable FROM ttyd_config WHERE pane_id=%s", (pane_id,))
+            c.execute("SELECT pane_id, title, ttyd_port, url, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable FROM ttyd_config WHERE pane_id=%s", (pane_id,))
             row = c.fetchone()
             if not row:
                 raise HTTPException(status_code=404, detail=f"Pane {pane_id} not found")
@@ -477,7 +509,6 @@ async def get_pane(pane_id: str, request: Request):
                 "pane_id": row["pane_id"],
                 "title": row.get("title"),
                 "ttyd_port": row["ttyd_port"],
-                "ttyd_token": row["ttyd_token"],
                 "url": row.get("url"),
                 "workspace": row.get("workspace"),
                 "init_script": row.get("init_script"),

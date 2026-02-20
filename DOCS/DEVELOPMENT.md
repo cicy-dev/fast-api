@@ -91,7 +91,6 @@ CREATE TABLE IF NOT EXISTS ttyd_config (
     pane_id     VARCHAR(255) NOT NULL UNIQUE,
     title       VARCHAR(255),
     ttyd_port   INT NOT NULL,
-    ttyd_token  VARCHAR(255) NOT NULL,
     url         VARCHAR(512),
     workspace   VARCHAR(500),
     init_script VARCHAR(500),

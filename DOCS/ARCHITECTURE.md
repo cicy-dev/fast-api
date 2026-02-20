@@ -128,7 +128,6 @@ CREATE TABLE ttyd_config (
     pane_id     VARCHAR(255) NOT NULL UNIQUE,  -- e.g. "worker:myapp.0"
     title       VARCHAR(255),
     ttyd_port   INT NOT NULL,                  -- e.g. 15103
-    ttyd_token  VARCHAR(255) NOT NULL,         -- secrets.token_urlsafe(32)
     url         VARCHAR(512),                  -- 外部访问 URL
     workspace   VARCHAR(500),                  -- 工作目录
     init_script VARCHAR(500),                  -- 启动命令
@@ -216,7 +215,7 @@ while elapsed < 30:
 ### 6.5 认证
 
 ```python
-# ~/global.json 中读取 api_token（与 ttyd-proxy server 共用同一 token）
+# ~/global.json 中读取 api_token（与 ttyd-proxy server、ttyd 进程共用同一 token）
 AUTH_TOKEN = load_token()  # 64 字符 hex 字符串
 security = HTTPBearer()
 
@@ -224,6 +223,13 @@ def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
     if cred.credentials != AUTH_TOKEN:
         raise HTTPException(status_code=401, detail="invalid token")
 ```
+
+**单 token 架构**：`~/global.json` 中的 `api_token` 同时用于：
+- fast-api Bearer 认证
+- ttyd 进程启动参数（`-c user:{api_token}`）
+- ttyd-proxy 验证访问权限
+
+不再有 per-pane token，数据库中无 `ttyd_token` 字段。
 
 ## 7. 环境变量
 
