@@ -396,6 +396,7 @@ async def restart_pane(pane_id: str, request: Request):
 async def create_window(data: WindowCreate, request: Request):
     """Create tmux session and start ttyd (each pane has its own unique session)"""
     import os
+    import pymysql
 
     host_home = os.getenv("HOST_HOME", os.path.expanduser("~"))
     workspace = data.workspace if data.workspace else f"{host_home}/workers/{data.win_name}"
@@ -404,6 +405,22 @@ async def create_window(data: WindowCreate, request: Request):
     os.makedirs(workspace_expanded, exist_ok=True)
 
     unique_session = data.win_name
+
+    conn = pymysql.connect(
+        host=MYSQL_HOST,
+        port=MYSQL_PORT,
+        user=MYSQL_USER,
+        password=MYSQL_PASSWORD,
+        database=MYSQL_DATABASE,
+        cursorclass=pymysql.cursors.DictCursor
+    )
+    try:
+        with conn.cursor() as c:
+            c.execute("SELECT pane_id FROM ttyd_config WHERE pane_id=%s", (f"{unique_session}:main.0",))
+            if c.fetchone():
+                raise HTTPException(status_code=400, detail=f"Pane '{unique_session}' already exists")
+    finally:
+        conn.close()
 
     session_check = run_tmux(["has-session", "-t", unique_session], check_session=True)
 
