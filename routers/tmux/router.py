@@ -67,8 +67,10 @@ def run_tmux(cmd, check_session=False):
     result = subprocess.run(["tmux", "-S", socket_path] + cmd, capture_output=True, text=True)
     if result.returncode != 0:
         err = result.stderr.strip().lower()
+    
         # If checking session existence, return None for not found errors
         if check_session and ("no server running" in err or "can't find session" in err or "can't find window" in err):
+            # call #/panes/{pane_id}/restart and return run_tmux
             return None
         raise HTTPException(status_code=400, detail=result.stderr.strip())
     return result.stdout.strip()

@@ -4,6 +4,9 @@
 功能: 查询/管理 local_services 表
 """
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 import pymysql
 import json
 import yaml
