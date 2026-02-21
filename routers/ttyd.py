@@ -157,7 +157,7 @@ async def start_ttyd(pane_id: str, request: Request):
             # send-keys fails from Python subprocess with "no current client"
             run_tmux([
                 "run-shell",
-                f"nohup ttyd -W -p {port} -c user:{token} "
+                f"nohup ttyd -W -p {port} -c user:{token} --style /home/w3c_offical/.ttyd-style.css "
                 f"tmux -S {TMUX_SOCKET} attach -t {_view_session} "
                 f"> /tmp/ttyd_{port}.log 2>&1 &"
             ])
@@ -226,8 +226,13 @@ async def list_configs(request: Request):
     conn = get_db()
     try:
         with conn.cursor() as c:
-            c.execute("SELECT pane_id, title, ttyd_port, active FROM ttyd_config ORDER BY ttyd_port")
+            c.execute("SELECT pane_id, title, ttyd_port, active, created_at, updated_at FROM ttyd_config ORDER BY COALESCE(updated_at, created_at) DESC")
             rows = c.fetchall()
+            for row in rows:
+                if row.get("created_at"):
+                    row["created_at"] = row["created_at"].isoformat()
+                if row.get("updated_at"):
+                    row["updated_at"] = row["updated_at"].isoformat()
             return format_response({"configs": rows}, request)
     finally:
         conn.close()
@@ -254,7 +259,13 @@ async def update_config(pane_id: str, request: Request):
     conn = get_db()
     try:
         with conn.cursor() as c:
+            # Handle updated_at separately with raw SQL
+            has_updated_at = "updated_at" in updates
+            if has_updated_at:
+                del updates["updated_at"]
             set_clause = ", ".join(f"{k}=%s" for k in updates)
+            if has_updated_at:
+                set_clause += ", updated_at=NOW()"
             c.execute(
                 f"UPDATE ttyd_config SET {set_clause} WHERE pane_id=%s",
                 list(updates.values()) + [pane_id]

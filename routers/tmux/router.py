@@ -26,12 +26,9 @@ def parse_port_range(port_range: str):
     start, end = port_range.split("-")
     return range(int(start), int(end) + 1)
 
-class SessionCreate(BaseModel):
-    name: str
-    detached: bool = True
 
 class WindowCreate(BaseModel):
-    win_name: str
+    win_name: Optional[str] = None
     dev: bool = False
     workspace: Optional[str] = None
     init_script: str = "pwd"
@@ -42,16 +39,12 @@ class WindowCreate(BaseModel):
     tg_chat_id: Optional[str] = None
     tg_enable: bool = False
     
-    @field_validator('win_name')
-    @classmethod
-    def validate_win_name(cls, v):
-        if not re.match(r'^[a-zA-Z0-9_]+$', v):
-            raise ValueError('win_name must contain only alphanumeric characters and underscores')
-        return v
-
-class SessionRename(BaseModel):
-    old_name: str
-    new_name: str
+    # @field_validator('win_name')
+    # @classmethod
+    # def validate_win_name(cls, v):
+    #     if not re.match(r'^[a-zA-Z0-9_]+$', v):
+    #         raise ValueError('win_name must contain only alphanumeric characters and underscores')
+    #     return v
 
 class WindowRename(BaseModel):
     session: str
@@ -97,6 +90,7 @@ def create_ttyd_pane_common(
     pane_id: str,
     session_name: str,
     win_name: str,
+    ttyd_port:int,
     workspace: str,
     init_script: str,
     proxy: str,
@@ -106,10 +100,12 @@ def create_ttyd_pane_common(
     tg_chat_id: str = None,
     tg_enable: bool = False,
     clear_after_init: bool = False,
+    no_insert_db: bool = False,
 ):
     import pymysql
     import socket
     import time
+    port = ttyd_port
 
     conn = pymysql.connect(
         host=MYSQL_HOST,
@@ -122,57 +118,40 @@ def create_ttyd_pane_common(
 
     try:
         with conn.cursor() as c:
-
-            # 1️⃣ 分配端口
-            port_range = parse_port_range(
-                TTYD_PORT_RANGE_DEV if dev else TTYD_PORT_RANGE_PROD
-            )
-
-            port = None
-            for p in port_range:
-                c.execute(
-                    "SELECT 1 FROM ttyd_config WHERE ttyd_port=%s",
-                    (p,)
-                )
-                if not c.fetchone():
-                    port = p
-                    break
-
-            if not port:
-                raise Exception("No available port")
-
             # 2️⃣ token (global) + url
             token = _load_api_token()
             url = f"https://g-ttyd.cicy.de5.net/?token={token}&bot_name={pane_id}"
 
-            # 3️⃣ 写入 DB
-            c.execute("""
-                INSERT INTO ttyd_config
-                (pane_id, title, ttyd_port, url, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-            """, (
-                pane_id,
-                title,
-                port,
-                url,
-                workspace,
-                init_script,
-                proxy,
-                tg_token,
-                tg_chat_id,
-                tg_enable,
-            ))
+            if no_insert_db is False:
+                # 3️⃣ 写入 DB
+                c.execute("""
+                    INSERT INTO ttyd_config
+                    (pane_id, title, ttyd_port, url, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable, created_at, updated_at)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, NOW(), NOW())
+                """, (
+                    pane_id,
+                    title,
+                    ttyd_port,
+                    url,
+                    workspace,
+                    init_script,
+                    proxy,
+                    tg_token,
+                    tg_chat_id,
+                    tg_enable,
+                ))
 
-            conn.commit()
+                conn.commit()
 
         # 4️⃣ 启动 ttyd (run-shell runs on host, bypassing docker PID isolation;
         #    send-keys fails from Python subprocess with "no current client")
         socket_path = os.getenv("TMUX_SOCKET", "/home/w3c_offical/.tmux/default")
         ttyd_cmd = (
-            f"nohup ttyd -W -p {port} "
+            f"nohup ttyd -W -p {ttyd_port} "
             f"-c user:{token} "
+            f"--style /home/w3c_offical/.ttyd-style.css "
             f"tmux -S {socket_path} attach -t {pane_id} "
-            f"> /tmp/ttyd_{port}.log 2>&1 &"
+            f"> /tmp/ttyd_{ttyd_port}.log 2>&1 &"
         )
 
         run_tmux(["run-shell", ttyd_cmd])
@@ -231,58 +210,6 @@ def create_ttyd_pane_common(
     finally:
         conn.close()
 
-
-@router.get("/sessions")
-async def list_sessions(request: Request):
-    """List all tmux sessions"""
-    try:
-        output = run_tmux(["list-sessions", "-F", "#{session_name}|#{session_windows}|#{session_created}"])
-        sessions = []
-        for line in output.split('\n'):
-            if line:
-                name, windows, created = line.split('|')
-                # Skip internal linked sessions (v_*) and auto sessions
-                if name.startswith('v_') or name.startswith('auto'):
-                    continue
-                sessions.append({"name": name, "windows": int(windows), "created": int(created)})
-        return format_response({"sessions": sessions}, request)
-    except HTTPException as e:
-        if "no server running" in str(e.detail):
-            return format_response({"sessions": []}, request)
-        raise
-
-@router.post("/sessions")
-async def create_session(data: SessionCreate, request: Request):
-    """Create new session"""
-    cmd = ["new-session", "-s", data.name]
-    if data.detached:
-        cmd.append("-d")
-    run_tmux(cmd)
-    return format_response({"success": True, "session": data.name}, request)
-
-@router.delete("/sessions/{name}")
-async def delete_session(name: str, request: Request):
-    """Delete session"""
-    run_tmux(["kill-session", "-t", name])
-    return format_response({"success": True, "session": name}, request)
-
-@router.put("/sessions/rename")
-async def rename_session(data: SessionRename, request: Request):
-    """Rename session"""
-    run_tmux(["rename-session", "-t", data.old_name, data.new_name])
-    return format_response({"success": True, "old_name": data.old_name, "new_name": data.new_name}, request)
-
-@router.get("/sessions/{session}/windows")
-async def list_windows(session: str, request: Request):
-    """List windows in session"""
-    output = run_tmux(["list-windows", "-t", session, "-F", "#{window_index}|#{window_name}|#{window_active}"])
-    windows = []
-    for line in output.split('\n'):
-        if line:
-            index, name, active = line.split('|')
-            windows.append({"index": int(index), "name": name, "active": active == "1"})
-    return format_response({"session": session, "windows": windows}, request)
-
 @router.post("/panes/{pane_id}/restart")
 async def restart_pane(pane_id: str, request: Request):
     """
@@ -337,10 +264,10 @@ async def restart_pane(pane_id: str, request: Request):
             except:
                 pass
 
-            c.execute(
-                "DELETE FROM ttyd_config WHERE pane_id=%s",
-                (pane_id,)
-            )
+            # c.execute(
+            #     "DELETE FROM ttyd_config WHERE pane_id=%s",
+            #     (pane_id,)
+            # )
             conn.commit()
 
     finally:
@@ -374,6 +301,7 @@ async def restart_pane(pane_id: str, request: Request):
             proxy=proxy,
             title=title,
             dev=False,
+            no_insert_d=True
         )
 
         return format_response({
@@ -391,21 +319,50 @@ async def restart_pane(pane_id: str, request: Request):
         }, request)
 
 
+def _get_next_worker_index() -> int:
+    import pymysql
+    conn = pymysql.connect(
+        host=MYSQL_HOST,
+        port=MYSQL_PORT,
+        user=MYSQL_USER,
+        password=MYSQL_PASSWORD,
+        database=MYSQL_DATABASE,
+        cursorclass=pymysql.cursors.DictCursor
+    )
+    try:
+        with conn.cursor() as c:
+            c.execute("SELECT value FROM global_vars WHERE key_name='worker_index'")
+            row = c.fetchone()
+            if row:
+                current = int(row["value"])
+            else:
+                current = 20000
+            next_idx = current + 1
+            c.execute(
+                "INSERT INTO global_vars (key_name, value) VALUES ('worker_index', %s) "
+                "ON DUPLICATE KEY UPDATE value=%s",
+                (str(next_idx), str(next_idx))
+            )
+            conn.commit()
+            return next_idx
+    finally:
+        conn.close()
+
 
 @router.post("/create")
 async def create_window(data: WindowCreate, request: Request):
     """Create tmux session and start ttyd (each pane has its own unique session)"""
     import os
     import pymysql
-
+    
+    worker_index = _get_next_worker_index()
+    unique_session = f"w-{worker_index}"
+    title = data.win_name or unique_session
     host_home = os.getenv("HOST_HOME", os.path.expanduser("~"))
-    workspace = data.workspace if data.workspace else f"{host_home}/workers/{data.win_name}"
+    workspace = data.workspace if data.workspace else f"{host_home}/workers/{unique_session}"
     workspace_expanded = os.path.expanduser(workspace)
 
     os.makedirs(workspace_expanded, exist_ok=True)
-
-    unique_session = data.win_name
-
     conn = pymysql.connect(
         host=MYSQL_HOST,
         port=MYSQL_PORT,
@@ -430,7 +387,6 @@ async def create_window(data: WindowCreate, request: Request):
     run_tmux(["new-session", "-d", "-s", unique_session, "-n", "main", "-c", workspace_expanded])
 
     pane_id = f"{unique_session}:main.0"
-    title = data.title or unique_session
 
     run_tmux(["set-option", "-g", "status-style", "bg=#1e1e1e,fg=#888888"])
     run_tmux(["set-option", "-g", "window-status-current-style", "fg=#ffffff,bg=#2d2d2d"])
@@ -441,6 +397,7 @@ async def create_window(data: WindowCreate, request: Request):
             pane_id=pane_id,
             session_name=unique_session,
             win_name="main",
+            ttyd_port=int(worker_index),
             workspace=data.workspace or workspace_expanded,
             init_script=data.init_script,
             proxy=data.proxy,
@@ -561,30 +518,6 @@ async def delete_pane(pane_id: str, request: Request):
         return format_response({"success": True, "pane_id": pane_id, "message": "Pane deleted"}, request)
     finally:
         conn.close()
-
-
-@router.delete("/sessions/{session}/windows/{window}")
-async def delete_window(session: str, window: str, request: Request):
-    """Delete window"""
-    run_tmux(["kill-window", "-t", f"{session}:{window}"])
-    return format_response({"success": True, "session": session, "window": window}, request)
-
-@router.post("/sessions/{session}/windows/{window}/send")
-async def send_to_window(session: str, window: str, request: Request, payload: dict):
-    """Send text or keys to window"""
-    # Use pane_id from payload if provided, otherwise default to .0
-    pane = payload.get("pane_id", "0")
-    win_id = f"{session}:{window}.{pane}"
-    
-    if "text" in payload:
-        # Send literal text
-        text = payload["text"].replace("'", "'\\''")
-        run_tmux(["send-keys", "-t", win_id, "-l", text])
-    elif "keys" in payload:
-        # Send keys
-        run_tmux(["send-keys", "-t", win_id, payload["keys"]])
-    
-    return format_response({"success": True, "win_id": win_id}, request)
 
 @router.post("/send")
 async def send_short(request: Request, payload: dict):
