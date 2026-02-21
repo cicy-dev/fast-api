@@ -206,9 +206,6 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:14444/api/auth/verify
 ```bash
 TOKEN="$(cat ~/global.json | python3 -c 'import sys,json; print(json.load(sys.stdin)["api_token"])')"
 
-# 列出所有会话
-curl -H "Authorization: Bearer $TOKEN" http://localhost:14444/api/tmux/sessions
-
 # 会话树视图
 curl -H "Authorization: Bearer $TOKEN" http://localhost:14444/api/tmux/tree
 
@@ -280,14 +277,14 @@ docker exec fast-api python -m pytest tests/ -v
 | create 超时（30s） | `cat /tmp/ttyd_{port}.log` | ttyd 无法绑定端口（端口被占用） |
 | 多个 ttyd 进程 | `ps aux \| grep "tmux attach -t {pane_id}"` | 旧进程未被 kill（PID 隔离问题） |
 | DB 与进程 token 不匹配 | 对比 `by-name` 返回 vs `ps aux` 进程 | restart 时 kill 未等待端口释放 |
-| tmux 命令失败 | `tmux -S ~/.tmux/default list-sessions` | tmux server 未运行，需重建 |
+| tmux 命令失败 | `tmux list-sessions` | tmux server 未运行，需重建 |
 | tmux server 重建 | 见下方 | 所有 pane 丢失，需全量重启 |
 
 **tmux server 宕机恢复：**
 ```bash
 # 重建 tmux server（在宿主机上）
 rm -f ~/.tmux/default
-tmux -S ~/.tmux/default new-session -d -s worker -n main
+tmux new-session -d -s worker -n main
 
 # 然后通过 API 重启所有 pane（fast-api 会重新创建 tmux window）
 TOKEN="..."

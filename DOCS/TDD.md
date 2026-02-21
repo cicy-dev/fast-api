@@ -133,7 +133,6 @@ GET /api/auth/verify (无效token) → 401
 
 #### test_tmux.sh
 ```
-GET /api/tmux/sessions                     → 200, 含 sessions 字段
 GET /api/tmux/tree                         → 200, 含 tree 字段
 POST /api/tmux (无 token)                  → 401
 POST /api/tmux (缺 target)                 → 200, success:false

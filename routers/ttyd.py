@@ -157,8 +157,8 @@ async def start_ttyd(pane_id: str, request: Request):
             # send-keys fails from Python subprocess with "no current client"
             run_tmux([
                 "run-shell",
-                f"nohup ttyd -W -p {port} -c user:{token} --style /home/w3c_offical/.ttyd-style.css "
-                f"tmux -S {TMUX_SOCKET} attach -t {_view_session} "
+                f"nohup /home/w3c_offical/projects/ai-workers/ttyd/build/ttyd -W -p {port} -c user:{token} --style /home/w3c_offical/.ttyd-style.css "
+                f"tmux attach -t {_view_session} "
                 f"> /tmp/ttyd_{port}.log 2>&1 &"
             ])
             

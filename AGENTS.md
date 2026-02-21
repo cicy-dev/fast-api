@@ -157,12 +157,6 @@ app.include_router(tmux_router, dependencies=[Depends(verify_token)])
 
 - Use `Request` parameter for YAML/JSON response negotiation:
 
-```python
-@router.get("/sessions")
-async def list_sessions(request: Request):
-    ...
-    return format_response({"sessions": sessions}, request)
-```
 
 ### Response Formatting
 
@@ -178,7 +172,7 @@ def format_response(data: dict, request: Request = None):
 
 ### Tmux Integration
 
-- Always use host socket: `tmux -S {socket_path}`
+- Always use host socket: `tmux {socket_path}`
 - Socket path from env: `os.getenv("TMUX_SOCKET", "/home/w3c_offical/.tmux/default")`
 - Each pane should have its own unique tmux session (no shared sessions)
 

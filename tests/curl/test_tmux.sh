@@ -25,34 +25,22 @@ assert_contains() {
 
 echo "=== test_tmux.sh ==="
 
-# GET /api/tmux/sessions
-echo "[1] GET /api/tmux/sessions"
-RESP=$(curl -s -w '\n%{http_code}' "$BASE/api/tmux/sessions" -H "$H_AUTH" -H "$H_ACCEPT")
-CODE=$(echo "$RESP" | tail -1); BODY=$(echo "$RESP" | head -1)
-assert_status "/api/tmux/sessions → 200" "200" "$CODE"
-assert_contains "/api/tmux/sessions contains sessions" '"sessions"' "$BODY"
-
-# GET /api/tmux/sessions - no token → 403
-echo "[2] GET /api/tmux/sessions (no token)"
-CODE=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/tmux/sessions")
-assert_status "/api/tmux/sessions no token → 401" "401" "$CODE"
-
 # GET /api/tmux/tree
-echo "[3] GET /api/tmux/tree"
+echo "[1] GET /api/tmux/tree"
 RESP=$(curl -s -w '\n%{http_code}' "$BASE/api/tmux/tree" -H "$H_AUTH" -H "$H_ACCEPT")
 CODE=$(echo "$RESP" | tail -1); BODY=$(echo "$RESP" | head -1)
 assert_status "/api/tmux/tree → 200" "200" "$CODE"
 assert_contains "/api/tmux/tree contains tree" '"tree"' "$BODY"
 
 # GET /api/tmux-list
-echo "[4] GET /api/tmux-list"
+echo "[2] GET /api/tmux-list"
 RESP=$(curl -s -w '\n%{http_code}' "$BASE/api/tmux-list" -H "$H_AUTH" -H "$H_ACCEPT")
 CODE=$(echo "$RESP" | tail -1); BODY=$(echo "$RESP" | head -1)
 assert_status "/api/tmux-list → 200" "200" "$CODE"
 assert_contains "/api/tmux-list contains success" '"success"' "$BODY"
 
 # POST /api/tmux - no token → 403
-echo "[5] POST /api/tmux (no token)"
+echo "[3] POST /api/tmux (no token)"
 CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/api/tmux" \
   -H "$H_JSON" -d '{"text":"hello","target":"worker:main.0"}')
 assert_status "/api/tmux no token → 401" "401" "$CODE"

@@ -149,8 +149,7 @@ def create_ttyd_pane_common(
         ttyd_cmd = (
             f"nohup ttyd -W -p {ttyd_port} "
             f"-c user:{token} "
-            f"--style /home/w3c_offical/.ttyd-style.css "
-            f"tmux -S {socket_path} attach -t {pane_id} "
+            f"tmux attach -t {pane_id} "
             f"> /tmp/ttyd_{ttyd_port}.log 2>&1 &"
         )
 
@@ -209,114 +208,84 @@ def create_ttyd_pane_common(
 
     finally:
         conn.close()
-
 @router.post("/panes/{pane_id}/restart")
 async def restart_pane(pane_id: str, request: Request):
     """
-    Restart pane:
-    1. 查配置
-    2. 杀 ttyd
-    3. 删 DB
-    4. 删 tmux session
-    5. 调用 create 公用逻辑重建
+    改进版重启：
+    1. 检索配置
+    2. 杀掉占用该端口的 ttyd 进程
+    3. 清理 tmux 窗格中的运行进程 (C-c) 并清屏
+    4. 重新执行环境变量设置和 init_script
+    5. 重新拉起 ttyd
     """
-
     import pymysql
-    import os
-    import socket
+    import time
 
     conn = pymysql.connect(
-        host=MYSQL_HOST,
-        port=MYSQL_PORT,
-        user=MYSQL_USER,
-        password=MYSQL_PASSWORD,
-        database=MYSQL_DATABASE,
-        cursorclass=pymysql.cursors.DictCursor
+        host=MYSQL_HOST, port=MYSQL_PORT,
+        user=MYSQL_USER, password=MYSQL_PASSWORD,
+        database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor
     )
 
     try:
         with conn.cursor() as c:
             c.execute("""
-                SELECT ttyd_port, workspace, init_script, title, proxy
-                FROM ttyd_config
-                WHERE pane_id=%s
+                SELECT ttyd_port, workspace, init_script, title, proxy, tg_token, tg_chat_id, tg_enable 
+                FROM ttyd_config WHERE pane_id=%s
             """, (pane_id,))
-
             row = c.fetchone()
             if not row:
-                return format_response(
-                    {"success": False, "error": "Pane not found"},
-                    request
-                )
+                return format_response({"success": False, "error": "数据库中未找到该 Pane 配置"}, request)
 
-            port = row["ttyd_port"]
-            workspace = row["workspace"]
-            init_script = row["init_script"] or "pwd"
-            title = row["title"] or pane_id
-            proxy = row["proxy"]
+        # --- 1. 杀掉旧的 ttyd 进程 (只杀 ttyd，不杀 tmux) ---
+        port = row["ttyd_port"]
+        subprocess.run(f"pkill -f 'ttyd.*-p {port} '", shell=True, capture_output=True)
+        time.sleep(0.5)
 
-            try:
-                run_tmux(["run-shell", (
-                    f"kill -9 $(lsof -ti:{port} 2>/dev/null) 2>/dev/null; "
-                    f"pkill -9 -f 'tmux attach -t {pane_id}' 2>/dev/null; "
-                    f"for i in $(seq 1 20); do lsof -ti:{port} >/dev/null 2>&1 || break; sleep 0.1; done; true"
-                )])
-            except:
-                pass
-
-            # c.execute(
-            #     "DELETE FROM ttyd_config WHERE pane_id=%s",
-            #     (pane_id,)
-            # )
-            conn.commit()
-
-    finally:
-        conn.close()
-
-    parts = pane_id.split(":")
-    if len(parts) != 2:
-        return format_response(
-            {"success": False, "error": "Invalid pane_id"},
-            request
-        )
-
-    session_name = parts[0]
-
-    try:
-        run_tmux(["kill-session", "-t", session_name])
-    except:
-        pass
-
-    workspace_expanded = os.path.expanduser(workspace or os.path.expanduser("~"))
-
-    try:
+        # --- 2. 检查并恢复 tmux 状态 ---
+        # 直接杀掉旧 session 并重建，确保干净状态
+        session_name = pane_id.split(":")[0]
+        try:
+            run_tmux(["kill-session", "-t", session_name])
+        except:
+            pass
+        time.sleep(0.3)
+        
+        workspace_expanded = os.path.expanduser(row["workspace"] or "~")
         run_tmux(["new-session", "-d", "-s", session_name, "-n", "main", "-c", workspace_expanded])
 
+        # --- 3. 调用公共逻辑重新初始化 (不插入DB) ---
         result = create_ttyd_pane_common(
             pane_id=pane_id,
             session_name=session_name,
             win_name="main",
-            workspace=workspace,
-            init_script=init_script,
-            proxy=proxy,
-            title=title,
-            dev=False,
-            no_insert_d=True
+            ttyd_port=int(port),
+            workspace=row["workspace"],
+            init_script=row["init_script"],
+            proxy=row["proxy"],
+            title=row["title"],
+            tg_token=row["tg_token"],
+            tg_chat_id=row["tg_chat_id"],
+            tg_enable=row["tg_enable"],
+            clear_after_init=True,
+            no_insert_db=True  # 核心：避免主键冲突
         )
+
+        # 更新数据库时间
+        with conn.cursor() as c:
+            c.execute("UPDATE ttyd_config SET updated_at=NOW() WHERE pane_id=%s", (pane_id,))
+            conn.commit()
 
         return format_response({
             "success": True,
-            "message": "Pane restarted",
-            "pane_id": pane_id,
-            "port": result["port"],
+            "message": "Pane 软重启完成",
             "url": result["url"]
         }, request)
 
     except Exception as e:
-        return format_response({
-            "success": False,
-            "error": str(e)
-        }, request)
+        return format_response({"success": False, "error": str(e)}, request)
+    finally:
+        conn.close()
 
 
 def _get_next_worker_index() -> int:

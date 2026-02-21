@@ -99,13 +99,6 @@ fast-api/
 
 | 路径 | 方法 | 说明 |
 |------|------|------|
-| `/api/tmux/sessions` | GET | 列出所有 tmux 会话 |
-| `/api/tmux/sessions` | POST | 创建会话（body: `{name, detached}`） |
-| `/api/tmux/sessions/{name}` | DELETE | 删除会话 |
-| `/api/tmux/sessions/rename` | PUT | 重命名会话（body: `{old_name, new_name}`） |
-| `/api/tmux/sessions/{s}/windows` | GET | 列出会话下所有窗口 |
-| `/api/tmux/sessions/{s}/windows/{w}` | DELETE | 删除窗口 |
-| `/api/tmux/sessions/{s}/windows/{w}/send` | POST | 向窗口发送文本/按键 |
 | `/api/tmux/send` | POST | 向任意 pane 发送（body: `{win_id, text/keys}`） |
 | `/api/tmux/create` | POST | 创建 window + 启动 ttyd（主接口） |
 | `/api/tmux/panes/{pane_id}` | GET | 获取 pane 配置 |

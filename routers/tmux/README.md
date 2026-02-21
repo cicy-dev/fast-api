@@ -8,10 +8,6 @@ Centralized HTTP API for tmux operations.
 # Get token
 TOKEN=$(jq -r '.api_token' ~/global.json)
 
-# List sessions
-curl -H "Authorization: Bearer $TOKEN" \
-  http://localhost:14444/api/tmux/sessions
-
 # Send command
 curl -H "Authorization: Bearer $TOKEN" \
   -d '{"win_id": "master:cicy_master_xk_bot.0", "text": "echo hello"}' \
@@ -22,12 +18,6 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 | Method | Endpoint | Payload | Description |
 |--------|----------|---------|-------------|
-| GET | `/api/tmux/sessions` | - | List all sessions |
-| POST | `/api/tmux/sessions` | `{"name": "session1"}` | Create session |
-| DELETE | `/api/tmux/sessions/{name}` | - | Delete session |
-| GET | `/api/tmux/sessions/{session}/windows` | - | List windows |
-| POST | `/api/tmux/sessions/{session}/windows` | `{"name": "window1"}` | Create window |
-| DELETE | `/api/tmux/sessions/{session}/windows/{window}` | - | Delete window |
 | POST | `/api/tmux/send` | `{"win_id": "...", "text": "..."}` | Send text |
 | POST | `/api/tmux/send` | `{"win_id": "...", "keys": "Enter"}` | Send keys |
 | POST | `/api/tmux/capture_pane` | `{"pane_id": "...", "start": -100, "end": -1}` | Capture pane output |
@@ -118,7 +108,7 @@ sessions:
 **JSON (with Accept header):**
 ```bash
 curl -H "Accept: application/json" -H "Authorization: Bearer $TOKEN" \
-  http://localhost:14444/api/tmux/sessions
+  http://localhost:14444/api/tmux/tree
 ```
 
 ## Authentication
