@@ -21,9 +21,29 @@ from typing import Optional
 from routers.tmux import router as tmux_router
 from routers import ttyd
 from routers import groups as groups_module
+from routers import apps as apps_module
+
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse as StarletteJSONResponse
 
 app = FastAPI(title="Local Services API", version="1.0")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"], allow_credentials=True)
+
+ALLOWED_ORIGINS = ["*"]
+
+class CORSErrorMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        try:
+            response = await call_next(request)
+        except Exception as e:
+            response = StarletteJSONResponse({"detail": str(e)}, status_code=500)
+        origin = request.headers.get("origin", "")
+        if origin:
+            response.headers["access-control-allow-origin"] = origin
+            response.headers["access-control-allow-credentials"] = "true"
+        return response
+
+app.add_middleware(CORSErrorMiddleware)
+app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS, allow_methods=["*"], allow_headers=["*"], allow_credentials=True)
 
 # Helper for YAML/JSON response (default: JSON; optional: Accept: application/yaml)
 def is_yaml(request: Request) -> bool:
@@ -73,6 +93,7 @@ def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
 app.include_router(tmux_router, dependencies=[Depends(verify_token)])
 app.include_router(ttyd.router, dependencies=[Depends(verify_token)])
 app.include_router(groups_module.router, dependencies=[Depends(verify_token)])
+app.include_router(apps_module.router, dependencies=[Depends(verify_token)])
 
 def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
     if cred.credentials != AUTH_TOKEN:
@@ -90,6 +111,22 @@ DB = dict(
 
 def get_db():
     return pymysql.connect(**DB, cursorclass=pymysql.cursors.DictCursor)
+
+@app.get("/api/qa/{record_id}")
+def qa_detail(record_id: int, token: str = Depends(verify_token)):
+    qa_db = {**DB, "database": "llm_qa_history"}
+    conn = pymysql.connect(**qa_db, cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with conn.cursor() as c:
+            c.execute("SELECT * FROM llm_qa_history WHERE id=%s", (record_id,))
+            row = c.fetchone()
+            if not row:
+                raise HTTPException(status_code=404, detail="not found")
+            row["created_at"] = str(row.get("created_at", ""))
+            row["updated_at"] = str(row.get("updated_at", ""))
+            return row
+    finally:
+        conn.close()
 
 @app.on_event("startup")
 async def startup_event():
@@ -158,7 +195,7 @@ async def startup_event():
                 f"nohup {TTYD_BINARY_PATH} -W -p {port} "
                 f"-c user:{token} "
                 f"tmux attach -t {pane_id} "
-                f"> /tmp/ttyd_{port}.log 2>&1 &"
+                f"> /home/w3c_offical/projects/ai-workers/fast-api/logs/ttyd_{port}.log 2>&1 &"
             )
             run_tmux_cmd(["run-shell", ttyd_cmd])
             print(f"[Startup] Started ttyd on port {port} for {pane_id}")
