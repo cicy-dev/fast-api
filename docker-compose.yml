@@ -16,7 +16,6 @@ services:
       - /home/w3c_offical/workers:/home/w3c_offical/workers:rw
       - /home/w3c_offical/tools:/home/w3c_offical/tools:ro
       - /home/w3c_offical/projects:/home/w3c_offical/projects:ro
-      - /home/w3c_offical/.tmux:/home/w3c_offical/.tmux
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     network_mode: host

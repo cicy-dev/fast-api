@@ -28,7 +28,7 @@ fast-api 是整个系统的核心后端服务，负责：
                         └──┬──────────┬───────────────┘
                            │          │
               tmux socket  │          │  MySQL
-              ~/.tmux/     │          │  127.0.0.1:3306
+                 │          │  127.0.0.1:3306
               default      │          │  db: tts_bot
                     ┌──────▼──┐  ┌────▼─────────────┐
                     │  tmux   │  │     MySQL         │
@@ -243,5 +243,4 @@ def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
 | `~/workers/` | `/home/w3c_offical/workers/` | rw | pane 工作目录 |
 | `~/tools/` | `/home/w3c_offical/tools/` | ro | tre 等工具 |
 | `~/projects/` | `/home/w3c_offical/projects/` | ro | 项目代码（init_script 用） |
-| `~/.tmux/` | `/home/w3c_offical/.tmux/` | rw | tmux socket |
 | `/var/run/docker.sock` | `/var/run/docker.sock` | rw | docker exec 命令 |

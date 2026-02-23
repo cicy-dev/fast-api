@@ -102,8 +102,7 @@ async def startup_event():
     TTYD_BASE_URL = os.getenv("TTYD_BASE_URL", "")
 
     def run_tmux_cmd(cmd, check_session=False):
-        socket_path = os.getenv("TMUX_SOCKET", "/home/w3c_offical/.tmux/default")
-        result = subprocess.run(["tmux", "-S", socket_path] + cmd, capture_output=True, text=True)
+        result = subprocess.run(["tmux"] + cmd, capture_output=True, text=True)
         if result.returncode != 0:
             err = result.stderr.strip().lower()
             if check_session and ("no server running" in err or "can't find session" in err or "can't find window" in err):
