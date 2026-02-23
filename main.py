@@ -91,6 +91,120 @@ DB = dict(
 def get_db():
     return pymysql.connect(**DB, cursorclass=pymysql.cursors.DictCursor)
 
+@app.on_event("startup")
+async def startup_event():
+    """Start all tmux sessions and ttyd services from database config on startup"""
+    import subprocess
+    import socket
+    import time
+
+    TTYD_BINARY_PATH = os.getenv("TTYD_BINARY_PATH", "ttyd")
+    TTYD_BASE_URL = os.getenv("TTYD_BASE_URL", "")
+
+    def run_tmux_cmd(cmd, check_session=False):
+        socket_path = os.getenv("TMUX_SOCKET", "/home/w3c_offical/.tmux/default")
+        result = subprocess.run(["tmux", "-S", socket_path] + cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            err = result.stderr.strip().lower()
+            if check_session and ("no server running" in err or "can't find session" in err or "can't find window" in err):
+                return None
+            print(f"tmux error: {result.stderr.strip()}")
+            return None
+        return result.stdout.strip()
+
+    def is_port_listening(port):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
+        result = sock.connect_ex(("127.0.0.1", port))
+        sock.close()
+        return result == 0
+
+    conn = get_db()
+    try:
+        with conn.cursor() as c:
+            c.execute("SELECT pane_id, title, ttyd_port, workspace, init_script, proxy, active FROM ttyd_config WHERE active=1")
+            configs = c.fetchall()
+        
+        print(f"[Startup] Found {len(configs)} active pane configs in database")
+        
+        for config in configs:
+            pane_id = config["pane_id"]
+            port = int(config["ttyd_port"])
+            workspace = config.get("workspace")
+            init_script = config.get("init_script")
+            proxy = config.get("proxy")
+            title = config.get("title", pane_id)
+            
+            if is_port_listening(port):
+                print(f"[Startup] ttyd already running on port {port} for {pane_id}")
+                continue
+            
+            parts = pane_id.split(":")
+            if len(parts) < 2:
+                print(f"[Startup] Invalid pane_id format: {pane_id}")
+                continue
+            
+            session_name = parts[0]
+            window_part = parts[1]
+            window_name = window_part.split(".")[0] if "." in window_part else window_part
+            
+            session_exists = run_tmux_cmd(["has-session", "-t", session_name], check_session=True)
+            if session_exists is None:
+                workspace_expanded = os.path.expanduser(workspace or "~")
+                print(f"[Startup] Creating tmux session {session_name} with workspace {workspace_expanded}")
+                run_tmux_cmd(["new-session", "-d", "-s", session_name, "-n", window_name, "-c", workspace_expanded])
+            
+            token = AUTH_TOKEN
+            ttyd_cmd = (
+                f"nohup {TTYD_BINARY_PATH} -W -p {port} "
+                f"-c user:{token} "
+                f"tmux attach -t {pane_id} "
+                f"> /tmp/ttyd_{port}.log 2>&1 &"
+            )
+            run_tmux_cmd(["run-shell", ttyd_cmd])
+            print(f"[Startup] Started ttyd on port {port} for {pane_id}")
+            
+            if proxy:
+                proxy_cmd = (
+                    f"export http_proxy='{proxy}' https_proxy='{proxy}' "
+                    f"HTTP_PROXY='{proxy}' HTTPS_PROXY='{proxy}' ALL_PROXY='{proxy}'"
+                )
+                run_tmux_cmd(["send-keys", "-t", pane_id, proxy_cmd, "Enter"])
+            
+            if init_script:
+                for line in init_script.splitlines():
+                    line = line.strip()
+                    if not line:
+                        continue
+                    if line.startswith('sleep:'):
+                        try:
+                            secs = float(line.split(':', 1)[1])
+                            time.sleep(secs)
+                        except (ValueError, IndexError):
+                            pass
+                    elif line.startswith('key:'):
+                        key_val = line.split(':', 1)[1]
+                        run_tmux_cmd(["send-keys", "-t", pane_id, key_val])
+                    else:
+                        run_tmux_cmd(["send-keys", "-t", pane_id, line, "Enter"])
+            
+            max_wait = 30
+            elapsed = 0
+            while elapsed < max_wait:
+                if is_port_listening(port):
+                    print(f"[Startup] ttyd ready on port {port}")
+                    break
+                time.sleep(0.5)
+                elapsed += 0.5
+            else:
+                print(f"[Startup] Warning: ttyd not ready on port {port} after {max_wait}s")
+        
+        print("[Startup] Finished starting all services")
+    except Exception as e:
+        print(f"[Startup] Error: {e}")
+    finally:
+        conn.close()
+
 @app.get("/api/health")
 async def api_health(request: Request):
     return format_response({"status": "ok", "source": "fast-api"}, request)
