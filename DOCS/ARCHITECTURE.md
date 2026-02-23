@@ -156,13 +156,7 @@ CREATE TABLE local_services (
 
 fast-api 运行在 Docker 容器内（`network_mode: host`，`privileged: true`），但 tmux 服务器运行在 Host 上。
 
-```python
-# 所有 tmux 命令通过 socket 文件通信
-TMUX_SOCKET = "/home/w3c_offical/.tmux/default"  # 宿主机 socket，容器内挂载
 
-def run_tmux(cmd):
-    result = subprocess.run(["tmux", "-S", TMUX_SOCKET] + cmd, ...)
-```
 
 **ttyd 进程杀死**（`os.kill()` 在容器内无法杀死 host 进程）：
 
@@ -228,7 +222,6 @@ def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `TMUX_SOCKET` | `/home/w3c_offical/.tmux/default` | tmux socket 路径（宿主机） |
 | `HOST_HOME` | `/home/w3c_offical` | 宿主机 home 目录 |
 | `HOST_UID` | `1001` | 容器内用户 UID |
 | `HOST_GID` | `1002` | 容器内用户 GID |

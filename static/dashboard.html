@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Fast API</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+        }
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-logout { background: #fee; color: #c33; }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        h2 { margin-bottom: 1rem; }
+        .token-list { list-style: none; }
+        .token-item {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-delete { background: #fee; color: #c33; padding: 0.25rem 0.75rem; }
+        .btn-create { background: #667eea; color: white; }
+        input { padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; margin-right: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Fast API Dashboard</h1>
+        <div class="user-info">
+            <img id="avatar" class="avatar" src="" alt="">
+            <span id="userName"></span>
+            <button class="btn btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>API Tokens</h2>
+            <div style="margin-bottom: 1rem;">
+                <input type="text" id="tokenName" placeholder="Token name">
+                <input type="number" id="tokenExpires" placeholder="Expires (days, optional)">
+                <button class="btn btn-create" onclick="createToken()">Create Token</button>
+            </div>
+            <ul class="token-list" id="tokenList"></ul>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        const token = localStorage.getItem('auth_token');
+        
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+        
+        async function fetchAPI(url, options = {}) {
+            const res = await fetch(`${API_BASE}${url}`, {
+                ...options,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    ...options.headers
+                }
+            });
+            if (!res.ok) throw new Error('API error');
+            return res.json();
+        }
+        
+        async function loadUser() {
+            try {
+                const user = await fetchAPI('/auth/me');
+                document.getElementById('userName').textContent = user.name || user.email;
+                document.getElementById('avatar').src = user.avatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name || user.email);
+            } catch {
+                window.location.href = '/login.html';
+            }
+        }
+        
+        async function loadTokens() {
+            const data = await fetchAPI('/auth/tokens');
+            const list = document.getElementById('tokenList');
+            list.innerHTML = data.tokens.map(t => `
+                <li class="token-item">
+                    <div>
+                        <strong>${t.name}</strong><br>
+                        <small>Created: ${new Date(t.created_at).toLocaleString()}</small>
+                        ${t.last_used ? `<br><small>Last used: ${new Date(t.last_used).toLocaleString()}</small>` : ''}
+                        ${t.expires_at ? `<br><small>Expires: ${new Date(t.expires_at).toLocaleString()}</small>` : ''}
+                    </div>
+                    <button class="btn btn-delete" onclick="deleteToken(${t.id})">Delete</button>
+                </li>
+            `).join('');
+        }
+        
+        async function createToken() {
+            const name = document.getElementById('tokenName').value || 'API Token';
+            const expires = document.getElementById('tokenExpires').value;
+            
+            const data = await fetchAPI('/auth/token', {
+                method: 'POST',
+                body: JSON.stringify({ name, expires_days: expires ? parseInt(expires) : null })
+            });
+            
+            alert(`Token created:\n\n${data.token}\n\nSave it now, you won't see it again!`);
+            document.getElementById('tokenName').value = '';
+            document.getElementById('tokenExpires').value = '';
+            loadTokens();
+        }
+        
+        async function deleteToken(id) {
+            if (!confirm('Delete this token?')) return;
+            await fetchAPI(`/auth/tokens/${id}`, { method: 'DELETE' });
+            loadTokens();
+        }
+        
+        function logout() {
+            localStorage.removeItem('auth_token');
+            window.location.href = '/login.html';
+        }
+        
+        loadUser();
+        loadTokens();
+    </script>
+</body>
+</html>

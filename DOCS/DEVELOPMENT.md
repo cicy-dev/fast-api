@@ -6,7 +6,6 @@
 |------|------|------|
 | Docker + Docker Compose | ≥ 24.x | 服务容器化运行 |
 | MySQL | 3306 (host) | 数据库 `tts_bot` 必须存在且可连接 |
-| tmux | 运行中（socket `~/.tmux/default`） | API 依赖宿主机 tmux server |
 | ttyd | `~/.kiro` 或系统 PATH | fast-api 会在 host 上启动 ttyd 进程 |
 | Cloudflare Tunnel | cloudflared 运行中 | 外网访问（开发可选） |
 
@@ -56,7 +55,7 @@ cp .env.example .env
 编辑 `.env`：
 ```env
 # tmux
-TMUX_SOCKET=/home/w3c_offical/.tmux/default
+TMUX_SOCKET=
 
 # Host
 HOST_UID=1001
@@ -283,7 +282,6 @@ docker exec fast-api python -m pytest tests/ -v
 **tmux server 宕机恢复：**
 ```bash
 # 重建 tmux server（在宿主机上）
-rm -f ~/.tmux/default
 tmux new-session -d -s worker -n main
 
 # 然后通过 API 重启所有 pane（fast-api 会重新创建 tmux window）

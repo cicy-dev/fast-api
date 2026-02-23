@@ -21,8 +21,8 @@ MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "tts_bot")
 TTYD_PORT_RANGE_DEV = os.getenv("TTYD_PORT_RANGE_DEV", "15100-15300")
 TTYD_PORT_RANGE_PROD = os.getenv("TTYD_PORT_RANGE_PROD", "15100-15300")
 
-TMUX_SOCKET = os.getenv("TMUX_SOCKET", "/home/w3c_offical/.tmux/default")
 TTYD_BASE_URL = os.getenv("TTYD_BASE_URL", "")
+TTYD_BINARY_PATH = os.getenv("TTYD_BINARY_PATH", "ttyd")
 
 def _load_api_token() -> str:
     import json as _json
@@ -51,7 +51,7 @@ def format_response(data: dict, request: Request = None):
     return data
 
 def run_tmux(cmd):
-    result = subprocess.run(["tmux", "-S", TMUX_SOCKET] + cmd, capture_output=True, text=True)
+    result = subprocess.run(["tmux"] + cmd, capture_output=True, text=True)
     if result.returncode != 0:
         raise HTTPException(status_code=400, detail=result.stderr.strip())
     return result.stdout.strip()
@@ -67,7 +67,7 @@ def parse_port_range(port_range: str):
 def _tmux_pane_exists(pane_id: str) -> bool:
     """Check if a tmux pane exists."""
     result = subprocess.run(
-        ["tmux", "-S", TMUX_SOCKET, "has-session", "-t", pane_id.split(".")[0]],
+        ["tmux", "has-session", "-t", pane_id.split(".")[0]],
         capture_output=True
     )
     return result.returncode == 0
@@ -150,14 +150,14 @@ async def start_ttyd(pane_id: str, request: Request):
             _window_name = _parts[1].split(".")[0] if len(_parts) > 1 else pane_id  # "chatgpt"
             _view_session = f"v_{_window_name}"  # "v_chatgpt"
             # ignore error if session already exists
-            subprocess.run(["tmux", "-S", TMUX_SOCKET, "new-session", "-d", "-s", _view_session, "-t", _base_session], capture_output=True)
+            subprocess.run(["tmux", "new-session", "-d", "-s", _view_session, "-t", _base_session], capture_output=True)
             run_tmux(["select-window", "-t", f"{_view_session}:{_window_name}"])
 
             # run-shell executes on the host (bypasses docker PID isolation);
             # send-keys fails from Python subprocess with "no current client"
             run_tmux([
                 "run-shell",
-                f"nohup /home/w3c_offical/projects/ai-workers/ttyd/build/ttyd -W -p {port} -c user:{token} --style /home/w3c_offical/.ttyd-style.css "
+                f"nohup {TTYD_BINARY_PATH} -W -p {port} -c user:{token} --style /home/w3c_offical/.ttyd-style.css "
                 f"tmux attach -t {_view_session} "
                 f"> /tmp/ttyd_{port}.log 2>&1 &"
             ])

@@ -21,6 +21,7 @@ MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "tts_bot")
 TTYD_PORT_RANGE_DEV = os.getenv("TTYD_PORT_RANGE_DEV", "15100-15300")
 TTYD_PORT_RANGE_PROD = os.getenv("TTYD_PORT_RANGE_PROD", "15100-15300")
 TTYD_BASE_URL = os.getenv("TTYD_BASE_URL", "")
+TTYD_BINARY_PATH = os.getenv("TTYD_BINARY_PATH", "ttyd")
 
 def parse_port_range(port_range: str):
     start, end = port_range.split("-")
@@ -55,8 +56,7 @@ def run_tmux(cmd, check_session=False):
     """Execute tmux command using host socket
     If check_session=True, returns None for "no server/session" errors instead of raising
     """
-    socket_path = os.getenv("TMUX_SOCKET", "/home/w3c_offical/.tmux/default")
-    result = subprocess.run(["tmux", "-S", socket_path] + cmd, capture_output=True, text=True)
+    result = subprocess.run(["tmux"] + cmd, capture_output=True, text=True)
     if result.returncode != 0:
         err = result.stderr.strip().lower()
     
@@ -120,7 +120,8 @@ def create_ttyd_pane_common(
         with conn.cursor() as c:
             # 2️⃣ token (global) + url
             token = _load_api_token()
-            url = f"https://g-ttyd.cicy.de5.net/?token={token}&bot_name={pane_id}"
+            
+            url = f"https://ttyd-proxy.cicy.de5.net/ttyd/{pane_id}/?token={token}"
 
             if no_insert_db is False:
                 # 3️⃣ 写入 DB
@@ -145,9 +146,8 @@ def create_ttyd_pane_common(
 
         # 4️⃣ 启动 ttyd (run-shell runs on host, bypassing docker PID isolation;
         #    send-keys fails from Python subprocess with "no current client")
-        socket_path = os.getenv("TMUX_SOCKET", "/home/w3c_offical/.tmux/default")
         ttyd_cmd = (
-            f"nohup ttyd -W -p {ttyd_port} "
+            f"nohup {TTYD_BINARY_PATH} -W -p {ttyd_port} "
             f"-c user:{token} "
             f"tmux attach -t {pane_id} "
             f"> /tmp/ttyd_{ttyd_port}.log 2>&1 &"

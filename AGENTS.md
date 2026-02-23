@@ -172,8 +172,6 @@ def format_response(data: dict, request: Request = None):
 
 ### Tmux Integration
 
-- Always use host socket: `tmux {socket_path}`
-- Socket path from env: `os.getenv("TMUX_SOCKET", "/home/w3c_offical/.tmux/default")`
 - Each pane should have its own unique tmux session (no shared sessions)
 
 ### File Organization
@@ -201,7 +199,7 @@ fast-api/
 Required in `.env` (copy from `.env.example`):
 
 ```
-TMUX_SOCKET=/home/w3c_offical/.tmux/default
+TMUX_SOCKET=
 MYSQL_HOST=127.0.0.1
 MYSQL_PORT=3306
 MYSQL_USER=root
