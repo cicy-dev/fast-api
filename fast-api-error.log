@@ -31575,3 +31575,43 @@ INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     103.219.192.139:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
 INFO:     connection open
+INFO:     Will watch for changes in these directories: ['/home/w3c_offical/projects/ai-workers/fast-api']
+INFO:     Uvicorn running on http://0.0.0.0:14444 (Press CTRL+C to quit)
+INFO:     Started reloader process [270715] using WatchFiles
+Process SpawnProcess-1:
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.10/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/w3c_offical/projects/ai-workers/fast-api/venv/lib/python3.10/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/home/w3c_offical/projects/ai-workers/fast-api/venv/lib/python3.10/site-packages/uvicorn/server.py", line 67, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+  File "/home/w3c_offical/projects/ai-workers/fast-api/venv/lib/python3.10/site-packages/uvicorn/_compat.py", line 60, in asyncio_run
+    return loop.run_until_complete(main)
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/home/w3c_offical/projects/ai-workers/fast-api/venv/lib/python3.10/site-packages/uvicorn/server.py", line 71, in serve
+    await self._serve(sockets)
+  File "/home/w3c_offical/projects/ai-workers/fast-api/venv/lib/python3.10/site-packages/uvicorn/server.py", line 78, in _serve
+    config.load()
+  File "/home/w3c_offical/projects/ai-workers/fast-api/venv/lib/python3.10/site-packages/uvicorn/config.py", line 439, in load
+    self.loaded_app = import_from_string(self.app)
+  File "/home/w3c_offical/projects/ai-workers/fast-api/venv/lib/python3.10/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/home/w3c_offical/projects/ai-workers/fast-api/main.py", line 21, in <module>
+    from routers.tmux import router as tmux_router
+  File "/home/w3c_offical/projects/ai-workers/fast-api/routers/tmux/__init__.py", line 1, in <module>
+    from .router import router
+  File "/home/w3c_offical/projects/ai-workers/fast-api/routers/tmux/router.py", line 294
+    print(f"[DEBUG] Created session {unique_session}")
+    ^^^^^
+SyntaxError: expected 'except' or 'finally' block

@@ -238,6 +238,12 @@ async def startup_event():
             time.sleep(0.3)
             run_tmux_cmd(["send-keys", "-t", pane_id, "clear", "Enter"])
 
+            # Auto cd to workspace and start kiro-cli
+            if workspace:
+                workspace_expanded = os.path.expanduser(workspace)
+                run_tmux_cmd(["send-keys", "-t", pane_id, f"cd {workspace_expanded}", "Enter"])
+            # kiro-cli will be started manually by user
+
             if init_script:
                 for line in init_script.splitlines():
                     line = line.strip()

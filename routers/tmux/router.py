@@ -194,6 +194,11 @@ def create_ttyd_pane_common(
         time.sleep(0.3)
         run_tmux(["send-keys", "-t", pane_id, "clear", "Enter"])
 
+        # 6.5️⃣ Auto cd to workspace
+        if workspace:
+            workspace_expanded = workspace.replace('~', '/home/w3c_offical')
+            run_tmux(["send-keys", "-t", pane_id, f"cd {workspace_expanded}", "Enter"])
+
         # 7️⃣ init_script (multi-step: sleep:N delays, key:X sends key without Enter, regular lines → Enter)
         if init_script:
             for line in init_script.splitlines():
