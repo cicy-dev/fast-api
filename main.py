@@ -22,13 +22,22 @@ from routers.tmux import router as tmux_router
 from routers import ttyd
 from routers import groups as groups_module
 from routers import apps as apps_module
+from routers import auth as auth_module
+from routers import websocket_agent
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse as StarletteJSONResponse
 
 app = FastAPI(title="Local Services API", version="1.0")
 
-ALLOWED_ORIGINS = ["*"]
+ALLOWED_ORIGINS = [
+    "https://desktop.cicy.de5.net",
+    "https://ttyd-dev.cicy.de5.net",
+    "https://ttyd-proxy.cicy.de5.net",
+    "http://localhost:6905",
+    "http://localhost:6902",
+    "http://localhost:6901",
+]
 
 class CORSErrorMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -94,6 +103,8 @@ app.include_router(tmux_router, dependencies=[Depends(verify_token)])
 app.include_router(ttyd.router, dependencies=[Depends(verify_token)])
 app.include_router(groups_module.router, dependencies=[Depends(verify_token)])
 app.include_router(apps_module.router, dependencies=[Depends(verify_token)])
+app.include_router(auth_module.router)  # Auth endpoints don't need token verification
+app.include_router(websocket_agent.router)  # WebSocket endpoints
 
 def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
     if cred.credentials != AUTH_TOKEN:

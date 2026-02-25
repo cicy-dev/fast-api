@@ -179,6 +179,36 @@ async def create_token(request: Request):
     finally:
         conn.close()
 
+@router.get("/tokens")
+async def list_tokens(request: Request, auth: dict = Depends(require_api_full)):
+    """List all tokens for current user"""
+    user = await get_current_user(request)
+    
+    conn = get_db()
+    try:
+        with conn.cursor() as c:
+            c.execute("""
+                SELECT id, name, created_at, last_used, expires_at, is_active
+                FROM user_tokens WHERE user_id=%s ORDER BY created_at DESC
+            """, (user['id'],))
+            return {"tokens": c.fetchall()}
+    finally:
+        conn.close()
+
+@router.delete("/tokens/{token_id}")
+async def delete_token(token_id: int, request: Request, auth: dict = Depends(require_api_full)):
+    """Delete a token"""
+    user = await get_current_user(request)
+    
+    conn = get_db()
+    try:
+        with conn.cursor() as c:
+            c.execute("DELETE FROM user_tokens WHERE id=%s AND user_id=%s", (token_id, user['id']))
+            conn.commit()
+            return {"success": True}
+    finally:
+        conn.close()
+
 @router.post("/logout")
 async def logout():
     """Logout (client should delete token)"""
@@ -208,7 +238,7 @@ def _get_db_connection():
     )
 
 def _verify_token_from_db(token: str) -> Optional[dict]:
-    """Query token from database, with global.json fallback"""
+    """Query token from database"""
     conn = _get_db_connection()
     try:
         with conn.cursor() as c:
@@ -220,25 +250,6 @@ def _verify_token_from_db(token: str) -> Optional[dict]:
             row = c.fetchone()
             
             if not row:
-                # Fallback: check global.json master token
-                import json
-                for path in ["/home/w3c_offical/global.json", os.path.expanduser("~/global.json")]:
-                    try:
-                        with open(path) as f:
-                            data = json.load(f)
-                            master_token = data.get("api_token", "")
-                            if master_token and token == master_token:
-                                # Return master permissions
-                                return {
-                                    "valid": True,
-                                    "token": token,
-                                    "group_id": None,
-                                    "pane_id": None,
-                                    "perms": ["api_full", "ttyd_read", "ttyd_write", "prompt", "pane_manage"],
-                                    "expires_at": None
-                                }
-                    except:
-                        pass
                 return None
             
             # Check expiration
@@ -261,7 +272,6 @@ def _verify_token_from_db(token: str) -> Optional[dict]:
 
 
 # Simple auth check for token management APIs
-
 async def require_api_full(request: Request):
     """Require api_full permission for token management"""
     auth_header = request.headers.get('Authorization', '')

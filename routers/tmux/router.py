@@ -75,6 +75,15 @@ def format_response(data: dict, request: Request):
         yaml_str = yaml.dump(data, default_flow_style=False, allow_unicode=True, sort_keys=False)
         return PlainTextResponse(yaml_str, media_type="application/yaml")
     return data
+
+def normalize_pane_id(pane_id: str) -> str:
+    """Normalize pane_id: w-20074 -> w-20074:main.0"""
+    if not pane_id:
+        return pane_id
+    if ':' not in pane_id:
+        return f"{pane_id}:main.0"
+    return pane_id
+
 def _load_api_token() -> str:
     import json as _json
     for path in ["/home/w3c_offical/global.json", os.path.expanduser("~/global.json")]:
@@ -228,6 +237,7 @@ def create_ttyd_pane_common(
         conn.close()
 @router.post("/panes/{pane_id}/restart")
 async def restart_pane(pane_id: str, request: Request):
+    pane_id = normalize_pane_id(pane_id)
     """
     改进版重启：
     1. 检索配置
@@ -426,6 +436,7 @@ async def create_window(data: WindowCreate, request: Request):
 
 @router.patch("/panes/{pane_id}")
 async def update_pane(pane_id: str, request: Request, payload: dict):
+    pane_id = normalize_pane_id(pane_id)
     """Update pane fields"""
     import pymysql
     
@@ -450,6 +461,7 @@ async def update_pane(pane_id: str, request: Request, payload: dict):
 
 @router.get("/panes/{pane_id}")
 async def get_pane(pane_id: str, request: Request):
+    pane_id = normalize_pane_id(pane_id)
     """Get pane details"""
     import pymysql
     conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=MYSQL_PASSWORD, 
@@ -477,6 +489,7 @@ async def get_pane(pane_id: str, request: Request):
 
 @router.delete("/panes/{pane_id}")
 async def delete_pane(pane_id: str, request: Request):
+    pane_id = normalize_pane_id(pane_id)
     """Delete pane - kill tmux session and remove database record"""
     import pymysql
     
@@ -512,6 +525,7 @@ async def send_short(request: Request, payload: dict):
     Payload: {"win_id": "session:window.pane", "text": "..."} or {"win_id": "...", "keys": "..."}
     """
     win_id = payload.get("win_id")
+    win_id = normalize_pane_id(win_id)
     if not win_id:
         return format_response({"error": "win_id required"}, request)
     
@@ -570,6 +584,7 @@ async def capture_pane(request: Request, payload: dict):
     Payload: {"pane_id": "session:window.pane", "start": -100, "end": -1}
     """
     pane_id = payload.get("pane_id")
+    pane_id = normalize_pane_id(pane_id)
     if not pane_id:
         return format_response({"error": "pane_id required"}, request)
     
@@ -590,3 +605,105 @@ async def capture_pane(request: Request, payload: dict):
     filtered_output = '\n'.join(filtered_lines)
     
     return format_response({"pane_id": pane_id, "output": filtered_output}, request)
+
+@router.post("/send_wait")
+async def send_wait(request: Request, payload: dict):
+    """Send text to pane and wait for prompt to return
+    Payload: {
+        "target": "w-20074" or "w-20074:main.0" or "@title",
+        "text": "command to execute",
+        "prompt_type": "kiro-cli" (default) or "bash",
+        "timeout": 60 (default, max 120)
+    }
+    """
+    import time
+    import pymysql
+    
+    target = payload.get("target")
+    text = payload.get("text")
+    prompt_type = payload.get("prompt_type", "kiro-cli")
+    timeout = min(int(payload.get("timeout", 60)), 120)
+    
+    if not target or not text:
+        return format_response({"success": False, "error": "target and text required"}, request)
+    
+    # Resolve target to pane_id
+    pane_id = target
+    if target.startswith("@"):
+        title = target[1:]
+        conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, 
+                              password=MYSQL_PASSWORD, database=MYSQL_DATABASE, 
+                              cursorclass=pymysql.cursors.DictCursor)
+        try:
+            with conn.cursor() as c:
+                c.execute("SELECT pane_id FROM ttyd_config WHERE title=%s LIMIT 1", (title,))
+                row = c.fetchone()
+                if not row:
+                    return format_response({"success": False, "error": f"No pane found with title '{title}'"}, request)
+                pane_id = row["pane_id"]
+        finally:
+            conn.close()
+    elif ":" not in target and target.startswith("w-"):
+        pane_id = f"{target}:main.0"
+    
+    # Prompt patterns
+    if prompt_type == "kiro-cli":
+        prompt_pattern = re.compile(r'\d+%\s*>\s*$')
+    elif prompt_type == "bash":
+        prompt_pattern = re.compile(r'w-\d+\s+\$\s*$')
+    else:
+        return format_response({"success": False, "error": f"Invalid prompt_type: {prompt_type}"}, request)
+    
+    # 1. Capture baseline
+    try:
+        baseline_output = run_tmux(["capture-pane", "-t", pane_id, "-p"])
+    except HTTPException as e:
+        return format_response({"success": False, "error": f"Failed to capture baseline: {e.detail}"}, request)
+    
+    baseline_lines = [l for l in baseline_output.split('\n') if not l.strip().startswith('[')]
+    baseline_len = len(baseline_lines)
+    
+    # 2. Send text with Enter
+    try:
+        text_escaped = text.replace("'", "'\\''")
+        run_tmux(["send-keys", "-t", pane_id, "-l", text_escaped])
+        run_tmux(["send-keys", "-t", pane_id, "Enter"])
+    except HTTPException as e:
+        return format_response({"success": False, "error": f"Failed to send text: {e.detail}"}, request)
+    
+    # 3. Poll for prompt
+    start_time = time.time()
+    answer = ""
+    
+    while time.time() - start_time < timeout:
+        time.sleep(1)
+        
+        try:
+            current_output = run_tmux(["capture-pane", "-t", pane_id, "-p"])
+        except HTTPException:
+            continue
+        
+        current_lines = [l for l in current_output.split('\n') if not l.strip().startswith('[')]
+        
+        # Check if prompt appeared at the end
+        if len(current_lines) > 0:
+            last_line = current_lines[-1].rstrip()
+            if prompt_pattern.search(last_line):
+                # Extract new output (everything after baseline)
+                new_lines = current_lines[baseline_len:]
+                answer = '\n'.join(new_lines).strip()
+                
+                return format_response({
+                    "success": True,
+                    "pane_id": pane_id,
+                    "question": text,
+                    "answer": answer
+                }, request)
+    
+    # Timeout
+    return format_response({
+        "success": False,
+        "pane_id": pane_id,
+        "question": text,
+        "error": f"Timeout after {timeout}s waiting for prompt"
+    }, request)
