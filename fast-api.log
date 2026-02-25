@@ -61747,3 +61747,292 @@ INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
 INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
 INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
 INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60562 - "POST /api/board/issues/5/close HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60572 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36254 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57044 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57072 - "POST /api/workers/message HTTP/1.1" 500 Internal Server Error
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46942 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     127.0.0.1:58566 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34670 - "POST /api/workers/message HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34692 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40286 - "POST /api/tmux/send_wait HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38644 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38662 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38672 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     127.0.0.1:35822 - "POST /api/workers/message HTTP/1.1" 500 Internal Server Error
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 3 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] Finished starting all services
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57460 - "POST /api/workers/message HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57474 - "POST /api/workers/reply HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57484 - "POST /api/workers/broadcast HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57504 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK

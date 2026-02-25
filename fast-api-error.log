@@ -31352,3 +31352,190 @@ INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     103.219.192.139:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
 INFO:     connection open
+WARNING:  WatchFiles detected changes in 'routers/workers.py'. Reloading...
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [240735]
+INFO:     Started server process [241849]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     103.219.192.139:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [241849]
+INFO:     Started server process [241903]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     2a14:4900:2206:bd7::f32:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [241903]
+INFO:     Stopping reloader process [240733]
+INFO:     Will watch for changes in these directories: ['/home/w3c_offical/projects/ai-workers/fast-api']
+INFO:     Uvicorn running on http://0.0.0.0:14444 (Press CTRL+C to quit)
+INFO:     Started reloader process [241931] using WatchFiles
+INFO:     Started server process [241933]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     2a14:4900:2206:bd7::f32:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+WARNING:  WatchFiles detected changes in 'routers/workers.py'. Reloading...
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [241933]
+INFO:     Started server process [242237]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     103.219.192.139:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+WARNING:  WatchFiles detected changes in 'routers/workers.py'. Reloading...
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [242237]
+INFO:     Started server process [242390]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     2a14:4900:2206:bd7::f32:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+WARNING:  WatchFiles detected changes in 'routers/workers.py'. Reloading...
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [242390]
+INFO:     Started server process [242445]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     103.219.192.139:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+WARNING:  WatchFiles detected changes in 'routers/workers.py'. Reloading...
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [242445]
+INFO:     Started server process [242516]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     103.219.192.139:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+WARNING:  WatchFiles detected changes in 'routers/workers.py'. Reloading...
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [242516]
+INFO:     Started server process [242556]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     103.219.192.139:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [242556]
+INFO:     Stopping reloader process [241931]
+INFO:     Will watch for changes in these directories: ['/home/w3c_offical/projects/ai-workers/fast-api']
+INFO:     Uvicorn running on http://0.0.0.0:14444 (Press CTRL+C to quit)
+INFO:     Started reloader process [242601] using WatchFiles
+INFO:     Started server process [242622]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     103.219.192.139:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+WARNING:  WatchFiles detected changes in 'routers/workers.py'. Reloading...
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [242622]
+INFO:     Started server process [242915]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'routers/workers.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [242915]
+INFO:     Started server process [242982]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'routers/workers.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [242982]
+INFO:     Started server process [243600]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [243600]
+INFO:     Stopping reloader process [242601]
+INFO:     Will watch for changes in these directories: ['/home/w3c_offical/projects/ai-workers/fast-api']
+INFO:     Uvicorn running on http://0.0.0.0:14444 (Press CTRL+C to quit)
+INFO:     Started reloader process [243629] using WatchFiles
+INFO:     Started server process [243631]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'routers/workers.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [243631]
+INFO:     Started server process [243691]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     103.219.192.139:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+WARNING:  WatchFiles detected changes in 'routers/workers.py'. Reloading...
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [243691]
+INFO:     Started server process [243744]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     2a14:4900:2206:bd7::f32:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+WARNING:  WatchFiles detected changes in 'routers/workers.py'. Reloading...
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [243744]
+INFO:     Started server process [244213]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     2a14:4900:2206:bd7::f32:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [244213]
+INFO:     Stopping reloader process [243629]
+INFO:     Will watch for changes in these directories: ['/home/w3c_offical/projects/ai-workers/fast-api']
+INFO:     Uvicorn running on http://0.0.0.0:14444 (Press CTRL+C to quit)
+INFO:     Started reloader process [244448] using WatchFiles
+INFO:     Started server process [244450]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     103.219.192.139:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
