@@ -124,7 +124,7 @@ CREATE TABLE ttyd_config (
     url         VARCHAR(512),                  -- 外部访问 URL
     workspace   VARCHAR(500),                  -- 工作目录
     init_script VARCHAR(500),                  -- 启动命令
-    proxy       VARCHAR(500),                  -- HTTP 代理地址
+    proxy       VARCHAR(500),                  -- HTTP 代理地址（见下方 Proxy 格式）
     tg_token    VARCHAR(200),                  -- Telegram bot token
     tg_chat_id  VARCHAR(100),                  -- Telegram chat ID
     tg_enable   TINYINT(1) DEFAULT 0,
@@ -135,6 +135,22 @@ CREATE TABLE ttyd_config (
 ```
 
 ### local_services（本地服务注册）
+
+### Pane Environment Injection
+
+Every tmux pane automatically gets the following env vars injected (in order, before `init_script`):
+
+1. **`X_PANE_ID`** — always set to the pane's ID (e.g. `w-20070:main.0`)
+2. **Proxy** — only if `proxy` field is non-empty in DB:
+   - Plain proxy: `http://host:port` → exports `http_proxy`, `https_proxy`, `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`
+   - Mitmproxy: `mitmproxy:http://host:port` → same as above + `REQUESTS_CA_BUNDLE=/home/w3c_offical/.mitmproxy/mitmproxy-ca-cert.pem`
+
+**Proxy field format examples:**
+| DB value | Type | Result |
+|----------|------|--------|
+| `http://127.0.0.1:7890` | Plain | `export HTTP_PROXY='http://127.0.0.1:7890' ...` |
+| `mitmproxy:http://127.0.0.1:18080` | Mitmproxy | Same + `REQUESTS_CA_BUNDLE=...mitmproxy-ca-cert.pem` |
+| _(empty)_ | None | No proxy injected |
 
 ```sql
 CREATE TABLE local_services (

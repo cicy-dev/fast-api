@@ -155,15 +155,33 @@ def create_ttyd_pane_common(
 
         run_tmux(["run-shell", ttyd_cmd])
 
-        # 5️⃣ proxy env vars (applied before init_script)
+        # 5️⃣ export X_PANE_ID
+        run_tmux(["send-keys", "-t", pane_id, f"export X_PANE_ID='{pane_id}'", "Enter"])
+
+        # 5.5️⃣ proxy env vars (applied before init_script)
+        # Format: "http://host:port" (plain) or "mitmproxy:http://host:port" (adds REQUESTS_CA_BUNDLE)
         if proxy:
+            is_mitmproxy = proxy.startswith("mitmproxy:")
+            proxy_url = proxy[len("mitmproxy:"):] if is_mitmproxy else proxy
             proxy_cmd = (
-                f"export http_proxy='{proxy}' https_proxy='{proxy}' "
-                f"HTTP_PROXY='{proxy}' HTTPS_PROXY='{proxy}' ALL_PROXY='{proxy}'"
+                f"export http_proxy='{proxy_url}' https_proxy='{proxy_url}' "
+                f"HTTP_PROXY='{proxy_url}' HTTPS_PROXY='{proxy_url}' ALL_PROXY='{proxy_url}'"
             )
+            if is_mitmproxy:
+                cert = "/home/w3c_offical/.mitmproxy/mitmproxy-ca-cert.pem"
+                proxy_cmd += (
+                    f" REQUESTS_CA_BUNDLE='{cert}'"
+                    f" SSL_CERT_FILE='{cert}'"
+                    f" NODE_EXTRA_CA_CERTS='{cert}'"
+                )
             run_tmux(["send-keys", "-t", pane_id, proxy_cmd, "Enter"])
 
-        # 6️⃣ init_script (multi-step: sleep:N delays, key:X sends key without Enter, regular lines → Enter)
+        # 6️⃣ clear screen before init_script
+        run_tmux(["send-keys", "-t", pane_id, "clear", "Enter"])
+        time.sleep(0.3)
+        run_tmux(["send-keys", "-t", pane_id, "clear", "Enter"])
+
+        # 7️⃣ init_script (multi-step: sleep:N delays, key:X sends key without Enter, regular lines → Enter)
         if init_script:
             for line in init_script.splitlines():
                 line = line.strip()

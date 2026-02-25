@@ -159,7 +159,7 @@ async def start_ttyd(pane_id: str, request: Request):
                 "run-shell",
                 f"nohup {TTYD_BINARY_PATH} -W -p {port} -c user:{token} --style /home/w3c_offical/.ttyd-style.css "
                 f"tmux attach -t {_view_session} "
-                f"> /tmp/ttyd_{port}.log 2>&1 &"
+                f"> /home/w3c_offical/projects/ai-workers/fast-api/logs/ttyd_{port}.log 2>&1 &"
             ])
             
             return format_response({

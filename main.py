@@ -200,13 +200,29 @@ async def startup_event():
             run_tmux_cmd(["run-shell", ttyd_cmd])
             print(f"[Startup] Started ttyd on port {port} for {pane_id}")
             
+            # export X_PANE_ID
+            run_tmux_cmd(["send-keys", "-t", pane_id, f"export X_PANE_ID='{pane_id}'", "Enter"])
+
             if proxy:
+                is_mitmproxy = proxy.startswith("mitmproxy:")
+                proxy_url = proxy[len("mitmproxy:"):] if is_mitmproxy else proxy
                 proxy_cmd = (
-                    f"export http_proxy='{proxy}' https_proxy='{proxy}' "
-                    f"HTTP_PROXY='{proxy}' HTTPS_PROXY='{proxy}' ALL_PROXY='{proxy}'"
+                    f"export http_proxy='{proxy_url}' https_proxy='{proxy_url}' "
+                    f"HTTP_PROXY='{proxy_url}' HTTPS_PROXY='{proxy_url}' ALL_PROXY='{proxy_url}'"
                 )
+                if is_mitmproxy:
+                    cert = "/home/w3c_offical/.mitmproxy/mitmproxy-ca-cert.pem"
+                    proxy_cmd += (
+                        f" REQUESTS_CA_BUNDLE='{cert}'"
+                        f" SSL_CERT_FILE='{cert}'"
+                        f" NODE_EXTRA_CA_CERTS='{cert}'"
+                    )
                 run_tmux_cmd(["send-keys", "-t", pane_id, proxy_cmd, "Enter"])
             
+            run_tmux_cmd(["send-keys", "-t", pane_id, "clear", "Enter"])
+            time.sleep(0.3)
+            run_tmux_cmd(["send-keys", "-t", pane_id, "clear", "Enter"])
+
             if init_script:
                 for line in init_script.splitlines():
                     line = line.strip()
