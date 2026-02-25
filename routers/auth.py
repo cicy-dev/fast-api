@@ -253,7 +253,20 @@ async def require_api_full(request: Request):
     result = _verify_token_from_db(token)
     
     if not result or not result.get("valid"):
-        raise HTTPException(401, "Invalid token")
+        # Fallback: 超级管理员 token
+        import json as _json
+        is_super = False
+        for path in ["/home/w3c_offical/global.json", os.path.expanduser("~/global.json")]:
+            try:
+                with open(path) as f:
+                    if _json.load(f).get("api_token") == token:
+                        result = {"valid": True, "perms": ["api_full", "ttyd_read", "ttyd_write", "prompt", "pane_manage", "app_manage", "agent_manage", "desktop_manage", "vnc_read", "vnc_manage", "voice_to_text"], "group_id": None}
+                        is_super = True
+                        break
+            except Exception:
+                pass
+        if not is_super:
+            raise HTTPException(401, "Invalid token")
     
     if "api_full" not in result.get("perms", []):
         raise HTTPException(403, "api_full permission required")
@@ -292,12 +305,22 @@ async def verify_token(request: Request):
     # Query database
     result = _verify_token_from_db(token)
     
+    if not result:
+        # Fallback: 检查是否是超级管理员 token (global.json)
+        import json as _json
+        for path in ["/home/w3c_offical/global.json", os.path.expanduser("~/global.json")]:
+            try:
+                with open(path) as f:
+                    if _json.load(f).get("api_token") == token:
+                        result = {"valid": True, "token": token, "group_id": None, "pane_id": None, "perms": ["api_full", "ttyd_read", "ttyd_write", "prompt", "pane_manage", "app_manage", "agent_manage", "desktop_manage", "vnc_read", "vnc_manage", "voice_to_text"], "expires_at": None}
+                        break
+            except Exception:
+                pass
+
     if result:
-        # Cache the result
         _token_cache[token] = {**result, "cached_at": now}
         return result
     else:
-        # Cache negative result too
         _token_cache[token] = {"valid": False, "cached_at": now}
         return {"valid": False}
 

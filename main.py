@@ -27,6 +27,7 @@ from routers import websocket_agent
 from routers import board as board_module
 from routers import workers as workers_module
 from routers import dashboard as dashboard_module
+from routers import vnc as vnc_module
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse as StarletteJSONResponse
@@ -37,6 +38,7 @@ ALLOWED_ORIGINS = [
     "https://desktop.cicy.de5.net",
     "https://ttyd-dev.cicy.de5.net",
     "https://ttyd-proxy.cicy.de5.net",
+    "https://g-vnc.cicy.de5.net",
     "http://localhost:6905",
     "http://localhost:6902",
     "http://localhost:6901",
@@ -118,6 +120,7 @@ app.include_router(websocket_agent.router)  # WebSocket endpoints
 app.include_router(board_module.router, dependencies=[Depends(verify_token)])  # Board API
 app.include_router(workers_module.router, dependencies=[Depends(verify_token)])  # Worker communication
 app.include_router(dashboard_module.router, dependencies=[Depends(verify_token)])  # Dashboard API (checks api_full internally)
+app.include_router(vnc_module.router, dependencies=[Depends(verify_token)])  # VNC API
 
 from db_pool import get_db as get_pool_db
 
@@ -287,7 +290,6 @@ async def health(request: Request):
 
 @app.get("/api/auth/verify")
 async def verify_auth(request: Request, token: str = Depends(verify_token)):
-    # 查询 token 详细信息
     from routers.auth import _verify_token_from_db
     token_info = _verify_token_from_db(token)
     if token_info and token_info.get("valid"):
@@ -295,7 +297,16 @@ async def verify_auth(request: Request, token: str = Depends(verify_token)):
             "valid": True,
             "token": token[:8] + "...",
             "perms": token_info.get("perms", []),
-            "group_id": token_info.get("group_id")
+            "group_id": token_info.get("group_id"),
+            "note": token_info.get("note")
+        }, request)
+    # Fallback: 超级管理员 token (global.json)
+    if token == AUTH_TOKEN:
+        return format_response({
+            "valid": True,
+            "token": token[:8] + "...",
+            "perms": ["api_full", "ttyd_read", "ttyd_write", "prompt", "pane_manage", "app_manage", "agent_manage", "desktop_manage"],
+            "group_id": None
         }, request)
     return format_response({"valid": True, "token": token[:8] + "..."}, request)
 

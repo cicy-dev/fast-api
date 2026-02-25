@@ -24,6 +24,18 @@ async def websocket_agent(websocket: WebSocket, group_id: int, token: str = Quer
     auth_result = _verify_token_from_db(token)
     
     if not auth_result or not auth_result.get("valid"):
+        # Fallback: super token
+        import json as _json, os
+        for path in ["/home/w3c_offical/global.json", os.path.expanduser("~/global.json")]:
+            try:
+                with open(path) as f:
+                    if _json.load(f).get("api_token") == token:
+                        auth_result = {"valid": True, "perms": ["api_full", "ttyd_read", "ttyd_write", "prompt", "pane_manage", "app_manage", "agent_manage", "desktop_manage", "vnc_read", "vnc_manage", "voice_to_text"], "group_id": None}
+                        break
+            except Exception:
+                pass
+    
+    if not auth_result or not auth_result.get("valid"):
         await websocket.close(code=1008, reason="Invalid token")
         return
     

@@ -12,6 +12,31 @@ import re
 
 router = APIRouter(prefix="/api/tmux", tags=["tmux"])
 
+def _get_token_perms(request: Request) -> list:
+    """从请求中提取 token 权限列表"""
+    from routers.auth import _verify_token_from_db
+    auth = request.headers.get('Authorization', '')
+    if not auth.startswith('Bearer '):
+        return []
+    token = auth[7:]
+    # 超级 token
+    import json as _json
+    for path in ["/home/w3c_offical/global.json", os.path.expanduser("~/global.json")]:
+        try:
+            with open(path) as f:
+                if _json.load(f).get("api_token") == token:
+                    return ["api_full", "ttyd_read", "ttyd_write", "prompt", "pane_manage", "app_manage", "agent_manage", "desktop_manage", "vnc_read", "vnc_manage", "voice_to_text"]
+        except Exception:
+            pass
+    result = _verify_token_from_db(token)
+    return result.get("perms", []) if result and result.get("valid") else []
+
+def _require_perm(request: Request, perm: str):
+    """检查权限，无权限则 403"""
+    perms = _get_token_perms(request)
+    if perm not in perms:
+        raise HTTPException(403, f"Requires {perm} permission")
+
 MYSQL_HOST = os.getenv("MYSQL_HOST", "127.0.0.1")
 MYSQL_PORT = int(os.getenv("MYSQL_PORT", "3306"))
 MYSQL_USER = os.getenv("MYSQL_USER", "root")
@@ -242,6 +267,7 @@ def create_ttyd_pane_common(
         conn.close()
 @router.post("/panes/{pane_id}/restart")
 async def restart_pane(pane_id: str, request: Request):
+    _require_perm(request, 'prompt')
     pane_id = normalize_pane_id(pane_id)
     """
     改进版重启：
@@ -352,6 +378,7 @@ def _get_next_worker_index() -> int:
 
 @router.get("/panes")
 async def list_panes(request: Request, group_id: Optional[int] = None):
+    _require_perm(request, 'ttyd_read')
     """List all panes, optionally filtered by group_id
     
     Query params:
@@ -396,6 +423,7 @@ async def list_panes(request: Request, group_id: Optional[int] = None):
 
 @router.post("/create")
 async def create_window(data: WindowCreate, request: Request):
+    _require_perm(request, 'agent_manage')
     """Create tmux session and start ttyd (each pane has its own unique session)"""
     import os
     import pymysql
@@ -483,6 +511,7 @@ async def create_window(data: WindowCreate, request: Request):
 
 @router.patch("/panes/{pane_id}")
 async def update_pane(pane_id: str, request: Request, payload: dict):
+    _require_perm(request, 'agent_manage')
     pane_id = normalize_pane_id(pane_id)
     """Update pane fields"""
     import pymysql
@@ -508,6 +537,7 @@ async def update_pane(pane_id: str, request: Request, payload: dict):
 
 @router.get("/panes/{pane_id}")
 async def get_pane(pane_id: str, request: Request):
+    _require_perm(request, 'ttyd_read')
     pane_id = normalize_pane_id(pane_id)
     """Get pane details"""
     from db_pool import get_db
@@ -539,6 +569,7 @@ async def get_pane(pane_id: str, request: Request):
 
 @router.delete("/panes/{pane_id}")
 async def delete_pane(pane_id: str, request: Request):
+    _require_perm(request, 'agent_manage')
     pane_id = normalize_pane_id(pane_id)
     """Delete pane - kill tmux session and remove database record"""
     import pymysql
@@ -571,6 +602,7 @@ async def delete_pane(pane_id: str, request: Request):
 
 @router.post("/send")
 async def send_short(request: Request, payload: dict):
+    _require_perm(request, 'prompt')
     """Send text or keys to window (short path)
     Payload: {"win_id": "session:window.pane", "text": "..."} or {"win_id": "...", "keys": "..."}
     """
@@ -592,6 +624,7 @@ async def send_short(request: Request, payload: dict):
 
 @router.get("/tree")
 async def tree(request: Request):
+    _require_perm(request, 'ttyd_read')
     """Get structured tree data"""
     try:
         sessions_output = run_tmux(["list-sessions", "-F", "#{session_name}"])
@@ -624,6 +657,7 @@ async def tree(request: Request):
 
 @router.post("/clear")
 async def clear_all(request: Request):
+    _require_perm(request, 'agent_manage')
     """Clear all tmux sessions and panes"""
     try:
         run_tmux(["kill-server"])
@@ -633,6 +667,7 @@ async def clear_all(request: Request):
 
 @router.post("/capture_pane")
 async def capture_pane(request: Request, payload: dict):
+    _require_perm(request, 'ttyd_read')
     """Capture pane output
     Payload: {"pane_id": "session:window.pane", "start": -100, "end": -1}
     """
@@ -661,6 +696,7 @@ async def capture_pane(request: Request, payload: dict):
 
 @router.post("/send_wait")
 async def send_wait(request: Request, payload: dict):
+    _require_perm(request, 'prompt')
     """Send text to pane and wait for prompt to return
     Payload: {
         "target": "w-20074" or "w-20074:main.0" or "@title",
