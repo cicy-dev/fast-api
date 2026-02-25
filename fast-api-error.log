@@ -32095,3 +32095,23 @@ INFO:     connection open
 INFO:     connection closed
 INFO:     2a14:4900:2206:bd7::f32:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
 INFO:     connection open
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     connection closed
+INFO:     connection closed
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [302295]
+INFO:     Started server process [302576]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     2a14:4900:2206:bd7::f32:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     2a14:4900:2206:bd7::f32:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+INFO:     103.219.192.139:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open
+INFO:     connection closed
+INFO:     103.219.192.139:0 - "WebSocket /ws/agent/1?token=1116568a729f18c9903038ff71e70aa1685888d9e8f4ca34419b9a5d9cf784ffdf1" [accepted]
+INFO:     connection open

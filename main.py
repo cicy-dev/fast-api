@@ -111,9 +111,16 @@ app.include_router(board_module.router, dependencies=[Depends(verify_token)])  #
 app.include_router(workers_module.router, dependencies=[Depends(verify_token)])  # Worker communication
 
 def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
-    if cred.credentials != AUTH_TOKEN:
-        raise HTTPException(status_code=401, detail="invalid token")
-    return cred.credentials
+    token = cred.credentials
+    # 先检查管理员 token
+    if token == AUTH_TOKEN:
+        return token
+    # 再检查数据库 token
+    from routers.auth import _verify_token_from_db
+    token_info = _verify_token_from_db(token)
+    if token_info and token_info.get("valid"):
+        return token
+    raise HTTPException(status_code=401, detail="invalid token")
 
 from db_pool import get_db as get_pool_db
 
