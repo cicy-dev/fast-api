@@ -62169,3 +62169,1459 @@ INFO:     127.0.0.1:58130 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
 INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
 INFO:     2a14:4900:2206:bd7::f32:0 - "GET /api/health HTTP/1.1" 200 OK
 INFO:     127.0.0.1:50412 - "POST /api/tmux/create HTTP/1.1" 200 OK
+[Startup] Found 7 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] Finished starting all services
+INFO:     127.0.0.1:43902 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43902 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50312 - "POST /api/tmux/send HTTP/1.1" 422 Unprocessable Entity
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36586 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/13 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/12 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/1 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/14 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/13 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/14 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/1 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/12 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/13 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/14 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/12 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36638 - "GET /api/ttyd/by-name/w-20064%3Amain.0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:36640 - "GET /api/ttyd/by-name/1223ff81-9284-4003-9a94-5cbd11dd7def%3Amain.0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:36658 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 7 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] Finished starting all services
+INFO:     127.0.0.1:46882 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46902 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46912 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46928 - "POST /api/auth/verify-token HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:46934 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46944 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46960 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46964 - "POST /api/tmux/send HTTP/1.1" 422 Unprocessable Entity
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 7 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] Finished starting all services
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 7 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] Finished starting all services
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45318 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 7 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] Finished starting all services
+INFO:     127.0.0.1:56428 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56436 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56438 - "POST /api/auth/verify-token HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:56452 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56460 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56472 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56488 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Error: '_GeneratorContextManager' object has no attribute 'cursor'
+[Startup] Error: '_GeneratorContextManager' object has no attribute 'cursor'
+[Startup] Found 7 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] Finished starting all services
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 7 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] Finished starting all services
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57372 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 7 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] Finished starting all services
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 7 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] Finished starting all services
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57184 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36694 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36706 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36708 - "POST /api/auth/verify-token HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:36722 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36726 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36734 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 7 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] Finished starting all services
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45392 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34144 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34152 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34168 - "POST /api/auth/verify-token HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:34182 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34194 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34200 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37414 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39164 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39192 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49006 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49010 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49014 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49022 - "POST /api/auth/verify-token HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:49034 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49040 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49056 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51244 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51248 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60628 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60634 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42544 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/12 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/14 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/1 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/13 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/13 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/12 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/14 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42544 - "GET /api/ttyd/by-name/1223ff81-9284-4003-9a94-5cbd11dd7def%3Amain.0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:42606 - "GET /api/ttyd/by-name/w-20064%3Amain.0 HTTP/1.1" 404 Not Found
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33090 - "POST /api/tmux/create HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:53742 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53756 - "POST /api/tmux/send HTTP/1.1" 422 Unprocessable Entity
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53764 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43146 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43148 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43152 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43158 - "POST /api/auth/verify-token HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:43174 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43188 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43196 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43208 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34608 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34614 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48406 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48420 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46178 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46198 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59988 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36250 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53744 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43816 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43832 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43844 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43850 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49416 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58006 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41886 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41902 - "GET /api/tmux/panes HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:48858 - "GET /api/tmux/panes HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:44386 - "POST /api/tmux/create_pane HTTP/1.1" 404 Not Found
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57876 - "POST /api/tmux/create HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57888 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57890 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/14 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/13 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/12 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/1 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/14 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/13 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/1 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/12 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/12 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/14 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/1 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/13 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57888 - "GET /api/ttyd/by-name/1223ff81-9284-4003-9a94-5cbd11dd7def%3Amain.0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57890 - "GET /api/ttyd/by-name/w-20064%3Amain.0 HTTP/1.1" 404 Not Found
+INFO:     103.219.192.139:0 - "OPTIONS /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50266 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46290 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36276 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42336 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56154 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56162 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56176 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56190 - "POST /api/auth/verify-token HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:56200 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56202 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56210 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56220 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38394 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51390 - "POST /api/auth/verify-token HTTP/1.1" 400 Bad Request
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-10001 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-10001 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39712 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39702 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39724 - "POST /api/auth/verify-token HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:39728 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39732 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39736 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39748 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56368 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60426 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35134 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56946 - "GET /api/tmux/panes HTTP/1.1" 404 Not Found
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56956 - "GET /api/tmux/panes HTTP/1.1" 404 Not Found
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47416 - "PATCH /api/tmux/panes/w-20074 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47430 - "PATCH /api/tmux/panes/w-20079 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36922 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/1 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/13 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/14 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/12 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/12 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/14 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/13 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42626 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42642 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42648 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42664 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42626 - "GET /api/ttyd/by-name/w-20064%3Amain.0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:42666 - "GET /api/ttyd/by-name/1223ff81-9284-4003-9a94-5cbd11dd7def%3Amain.0 HTTP/1.1" 404 Not Found
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/1/panes/w-20079%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/groups/1/panes/w-20079%3Amain.0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48534 - "GET /api/ttyd/by-name/w-20079%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-20079%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-20079%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20079%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20079%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/1/panes/w-20079%3Amain.0/layout HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "PATCH /api/groups/1/panes/w-20079%3Amain.0/layout HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48540 - "GET /api/tmux/panes HTTP/1.1" 404 Not Found
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 8 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] ttyd already running on port 20079 for w-20079:main.0
+[Startup] Finished starting all services
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 8 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] ttyd already running on port 20079 for w-20079:main.0
+[Startup] Finished starting all services
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55374 - "GET /api/tmux/panes HTTP/1.1" 401 Unauthorized
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35644 - "GET /api/tmux/panes?group_id=1 HTTP/1.1" 401 Unauthorized
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43332 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43350 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43352 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43356 - "POST /api/auth/verify-token HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:43362 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43368 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43372 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43374 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43380 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54668 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55872 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55882 - "GET /api/auth/verify-token HTTP/1.1" 405 Method Not Allowed
+INFO:     127.0.0.1:55888 - "GET /api/tmux/panes?group_id=1 HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:38432 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49812 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49812 - "POST /api/auth/verify-token HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:51590 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-10001 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-10001 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/auth/verify HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/12 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/13 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/1 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/groups/14 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/14 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/12 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/1 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/13 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/1 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/13 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/12 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/groups/14 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51622 - "GET /api/ttyd/by-name/1223ff81-9284-4003-9a94-5cbd11dd7def%3Amain.0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51638 - "GET /api/ttyd/by-name/w-20064%3Amain.0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51664 - "POST /api/auth/tokens HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20079%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20079%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-20074%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "OPTIONS /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/tmux/panes/w-10001%3Amain.0 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34112 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34124 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46884 - "GET /api/tmux/panes?group_id=1 HTTP/1.1" 500 Internal Server Error
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45666 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 8 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] ttyd already running on port 20079 for w-20079:main.0
+[Startup] Finished starting all services
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 8 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] ttyd already running on port 20079 for w-20079:main.0
+[Startup] Finished starting all services
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56526 - "GET /api/tmux/panes HTTP/1.1" 401 Unauthorized
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56532 - "GET /api/tmux/panes?group_id=1 HTTP/1.1" 401 Unauthorized
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 8 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] ttyd already running on port 20079 for w-20079:main.0
+[Startup] Finished starting all services
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+[Startup] Found 8 active pane configs in database
+[Startup] ttyd already running on port 10001 for w-10001:main.0
+[Startup] ttyd already running on port 20073 for w-20073:main.0
+[Startup] ttyd already running on port 20074 for w-20074:main.0
+[Startup] ttyd already running on port 20075 for w-20075:main.0
+[Startup] ttyd already running on port 20076 for w-20076:main.0
+[Startup] ttyd already running on port 20077 for w-20077:main.0
+[Startup] ttyd already running on port 20078 for w-20078:main.0
+[Startup] ttyd already running on port 20079 for w-20079:main.0
+[Startup] Finished starting all services
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44556 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37126 - "GET /api/tmux/panes?group_id=1 HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37134 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39998 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40008 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54266 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54272 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54446 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54446 - "POST /api/auth/verify-token HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54456 - "GET /api/ttyd/list HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     34.26.120.226:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45868 - "POST /api/tmux/send HTTP/1.1" 422 Unprocessable Entity
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45880 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45882 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45892 - "POST /api/auth/verify-token HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:45908 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45916 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45932 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45934 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56756 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53136 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53138 - "POST /api/tmux/capture_pane HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56400 - "POST /api/tmux/send HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     103.219.192.139:0 - "GET /api/health HTTP/1.1" 200 OK

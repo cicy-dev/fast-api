@@ -355,6 +355,50 @@ def _get_next_worker_index() -> int:
         conn.close()
 
 
+@router.get("/panes")
+async def list_panes(request: Request, group_id: Optional[int] = None):
+    """List all panes, optionally filtered by group_id
+    
+    Query params:
+    - group_id: filter by group (optional)
+    
+    Returns: {"panes": [{pane_id, title, ttyd_port, url, workspace, group_id, active, created_at}]}
+    """
+    from db_pool import get_db
+    
+    with get_db() as conn:
+        with conn.cursor() as c:
+            if group_id is not None:
+                c.execute("""
+                    SELECT DISTINCT t.pane_id, t.title, t.ttyd_port, t.url, t.workspace, 
+                           t.init_script, t.proxy, t.active, t.created_at, t.updated_at,
+                           gp.group_id
+                    FROM ttyd_config t
+                    INNER JOIN ttyd_group_panes gp ON t.pane_id = gp.pane_id
+                    WHERE gp.group_id = %s
+                    ORDER BY t.created_at DESC
+                """, (group_id,))
+            else:
+                c.execute("""
+                    SELECT t.pane_id, t.title, t.ttyd_port, t.url, t.workspace, 
+                           t.init_script, t.proxy, t.active, t.created_at, t.updated_at,
+                           gp.group_id
+                    FROM ttyd_config t
+                    LEFT JOIN ttyd_group_panes gp ON t.pane_id = gp.pane_id
+                    ORDER BY t.created_at DESC
+                """)
+            
+            panes = c.fetchall()
+            
+            # Convert datetime to string
+            for p in panes:
+                if p.get('created_at'):
+                    p['created_at'] = p['created_at'].isoformat()
+                if p.get('updated_at'):
+                    p['updated_at'] = p['updated_at'].isoformat()
+            
+            return format_response({"panes": panes}, request)
+
 @router.post("/create")
 async def create_window(data: WindowCreate, request: Request):
     """Create tmux session and start ttyd (each pane has its own unique session)"""
@@ -472,12 +516,17 @@ async def update_pane(pane_id: str, request: Request, payload: dict):
 async def get_pane(pane_id: str, request: Request):
     pane_id = normalize_pane_id(pane_id)
     """Get pane details"""
-    import pymysql
-    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=MYSQL_PASSWORD, 
-                          database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor)
-    try:
+    from db_pool import get_db
+    
+    with get_db() as conn:
         with conn.cursor() as c:
-            c.execute("SELECT pane_id, title, ttyd_port, url, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable FROM ttyd_config WHERE pane_id=%s", (pane_id,))
+            c.execute("""
+                SELECT t.pane_id, t.title, t.ttyd_port, t.url, t.workspace, t.init_script, 
+                       t.proxy, t.tg_token, t.tg_chat_id, t.tg_enable, gp.group_id
+                FROM ttyd_config t
+                LEFT JOIN ttyd_group_panes gp ON t.pane_id = gp.pane_id
+                WHERE t.pane_id = %s
+            """, (pane_id,))
             row = c.fetchone()
             if not row:
                 raise HTTPException(status_code=404, detail=f"Pane {pane_id} not found")
@@ -491,10 +540,9 @@ async def get_pane(pane_id: str, request: Request):
                 "proxy": row.get("proxy"),
                 "tg_token": row.get("tg_token"),
                 "tg_chat_id": row.get("tg_chat_id"),
-                "tg_enable": row.get("tg_enable", False)
+                "tg_enable": row.get("tg_enable", False),
+                "group_id": row.get("group_id")
             }, request)
-    finally:
-        conn.close()
 
 @router.delete("/panes/{pane_id}")
 async def delete_pane(pane_id: str, request: Request):

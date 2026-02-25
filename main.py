@@ -115,6 +115,8 @@ def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
         raise HTTPException(status_code=401, detail="invalid token")
     return cred.credentials
 
+from db_pool import get_db as get_pool_db
+
 DB = dict(
     host=os.getenv("MYSQL_HOST", "127.0.0.1"),
     port=int(os.getenv("MYSQL_PORT", "3306")),
@@ -125,13 +127,13 @@ DB = dict(
 )
 
 def get_db():
-    return pymysql.connect(**DB, cursorclass=pymysql.cursors.DictCursor)
+    """Get database connection from pool"""
+    return get_pool_db()
 
 @app.get("/api/qa/{record_id}")
 def qa_detail(record_id: int, token: str = Depends(verify_token)):
     qa_db = {**DB, "database": "llm_qa_history"}
-    conn = pymysql.connect(**qa_db, cursorclass=pymysql.cursors.DictCursor)
-    try:
+    with get_pool_db() as conn:
         with conn.cursor() as c:
             c.execute("SELECT * FROM llm_qa_history WHERE id=%s", (record_id,))
             row = c.fetchone()
@@ -140,8 +142,6 @@ def qa_detail(record_id: int, token: str = Depends(verify_token)):
             row["created_at"] = str(row.get("created_at", ""))
             row["updated_at"] = str(row.get("updated_at", ""))
             return row
-    finally:
-        conn.close()
 
 @app.on_event("startup")
 async def startup_event():
@@ -170,8 +170,7 @@ async def startup_event():
         sock.close()
         return result == 0
 
-    conn = get_db()
-    try:
+    with get_db() as conn:
         with conn.cursor() as c:
             c.execute("SELECT pane_id, title, ttyd_port, workspace, init_script, proxy, active FROM ttyd_config WHERE active=1")
             configs = c.fetchall()
@@ -273,10 +272,6 @@ async def startup_event():
                 print(f"[Startup] Warning: ttyd not ready on port {port} after {max_wait}s")
         
         print("[Startup] Finished starting all services")
-    except Exception as e:
-        print(f"[Startup] Error: {e}")
-    finally:
-        conn.close()
 
 @app.get("/api/health")
 async def api_health(request: Request):
