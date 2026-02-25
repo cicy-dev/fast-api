@@ -283,6 +283,16 @@ async def health(request: Request):
 
 @app.get("/api/auth/verify")
 async def verify_auth(request: Request, token: str = Depends(verify_token)):
+    # 查询 token 详细信息
+    from routers.auth import _verify_token_from_db
+    token_info = _verify_token_from_db(token)
+    if token_info and token_info.get("valid"):
+        return format_response({
+            "valid": True,
+            "token": token[:8] + "...",
+            "perms": token_info.get("perms", []),
+            "group_id": token_info.get("group_id")
+        }, request)
     return format_response({"valid": True, "token": token[:8] + "..."}, request)
 
 @app.post("/api/test/login")
