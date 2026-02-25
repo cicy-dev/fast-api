@@ -85,11 +85,28 @@ class GroupStatePatch(BaseModel):
 
 @router.get("")
 async def list_groups(request: Request):
-    """List all groups with pane_ids and pane_count."""
+    """List all groups with pane_ids and pane_count. If token has group_id restriction, only return that group."""
+    # Get token from Authorization header
+    from routers.auth import _verify_token_from_db
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header.replace("Bearer ", "").strip() if auth_header.startswith("Bearer ") else None
+    
+    token_group_id = None
+    if token:
+        token_info = _verify_token_from_db(token)
+        if token_info and token_info.get("valid"):
+            token_group_id = token_info.get("group_id")
+    
     conn = get_db()
     try:
         with conn.cursor() as c:
-            c.execute("SELECT id, name, description, created_at, updated_at FROM ttyd_groups ORDER BY id")
+            if token_group_id is not None:
+                # Token has group_id restriction, only return that group
+                c.execute("SELECT id, name, description, created_at, updated_at FROM ttyd_groups WHERE id=%s", (token_group_id,))
+            else:
+                # No restriction, return all groups
+                c.execute("SELECT id, name, description, created_at, updated_at FROM ttyd_groups ORDER BY id")
+            
             groups = c.fetchall()
             for g in groups:
                 c.execute("SELECT pane_id FROM ttyd_group_panes WHERE group_id=%s", (g["id"],))
@@ -133,7 +150,22 @@ async def create_group(body: GroupCreate, request: Request):
 
 @router.get("/{group_id}")
 async def get_group(group_id: int, request: Request):
-    """Get a single group with full pane layout details."""
+    """Get a single group with full pane layout details. Returns 403 if token's group_id doesn't match."""
+    # Get token from Authorization header
+    from routers.auth import _verify_token_from_db
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header.replace("Bearer ", "").strip() if auth_header.startswith("Bearer ") else None
+    
+    token_group_id = None
+    if token:
+        token_info = _verify_token_from_db(token)
+        if token_info and token_info.get("valid"):
+            token_group_id = token_info.get("group_id")
+    
+    # Check permission: if token has group_id restriction, must match
+    if token_group_id is not None and token_group_id != group_id:
+        raise HTTPException(status_code=403, detail="Access denied: group_id mismatch")
+    
     conn = get_db()
     try:
         with conn.cursor() as c:
