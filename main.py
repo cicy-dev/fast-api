@@ -95,11 +95,6 @@ def load_token():
 AUTH_TOKEN = load_token()
 security = HTTPBearer()
 
-def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
-    if cred.credentials != AUTH_TOKEN:
-        raise HTTPException(status_code=401, detail="invalid token")
-    return cred.credentials
-
 # Include routers with authentication
 app.include_router(tmux_router, dependencies=[Depends(verify_token)])
 app.include_router(ttyd.router)  # No auth for internal cache
