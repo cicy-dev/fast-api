@@ -101,7 +101,7 @@ def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
 
 # Include routers with authentication
 app.include_router(tmux_router, dependencies=[Depends(verify_token)])
-app.include_router(ttyd.router, dependencies=[Depends(verify_token)])
+app.include_router(ttyd.router)  # No auth for internal cache
 app.include_router(groups_module.router, dependencies=[Depends(verify_token)])
 app.include_router(apps_module.router, dependencies=[Depends(verify_token)])
 app.include_router(auth_module.router)  # Auth endpoints don't need token verification

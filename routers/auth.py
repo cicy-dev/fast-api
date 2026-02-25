@@ -220,25 +220,6 @@ def _verify_token_from_db(token: str) -> Optional[dict]:
             row = c.fetchone()
             
             if not row:
-                # Fallback: check global.json master token
-                import json
-                for path in ["/home/w3c_offical/global.json", os.path.expanduser("~/global.json")]:
-                    try:
-                        with open(path) as f:
-                            data = json.load(f)
-                            master_token = data.get("api_token", "")
-                            if master_token and token == master_token:
-                                # Return master permissions
-                                return {
-                                    "valid": True,
-                                    "token": token,
-                                    "group_id": None,
-                                    "pane_id": None,
-                                    "perms": ["api_full", "ttyd_read", "ttyd_write", "prompt", "pane_manage"],
-                                    "expires_at": None
-                                }
-                    except:
-                        pass
                 return None
             
             # Check expiration
