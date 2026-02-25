@@ -76,6 +76,10 @@ def format_response(data: dict, request: Request):
         return PlainTextResponse(yaml_str, media_type="application/yaml")
     return data
 
+def short_pane_id(pane_id: str) -> str:
+    """w-20074:main.0 -> w-20074"""
+    return pane_id.replace(":main.0", "") if pane_id else pane_id
+
 def normalize_pane_id(pane_id: str) -> str:
     """Normalize pane_id: w-20074 -> w-20074:main.0"""
     if not pane_id:
@@ -414,7 +418,7 @@ async def create_window(data: WindowCreate, request: Request):
             "success": False,
             "session": unique_session,
             "window": "main",
-            "pane_id": pane_id,
+            "pane_id": short_pane_id(pane_id),
             "error": str(e)
         }, request)
 
@@ -422,7 +426,7 @@ async def create_window(data: WindowCreate, request: Request):
         "success": True,
         "session": unique_session,
         "window": "main",
-        "pane_id": pane_id,
+        "pane_id": short_pane_id(pane_id),
         "title": title,
         "workspace": data.workspace,
         "init_script": data.init_script,
@@ -455,7 +459,7 @@ async def update_pane(pane_id: str, request: Request, payload: dict):
             values.append(pane_id)
             c.execute(f"UPDATE ttyd_config SET {set_clause} WHERE pane_id=%s", values)
         conn.commit()
-        return format_response({"success": True, "pane_id": pane_id, "updated": updates}, request)
+        return format_response({"success": True, "pane_id": short_pane_id(pane_id), "updated": updates}, request)
     finally:
         conn.close()
 
@@ -473,7 +477,7 @@ async def get_pane(pane_id: str, request: Request):
             if not row:
                 raise HTTPException(status_code=404, detail=f"Pane {pane_id} not found")
             return format_response({
-                "pane_id": row["pane_id"],
+                "pane_id": short_pane_id(row["pane_id"]),
                 "title": row.get("title"),
                 "ttyd_port": row["ttyd_port"],
                 "url": row.get("url"),
@@ -515,7 +519,7 @@ async def delete_pane(pane_id: str, request: Request):
         except:
             pass
             
-        return format_response({"success": True, "pane_id": pane_id, "message": "Pane deleted"}, request)
+        return format_response({"success": True, "pane_id": short_pane_id(pane_id), "message": "Pane deleted"}, request)
     finally:
         conn.close()
 
@@ -536,7 +540,7 @@ async def send_short(request: Request, payload: dict):
     elif "keys" in payload:
         run_tmux(["send-keys", "-t", win_id, payload["keys"]])
     
-    return format_response({"success": True, "win_id": win_id}, request)
+    return format_response({"success": True, "win_id": short_pane_id(win_id)}, request)
 
 @router.get("/tree")
 async def tree(request: Request):
@@ -605,7 +609,7 @@ async def capture_pane(request: Request, payload: dict):
     filtered_lines = [line for line in lines if not line.strip().startswith('[')]
     filtered_output = '\n'.join(filtered_lines)
     
-    return format_response({"pane_id": pane_id, "output": filtered_output}, request)
+    return format_response({"pane_id": short_pane_id(pane_id), "output": filtered_output}, request)
 
 @router.post("/send_wait")
 async def send_wait(request: Request, payload: dict):
@@ -696,7 +700,7 @@ async def send_wait(request: Request, payload: dict):
                 
                 return format_response({
                     "success": True,
-                    "pane_id": pane_id,
+                    "pane_id": short_pane_id(pane_id),
                     "question": text,
                     "answer": answer
                 }, request)
@@ -704,7 +708,7 @@ async def send_wait(request: Request, payload: dict):
     # Timeout
     return format_response({
         "success": False,
-        "pane_id": pane_id,
+        "pane_id": short_pane_id(pane_id),
         "question": text,
         "error": f"Timeout after {timeout}s waiting for prompt"
     }, request)
