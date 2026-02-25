@@ -582,6 +582,8 @@ async def send_short(request: Request, payload: dict):
     if "text" in payload:
         text = payload["text"].replace("'", "'\\''")
         run_tmux(["send-keys", "-t", win_id, "-l", text])
+        import time
+        time.sleep(0.5)
         run_tmux(["send-keys", "-t", win_id, "Enter"])
     elif "keys" in payload:
         run_tmux(["send-keys", "-t", win_id, payload["keys"]])

@@ -402,3 +402,35 @@ async def delete_token(token_id: int, request: Request, auth: dict = Depends(req
             return {"success": True, "message": f"Token {token_id} deleted"}
     finally:
         conn.close()
+
+@router.post("/revoke")
+async def revoke_token(request: Request):
+    """Revoke a token by token string
+    Body: {"token": "..."}
+    Response: {"success": true} or 404
+    """
+    try:
+        data = await request.json()
+    except:
+        raise HTTPException(400, "Invalid JSON")
+    
+    token = data.get("token")
+    if not token:
+        raise HTTPException(400, "token required")
+    
+    conn = _get_db_connection()
+    try:
+        with conn.cursor() as c:
+            c.execute("DELETE FROM tokens WHERE token = %s", (token,))
+            conn.commit()
+            
+            if c.rowcount == 0:
+                raise HTTPException(404, "Token not found")
+            
+            # Clear cache
+            if token in _token_cache:
+                del _token_cache[token]
+            
+            return {"success": True, "message": "Token revoked"}
+    finally:
+        conn.close()
