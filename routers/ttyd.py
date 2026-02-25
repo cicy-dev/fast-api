@@ -124,7 +124,6 @@ async def start_ttyd(pane_id: str, request: Request):
                     "title": title,
                     "port": port,
                     "token": token,
-                    "url": row.get("url"),
                     "workspace": workspace,
                     "init_script": init_script,
                     "proxy": proxy,
@@ -167,7 +166,6 @@ async def start_ttyd(pane_id: str, request: Request):
                 "title": title,
                 "port": port,
                 "token": token,
-                "url": row.get("url"),
                 "workspace": workspace,
                 "init_script": init_script,
                 "proxy": proxy,
@@ -215,8 +213,7 @@ async def get_by_name(name: str, request: Request):
             return format_response({
                 "pane_id": row["pane_id"],
                 "port": row["ttyd_port"],
-                "token": _load_api_token(),
-                "url": row.get("url")
+                "token": _load_api_token()
             }, request)
     finally:
         conn.close()
@@ -250,9 +247,9 @@ async def delete_config(pane_id: str, request: Request):
 
 @router.patch("/config/{pane_id:path}")
 async def update_config(pane_id: str, request: Request):
-    """更新配置字段（title, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable, active, url）"""
+    """更新配置字段（title, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable, active）"""
     body = await request.json()
-    allowed = {"title", "workspace", "init_script", "proxy", "tg_token", "tg_chat_id", "tg_enable", "active", "url"}
+    allowed = {"title", "workspace", "init_script", "proxy", "tg_token", "tg_chat_id", "tg_enable", "active"}
     updates = {k: v for k, v in body.items() if k in allowed}
     if not updates:
         raise HTTPException(status_code=400, detail="No valid fields to update")

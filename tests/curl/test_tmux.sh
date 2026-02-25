@@ -42,7 +42,7 @@ assert_contains "/api/tmux-list contains success" '"success"' "$BODY"
 # POST /api/tmux - no token → 403
 echo "[3] POST /api/tmux (no token)"
 CODE=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/api/tmux" \
-  -H "$H_JSON" -d '{"text":"hello","target":"worker:main.0"}')
+  -H "$H_JSON" -d '{"text":"hello","target":"worker"}')
 assert_status "/api/tmux no token → 401" "401" "$CODE"
 
 # POST /api/tmux - missing target → success:false

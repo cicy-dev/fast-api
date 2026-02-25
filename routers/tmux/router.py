@@ -131,22 +131,19 @@ def create_ttyd_pane_common(
 
     try:
         with conn.cursor() as c:
-            # 2️⃣ token (global) + url
+            # 2️⃣ token (global)
             token = _load_api_token()
-            
-            url = f"https://ttyd-proxy.cicy.de5.net/ttyd/{pane_id}/?token={token}"
 
             if no_insert_db is False:
                 # 3️⃣ 写入 DB
                 c.execute("""
                     INSERT INTO ttyd_config
-                    (pane_id, title, ttyd_port, url, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable, created_at, updated_at)
-                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s, NOW(), NOW())
+                    (pane_id, title, ttyd_port, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable, created_at, updated_at)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s, NOW(), NOW())
                 """, (
                     pane_id,
                     title,
                     ttyd_port,
-                    url,
                     workspace,
                     init_script,
                     proxy,
@@ -233,8 +230,7 @@ def create_ttyd_pane_common(
                 sock.close()
                 return {
                     "port": port,
-                    "token": token,
-                    "url": url
+                    "token": token
                 }
             sock.close()
             time.sleep(0.5)
@@ -315,8 +311,7 @@ async def restart_pane(pane_id: str, request: Request):
 
         return format_response({
             "success": True,
-            "message": "Pane 软重启完成",
-            "url": result["url"]
+            "message": "Pane 软重启完成"
         }, request)
 
     except Exception as e:
@@ -362,7 +357,7 @@ async def list_panes(request: Request, group_id: Optional[int] = None):
     Query params:
     - group_id: filter by group (optional)
     
-    Returns: {"panes": [{pane_id, title, ttyd_port, url, workspace, group_id, active, created_at}]}
+    Returns: {"panes": [{pane_id, title, ttyd_port, workspace, group_id, active, created_at}]}
     """
     from db_pool import get_db
     
@@ -370,7 +365,7 @@ async def list_panes(request: Request, group_id: Optional[int] = None):
         with conn.cursor() as c:
             if group_id is not None:
                 c.execute("""
-                    SELECT DISTINCT t.pane_id, t.title, t.ttyd_port, t.url, t.workspace, 
+                    SELECT DISTINCT t.pane_id, t.title, t.ttyd_port, t.workspace, 
                            t.init_script, t.proxy, t.active, t.created_at, t.updated_at,
                            gp.group_id
                     FROM ttyd_config t
@@ -380,7 +375,7 @@ async def list_panes(request: Request, group_id: Optional[int] = None):
                 """, (group_id,))
             else:
                 c.execute("""
-                    SELECT t.pane_id, t.title, t.ttyd_port, t.url, t.workspace, 
+                    SELECT t.pane_id, t.title, t.ttyd_port, t.workspace, 
                            t.init_script, t.proxy, t.active, t.created_at, t.updated_at,
                            gp.group_id
                     FROM ttyd_config t
@@ -483,8 +478,7 @@ async def create_window(data: WindowCreate, request: Request):
         "tg_token": data.tg_token,
         "tg_chat_id": data.tg_chat_id,
         "tg_enable": data.tg_enable,
-        "ttyd_port": result["port"],
-        "url": result["url"]
+        "ttyd_port": result["port"]
     }, request)
 
 @router.patch("/panes/{pane_id}")
@@ -521,7 +515,7 @@ async def get_pane(pane_id: str, request: Request):
     with get_db() as conn:
         with conn.cursor() as c:
             c.execute("""
-                SELECT t.pane_id, t.title, t.ttyd_port, t.url, t.workspace, t.init_script, 
+                SELECT t.pane_id, t.title, t.ttyd_port, t.workspace, t.init_script, 
                        t.proxy, t.tg_token, t.tg_chat_id, t.tg_enable, gp.group_id
                 FROM ttyd_config t
                 LEFT JOIN ttyd_group_panes gp ON t.pane_id = gp.pane_id
@@ -534,7 +528,6 @@ async def get_pane(pane_id: str, request: Request):
                 "pane_id": short_pane_id(row["pane_id"]),
                 "title": row.get("title"),
                 "ttyd_port": row["ttyd_port"],
-                "url": row.get("url"),
                 "workspace": row.get("workspace"),
                 "init_script": row.get("init_script"),
                 "proxy": row.get("proxy"),

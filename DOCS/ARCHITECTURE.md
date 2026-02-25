@@ -140,7 +140,7 @@ CREATE TABLE ttyd_config (
 
 Every tmux pane automatically gets the following env vars injected (in order, before `init_script`):
 
-1. **`X_PANE_ID`** — always set to the pane's ID (e.g. `w-20070:main.0`)
+1. **`X_PANE_ID`** — always set to the pane's ID (e.g. `w-20070`)
 2. **Proxy** — only if `proxy` field is non-empty in DB:
    - Plain proxy: `http://host:port` → exports `http_proxy`, `https_proxy`, `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`
    - Mitmproxy: `mitmproxy:http://host:port` → same as above + `REQUESTS_CA_BUNDLE=/home/w3c_offical/.mitmproxy/mitmproxy-ca-cert.pem`

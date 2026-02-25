@@ -331,7 +331,7 @@ async def create_token(data: TokenCreate, request: Request, auth: dict = Depends
     Request body:
     {
         "group_id": 5,  // optional, null = all groups
-        "pane_id": "w-20065:main.0",  // optional, null = all panes in group
+        "pane_id": "w-20065",  // optional, null = all panes in group
         "perms": ["ttyd_read", "prompt"],
         "note": "客户张三",
         "expires_at": "2026-03-04T00:00:00"  // optional, null = never expires
