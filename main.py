@@ -26,6 +26,7 @@ from routers import auth as auth_module
 from routers import websocket_agent
 from routers import board as board_module
 from routers import workers as workers_module
+from routers import dashboard as dashboard_module
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse as StarletteJSONResponse
@@ -116,6 +117,7 @@ app.include_router(auth_module.router)  # Auth endpoints don't need token verifi
 app.include_router(websocket_agent.router)  # WebSocket endpoints
 app.include_router(board_module.router, dependencies=[Depends(verify_token)])  # Board API
 app.include_router(workers_module.router, dependencies=[Depends(verify_token)])  # Worker communication
+app.include_router(dashboard_module.router, dependencies=[Depends(verify_token)])  # Dashboard API (checks api_full internally)
 
 from db_pool import get_db as get_pool_db
 

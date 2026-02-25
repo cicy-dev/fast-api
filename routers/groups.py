@@ -32,6 +32,21 @@ def get_db():
     )
 
 
+def _check_group_permission(request: Request, group_id: int):
+    """Check if token has permission to access this group. Raises 403 if denied."""
+    from routers.auth import _verify_token_from_db
+    auth_header = request.headers.get("Authorization", "")
+    token = auth_header.replace("Bearer ", "").strip() if auth_header.startswith("Bearer ") else None
+    
+    if token:
+        token_info = _verify_token_from_db(token)
+        if token_info and token_info.get("valid"):
+            token_group_id = token_info.get("group_id")
+            # If token has group_id restriction, must match
+            if token_group_id is not None and token_group_id != group_id:
+                raise HTTPException(status_code=403, detail="Access denied: group_id mismatch")
+
+
 def format_response(data, request: Request = None):
     if request and "application/yaml" in request.headers.get("accept", "").lower():
         yaml_str = yaml.dump(data, default_flow_style=False, allow_unicode=True, sort_keys=False)
@@ -151,20 +166,7 @@ async def create_group(body: GroupCreate, request: Request):
 @router.get("/{group_id}")
 async def get_group(group_id: int, request: Request):
     """Get a single group with full pane layout details. Returns 403 if token's group_id doesn't match."""
-    # Get token from Authorization header
-    from routers.auth import _verify_token_from_db
-    auth_header = request.headers.get("Authorization", "")
-    token = auth_header.replace("Bearer ", "").strip() if auth_header.startswith("Bearer ") else None
-    
-    token_group_id = None
-    if token:
-        token_info = _verify_token_from_db(token)
-        if token_info and token_info.get("valid"):
-            token_group_id = token_info.get("group_id")
-    
-    # Check permission: if token has group_id restriction, must match
-    if token_group_id is not None and token_group_id != group_id:
-        raise HTTPException(status_code=403, detail="Access denied: group_id mismatch")
+    _check_group_permission(request, group_id)
     
     conn = get_db()
     try:
@@ -190,6 +192,8 @@ async def get_group(group_id: int, request: Request):
 @router.patch("/{group_id}")
 async def update_group(group_id: int, body: GroupPatch, request: Request):
     """Rename or update description."""
+    _check_group_permission(request, group_id)
+    
     updates = {}
     if body.name is not None:
         updates["name"] = body.name
@@ -216,6 +220,8 @@ async def update_group(group_id: int, body: GroupPatch, request: Request):
 @router.delete("/{group_id}")
 async def delete_group(group_id: int, request: Request):
     """Delete a group (CASCADE deletes pane associations)."""
+    _check_group_permission(request, group_id)
+    
     conn = get_db()
     try:
         with conn.cursor() as c:
@@ -231,6 +237,8 @@ async def delete_group(group_id: int, request: Request):
 @router.put("/{group_id}/panes")
 async def replace_panes(group_id: int, body: PaneIdList, request: Request):
     """Full replacement of panes in a group."""
+    _check_group_permission(request, group_id)
+    
     conn = get_db()
     try:
         with conn.cursor() as c:
@@ -252,6 +260,8 @@ async def replace_panes(group_id: int, body: PaneIdList, request: Request):
 @router.post("/{group_id}/panes/{pane_id:path}")
 async def add_pane(group_id: int, pane_id: str, request: Request):
     """Add a single pane to a group."""
+    _check_group_permission(request, group_id)
+    
     conn = get_db()
     try:
         with conn.cursor() as c:
@@ -274,6 +284,8 @@ async def add_pane(group_id: int, pane_id: str, request: Request):
 @router.delete("/{group_id}/panes/{pane_id:path}")
 async def remove_pane(group_id: int, pane_id: str, request: Request):
     """Remove a single pane from a group."""
+    _check_group_permission(request, group_id)
+    
     conn = get_db()
     try:
         with conn.cursor() as c:
@@ -290,6 +302,8 @@ async def remove_pane(group_id: int, pane_id: str, request: Request):
 @router.patch("/{group_id}/panes/{pane_id:path}/layout")
 async def update_pane_layout(group_id: int, pane_id: str, body: LayoutPatch, request: Request):
     """Save a single pane's position/size."""
+    _check_group_permission(request, group_id)
+    
     updates = {}
     if body.pos_x is not None:
         updates["pos_x"] = body.pos_x
@@ -320,6 +334,8 @@ async def update_pane_layout(group_id: int, pane_id: str, body: LayoutPatch, req
 @router.patch("/{group_id}/layout")
 async def batch_update_layout(group_id: int, body: BatchLayoutPatch, request: Request):
     """Batch save all pane layouts (called after Auto-grid)."""
+    _check_group_permission(request, group_id)
+    
     conn = get_db()
     try:
         with conn.cursor() as c:
@@ -339,6 +355,8 @@ async def batch_update_layout(group_id: int, body: BatchLayoutPatch, request: Re
 @router.patch("/{group_id}/state")
 async def update_group_state(group_id: int, body: GroupStatePatch, request: Request):
     """Save group state (activePane, layoutMode) - currently stored in localStorage on client."""
+    _check_group_permission(request, group_id)
+    
     # Note: This endpoint accepts the state but doesn't persist to DB yet.
     # State is primarily managed in localStorage on the client side.
     # In a future enhancement, we could add a ttyd_group_state table.
