@@ -95,16 +95,6 @@ def load_token():
 AUTH_TOKEN = load_token()
 security = HTTPBearer()
 
-# Include routers with authentication
-app.include_router(tmux_router, dependencies=[Depends(verify_token)])
-app.include_router(ttyd.router)  # No auth for internal cache
-app.include_router(groups_module.router, dependencies=[Depends(verify_token)])
-app.include_router(apps_module.router, dependencies=[Depends(verify_token)])
-app.include_router(auth_module.router)  # Auth endpoints don't need token verification
-app.include_router(websocket_agent.router)  # WebSocket endpoints
-app.include_router(board_module.router, dependencies=[Depends(verify_token)])  # Board API
-app.include_router(workers_module.router, dependencies=[Depends(verify_token)])  # Worker communication
-
 def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
     token = cred.credentials
     # 先检查管理员 token
@@ -116,6 +106,16 @@ def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
     if token_info and token_info.get("valid"):
         return token
     raise HTTPException(status_code=401, detail="invalid token")
+
+# Include routers with authentication
+app.include_router(tmux_router, dependencies=[Depends(verify_token)])
+app.include_router(ttyd.router)  # No auth for internal cache
+app.include_router(groups_module.router, dependencies=[Depends(verify_token)])
+app.include_router(apps_module.router, dependencies=[Depends(verify_token)])
+app.include_router(auth_module.router)  # Auth endpoints don't need token verification
+app.include_router(websocket_agent.router)  # WebSocket endpoints
+app.include_router(board_module.router, dependencies=[Depends(verify_token)])  # Board API
+app.include_router(workers_module.router, dependencies=[Depends(verify_token)])  # Worker communication
 
 from db_pool import get_db as get_pool_db
 
