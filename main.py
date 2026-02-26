@@ -121,6 +121,8 @@ app.include_router(board_module.router, dependencies=[Depends(verify_token)])  #
 app.include_router(workers_module.router, dependencies=[Depends(verify_token)])  # Worker communication
 app.include_router(dashboard_module.router, dependencies=[Depends(verify_token)])  # Dashboard API (checks api_full internally)
 app.include_router(vnc_module.router, dependencies=[Depends(verify_token)])  # VNC API
+from routers import cf_ai as cf_ai_module
+app.include_router(cf_ai_module.router, dependencies=[Depends(verify_token)])  # Cloudflare AI proxy
 
 from db_pool import get_db as get_pool_db
 
@@ -240,10 +242,6 @@ async def startup_event():
                     )
                 run_tmux_cmd(["send-keys", "-t", pane_id, proxy_cmd, "Enter"])
             
-            run_tmux_cmd(["send-keys", "-t", pane_id, "clear", "Enter"])
-            time.sleep(0.3)
-            run_tmux_cmd(["send-keys", "-t", pane_id, "clear", "Enter"])
-
             # Auto cd to workspace and start kiro-cli
             if workspace:
                 workspace_expanded = os.path.expanduser(workspace)
@@ -511,24 +509,16 @@ def _fallback_correct(text: str) -> str:
 
 
 @app.post("/api/correctEnglish")
-async def correct_english(request: Request, token: str = Depends(verify_token)):
-    """Correct English text via HuggingFace, with regex fallback."""
+async def correct_english_api(request: Request, token: str = Depends(verify_token)):
+    """Correct English text via Cloudflare AI."""
     body = await request.json()
     text = body.get("text", "")
     if not text:
         return format_response({"success": False, "error": "no text"}, request)
     try:
-        resp = _requests.post(
-            "https://api-inference.huggingface.co/models/facebook/bart-large-cnn",
-            json={"inputs": f"Correct this English text: {text}",
-                  "parameters": {"max_length": 200, "min_length": 10}},
-            timeout=10
-        )
-        if resp.status_code == 200:
-            result = resp.json()
-            corrected = (result[0].get("summary_text") or result[0].get("generated_text") or text)
-            corrected = _re.sub(r'^Correct this English text:\s*', '', corrected, flags=_re.IGNORECASE)
-            corrected = corrected.strip('"\'').strip()
+        from services.cf_ai import correct_english as cf_correct
+        corrected = await cf_correct(text)
+        if corrected:
             return format_response({"success": True, "correctedText": corrected}, request)
     except Exception:
         pass

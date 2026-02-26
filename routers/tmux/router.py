@@ -32,8 +32,10 @@ def _get_token_perms(request: Request) -> list:
     return result.get("perms", []) if result and result.get("valid") else []
 
 def _require_perm(request: Request, perm: str):
-    """检查权限，无权限则 403"""
+    """检查权限，无权限则 403。api_full 拥有所有权限"""
     perms = _get_token_perms(request)
+    if "api_full" in perms:
+        return
     if perm not in perms:
         raise HTTPException(403, f"Requires {perm} permission")
 
@@ -211,12 +213,7 @@ def create_ttyd_pane_common(
                 )
             run_tmux(["send-keys", "-t", pane_id, proxy_cmd, "Enter"])
 
-        # 6️⃣ clear screen before init_script
-        run_tmux(["send-keys", "-t", pane_id, "clear", "Enter"])
-        time.sleep(0.3)
-        run_tmux(["send-keys", "-t", pane_id, "clear", "Enter"])
-
-        # 6.5️⃣ Auto cd to workspace
+        # 6️⃣ Auto cd to workspace
         if workspace:
             workspace_expanded = workspace.replace('~', '/home/w3c_offical')
             run_tmux(["send-keys", "-t", pane_id, f"cd {workspace_expanded}", "Enter"])
@@ -239,12 +236,7 @@ def create_ttyd_pane_common(
                 else:
                     run_tmux(["send-keys", "-t", pane_id, line, "Enter"])
 
-        # 7️⃣ 可选：sleep + clear（create 时使用）
-        if clear_after_init:
-            time.sleep(1)
-            run_tmux(["send-keys", "-t", pane_id, "clear", "Enter"])
-
-        # 8️⃣ 等待 ttyd ready
+        # 7️⃣ 等待 ttyd ready
         max_wait = 30
         elapsed = 0
 
