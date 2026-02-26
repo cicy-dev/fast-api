@@ -516,7 +516,7 @@ async def update_pane(pane_id: str, request: Request, payload: dict):
     """Update pane fields"""
     import pymysql
     
-    allowed_fields = ['title', 'workspace', 'init_script', 'proxy', 'tg_token', 'tg_chat_id', 'tg_enable']
+    allowed_fields = ['title', 'workspace', 'init_script', 'proxy', 'tg_token', 'tg_chat_id', 'tg_enable', 'private_mode', 'allowed_users', 'proxy_enable']
     updates = {k: v for k, v in payload.items() if k in allowed_fields}
     
     if not updates:
@@ -693,6 +693,42 @@ async def capture_pane(request: Request, payload: dict):
     filtered_output = '\n'.join(filtered_lines)
     
     return format_response({"pane_id": short_pane_id(pane_id), "output": filtered_output}, request)
+
+@router.get("/pane/agent/status/{pane_id}")
+async def agent_status(request: Request, pane_id: str):
+    _require_perm(request, 'ttyd_read')
+    pane_id = normalize_pane_id(pane_id)
+    if not pane_id:
+        return format_response({"error": "pane_id required"}, request)
+    raw = run_tmux(["capture-pane", "-t", pane_id, "-p"])
+    lines = [l for l in raw.split('\n') if l.strip()]
+    text = '\n'.join(lines[-4:])
+    last2 = ' '.join(lines[-2:]) if len(lines) >= 2 else ' '.join(lines)
+    last = lines[-1] if lines else ''
+    import re
+    # 提取 context token 用量百分比，如 "20% >"
+    ctx_match = re.search(r'(\d+)%?\s*!?>', raw if raw else '')
+    context_usage = int(ctx_match.group(1)) if ctx_match else None
+    is_waiting_auth = 'Allow this action' in last2 or '[y/n/t]' in last2
+    is_compacting = 'Creating summary' in last2 or '/compact' in last2
+    is_thinking = bool(re.search(r'[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏]|Thinking', last2))
+    is_idle = last.rstrip().endswith('>') or last.rstrip().endswith('$')
+    is_wait_startup = len(lines) == 0 or (is_idle and last.rstrip().endswith('$'))
+    # status 保留向后兼容
+    if is_waiting_auth: status = 'wait_auth'
+    elif is_compacting: status = 'compacting'
+    elif is_thinking: status = 'thinking'
+    elif is_idle: status = 'idle'
+    elif is_wait_startup: status = 'wait_startup'
+    else: status = 'thinking'
+    return format_response({
+        "pane_id": short_pane_id(pane_id), "raw": text, "status": status,
+        "isThinking": is_thinking or is_compacting,
+        "isWaitingAuth": is_waiting_auth,
+        "isCompacting": is_compacting,
+        "isWaitStartup": is_wait_startup,
+        "contextUsage": context_usage,
+    }, request)
 
 @router.post("/send_wait")
 async def send_wait(request: Request, payload: dict):

@@ -184,6 +184,11 @@ async def get_group(group_id: int, request: Request):
                 (group_id,)
             )
             group["panes"] = c.fetchall()
+            c.execute(
+                "SELECT a.id, a.name, a.url, a.icon FROM group_apps ga JOIN desktop_apps a ON ga.app_id=a.id WHERE ga.group_id=%s",
+                (group_id,)
+            )
+            group["apps"] = c.fetchall()
             return format_response(group, request)
     finally:
         conn.close()
@@ -365,3 +370,56 @@ async def update_group_state(group_id: int, body: GroupStatePatch, request: Requ
         "group_id": group_id,
         "message": "State cached on client (localStorage)"
     }, request)
+
+
+# ── Group Apps ──────────────────────────────────────────
+
+class AppIdList(BaseModel):
+    app_ids: list[int]
+
+@router.put("/{group_id}/apps")
+async def replace_apps(group_id: int, body: AppIdList, request: Request):
+    """全量替换 group 的 apps"""
+    _check_group_permission(request, group_id)
+    conn = get_db()
+    try:
+        with conn.cursor() as c:
+            c.execute("SELECT id FROM ttyd_groups WHERE id=%s", (group_id,))
+            if not c.fetchone():
+                raise HTTPException(status_code=404, detail="Group not found")
+            c.execute("DELETE FROM group_apps WHERE group_id=%s", (group_id,))
+            for app_id in body.app_ids:
+                c.execute("INSERT INTO group_apps (group_id, app_id) VALUES (%s, %s)", (group_id, app_id))
+            conn.commit()
+            return format_response({"success": True, "group_id": group_id, "app_count": len(body.app_ids)}, request)
+    finally:
+        conn.close()
+
+@router.post("/{group_id}/apps/{app_id}")
+async def add_app(group_id: int, app_id: int, request: Request):
+    """添加单个 app 到 group"""
+    _check_group_permission(request, group_id)
+    conn = get_db()
+    try:
+        with conn.cursor() as c:
+            try:
+                c.execute("INSERT INTO group_apps (group_id, app_id) VALUES (%s, %s)", (group_id, app_id))
+                conn.commit()
+            except pymysql.err.IntegrityError:
+                pass
+            return format_response({"success": True, "group_id": group_id, "app_id": app_id}, request)
+    finally:
+        conn.close()
+
+@router.delete("/{group_id}/apps/{app_id}")
+async def remove_app(group_id: int, app_id: int, request: Request):
+    """从 group 移除单个 app"""
+    _check_group_permission(request, group_id)
+    conn = get_db()
+    try:
+        with conn.cursor() as c:
+            c.execute("DELETE FROM group_apps WHERE group_id=%s AND app_id=%s", (group_id, app_id))
+            conn.commit()
+            return format_response({"success": True, "group_id": group_id, "app_id": app_id}, request)
+    finally:
+        conn.close()
