@@ -66,11 +66,11 @@ async def get_dashboard(request: Request):
     conn = get_db()
     try:
         with conn.cursor() as c:
-            # Get agents from ttyd_config JOIN ttyd_group_panes
+            # Get agents from ttyd_config JOIN group_windows
             c.execute("""
                 SELECT t.pane_id, t.title, gp.group_id
                 FROM ttyd_config t
-                LEFT JOIN ttyd_group_panes gp ON t.pane_id = gp.pane_id
+                LEFT JOIN group_windows gp ON t.pane_id = gp.win_id
                 WHERE t.active = 1
                 ORDER BY t.created_at DESC
             """)

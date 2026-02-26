@@ -396,7 +396,7 @@ async def list_panes(request: Request, group_id: Optional[int] = None):
                            t.init_script, t.proxy, t.active, t.created_at, t.updated_at,
                            gp.group_id
                     FROM ttyd_config t
-                    INNER JOIN ttyd_group_panes gp ON t.pane_id = gp.pane_id
+                    INNER JOIN group_windows gp ON t.pane_id = gp.win_id
                     WHERE gp.group_id = %s
                     ORDER BY t.created_at DESC
                 """, (group_id,))
@@ -406,7 +406,7 @@ async def list_panes(request: Request, group_id: Optional[int] = None):
                            t.init_script, t.proxy, t.active, t.created_at, t.updated_at,
                            gp.group_id
                     FROM ttyd_config t
-                    LEFT JOIN ttyd_group_panes gp ON t.pane_id = gp.pane_id
+                    LEFT JOIN group_windows gp ON t.pane_id = gp.win_id
                     ORDER BY t.created_at DESC
                 """)
             
@@ -548,7 +548,7 @@ async def get_pane(pane_id: str, request: Request):
                 SELECT t.pane_id, t.title, t.ttyd_port, t.workspace, t.init_script, 
                        t.proxy, t.tg_token, t.tg_chat_id, t.tg_enable, gp.group_id
                 FROM ttyd_config t
-                LEFT JOIN ttyd_group_panes gp ON t.pane_id = gp.pane_id
+                LEFT JOIN group_windows gp ON t.pane_id = gp.win_id
                 WHERE t.pane_id = %s
             """, (pane_id,))
             row = c.fetchone()
@@ -697,38 +697,11 @@ async def capture_pane(request: Request, payload: dict):
 @router.get("/pane/agent/status/{pane_id}")
 async def agent_status(request: Request, pane_id: str):
     _require_perm(request, 'ttyd_read')
+    from services.pane_status import check_pane
     pane_id = normalize_pane_id(pane_id)
     if not pane_id:
         return format_response({"error": "pane_id required"}, request)
-    raw = run_tmux(["capture-pane", "-t", pane_id, "-p"])
-    lines = [l for l in raw.split('\n') if l.strip()]
-    text = '\n'.join(lines[-4:])
-    last2 = ' '.join(lines[-2:]) if len(lines) >= 2 else ' '.join(lines)
-    last = lines[-1] if lines else ''
-    import re
-    # 提取 context token 用量百分比，如 "20% >"
-    ctx_match = re.search(r'(\d+)%?\s*!?>', raw if raw else '')
-    context_usage = int(ctx_match.group(1)) if ctx_match else None
-    is_waiting_auth = 'Allow this action' in last2 or '[y/n/t]' in last2
-    is_compacting = 'Creating summary' in last2 or '/compact' in last2
-    is_thinking = bool(re.search(r'[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏]|Thinking', last2))
-    is_idle = last.rstrip().endswith('>') or last.rstrip().endswith('$')
-    is_wait_startup = len(lines) == 0 or (is_idle and last.rstrip().endswith('$'))
-    # status 保留向后兼容
-    if is_waiting_auth: status = 'wait_auth'
-    elif is_compacting: status = 'compacting'
-    elif is_thinking: status = 'thinking'
-    elif is_idle: status = 'idle'
-    elif is_wait_startup: status = 'wait_startup'
-    else: status = 'thinking'
-    return format_response({
-        "pane_id": short_pane_id(pane_id), "raw": text, "status": status,
-        "isThinking": is_thinking or is_compacting,
-        "isWaitingAuth": is_waiting_auth,
-        "isCompacting": is_compacting,
-        "isWaitStartup": is_wait_startup,
-        "contextUsage": context_usage,
-    }, request)
+    return format_response(check_pane(pane_id), request)
 
 @router.post("/send_wait")
 async def send_wait(request: Request, payload: dict):
