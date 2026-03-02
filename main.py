@@ -247,7 +247,8 @@ async def startup_event():
                     tg_chat_id=config.get("tg_chat_id"),
                     tg_enable=config.get("tg_enable", False),
                     clear_after_init=False,
-                    no_insert_db=True
+                    no_insert_db=True,
+                    agent_type=config.get("agent_type")
                 )
                 print(f"[Startup] Started ttyd on port {port} for {pane_id}")
             except Exception as e:

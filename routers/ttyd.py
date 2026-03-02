@@ -265,9 +265,9 @@ async def delete_config(pane_id: str, request: Request):
 
 @router.patch("/config/{pane_id:path}")
 async def update_config(pane_id: str, request: Request):
-    """更新配置字段（title, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable, active, agent_duty, proxy_enable, config, ttyd_preview）"""
+    """更新配置字段（title, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable, active, agent_duty, agent_type, proxy_enable, config, ttyd_preview）"""
     body = await request.json()
-    allowed = {"title", "workspace", "init_script", "proxy", "tg_token", "tg_chat_id", "tg_enable", "active", "agent_duty", "proxy_enable", "config", "ttyd_preview"}
+    allowed = {"title", "workspace", "init_script", "proxy", "tg_token", "tg_chat_id", "tg_enable", "active", "agent_duty", "agent_type", "proxy_enable", "config", "ttyd_preview"}
     updates = {k: v for k, v in body.items() if k in allowed}
     if not updates:
         raise HTTPException(status_code=400, detail="No valid fields to update")

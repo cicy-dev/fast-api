@@ -66,6 +66,7 @@ class WindowCreate(BaseModel):
     tg_token: Optional[str] = None
     tg_chat_id: Optional[str] = None
     tg_enable: bool = False
+    agent_type: Optional[str] = None
     
     # @field_validator('win_name')
     # @classmethod
@@ -143,6 +144,7 @@ def create_ttyd_pane_common(
     tg_enable: bool = False,
     clear_after_init: bool = False,
     no_insert_db: bool = False,
+    agent_type: str = None,
 ):
     import pymysql
     import socket
@@ -245,6 +247,10 @@ def create_ttyd_pane_common(
                 else:
                     run_tmux(["send-keys", "-t", pane_id, line, "Enter"])
 
+        # 7.5️⃣ Run agent_type command if set
+        if agent_type:
+            run_tmux(["send-keys", "-t", pane_id, agent_type, "Enter"])
+
         # 7️⃣ 等待 ttyd ready
         max_wait = 30
         elapsed = 0
@@ -338,7 +344,8 @@ async def restart_pane(pane_id: str, request: Request):
             tg_chat_id=row["tg_chat_id"],
             tg_enable=row["tg_enable"],
             clear_after_init=True,
-            no_insert_db=True  # 核心：避免主键冲突
+            no_insert_db=True,  # 核心：避免主键冲突
+            agent_type=row.get("agent_type")
         )
 
         # 更新数据库时间
@@ -494,6 +501,7 @@ async def create_window(data: WindowCreate, request: Request):
             tg_chat_id=data.tg_chat_id,
             tg_enable=data.tg_enable,
             clear_after_init=True,
+            agent_type=data.agent_type,
         )
     except Exception as e:
         try:
@@ -857,8 +865,8 @@ async def send_wait(request: Request, payload: dict):
 
 
 @router.post("/mouse/{action}")
-async def toggle_mouse_mode(action: str, request: Request):
-    """切换 tmux 鼠标模式"""
+async def toggle_mouse_mode(action: str, pane_id: str = None, request: Request = None):
+    """切换 tmux 鼠标模式（针对当前 pane）"""
     _require_perm(request, "ttyd_write")
     
     if action not in ["on", "off"]:
@@ -869,7 +877,8 @@ async def toggle_mouse_mode(action: str, request: Request):
         return format_response({
             "success": True,
             "mouse_mode": action,
-            "message": f"Mouse mode turned {action}"
+            "pane_id": pane_id,
+            "message": f"Mouse mode turned {action} for pane {pane_id or 'global'}"
         }, request)
     except HTTPException as e:
         return format_response({
@@ -935,3 +944,26 @@ async def choose_session(pane_id: str, request: Request):
         return format_response({"success": True}, request)
     except Exception as e:
         return format_response({"success": False, "error": str(e)}, request)
+
+
+@router.get("/pane/agent/statuses")
+@router.get("/panes/status")
+async def get_all_panes_statuses(
+    request: Request,
+    lines: int = 4,
+    include_inactive: bool = False,
+    agent_type: str | None = None
+):
+    """Get status of all registered panes"""
+    _require_perm(request, 'ttyd_read')
+    from services.pane_status import get_all_panes_status
+    
+    try:
+        statuses = get_all_panes_status(
+            lines=lines,
+            include_inactive=include_inactive,
+            agent_type=agent_type
+        )
+        return format_response({"panes": statuses}, request)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
