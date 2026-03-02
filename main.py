@@ -4,8 +4,24 @@
 功能: 查询/管理 local_services 表
 """
 import os
+import sys
+import logging
 from dotenv import load_dotenv
 load_dotenv()
+
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+if "--reload" in sys.argv:
+    LOG_LEVEL = "DEBUG"
+
+logging.basicConfig(
+    level=getattr(logging, LOG_LEVEL),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+# Set all loggers
+for name in ["uvicorn", "uvicorn.access", "uvicorn.error"]:
+    log = logging.getLogger(name)
+    log.setLevel(getattr(logging, LOG_LEVEL))
+logger = logging.getLogger(__name__)
 
 import pymysql
 import json
@@ -28,21 +44,14 @@ from routers import board as board_module
 from routers import workers as workers_module
 from routers import dashboard as dashboard_module
 from routers import vnc as vnc_module
+from routers import agents as agents_module
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse as StarletteJSONResponse
 
 app = FastAPI(title="Local Services API", version="1.0")
 
-ALLOWED_ORIGINS = [
-    "https://desktop.cicy.de5.net",
-    "https://ttyd-dev.cicy.de5.net",
-    "https://ttyd-proxy.cicy.de5.net",
-    "https://g-vnc.cicy.de5.net",
-    "http://localhost:6905",
-    "http://localhost:6902",
-    "http://localhost:6901",
-]
+ALLOWED_ORIGINS = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "https://g-vnc.cicy.de5.net,https://g-fast-api.cicy.de5.net,http://localhost,http://127.0.0.1").split(",") if o.strip()]
 
 class CORSErrorMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -57,7 +66,7 @@ class CORSErrorMiddleware(BaseHTTPMiddleware):
         return response
 
 app.add_middleware(CORSErrorMiddleware)
-app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS, allow_methods=["*"], allow_headers=["*"], allow_credentials=True)
+app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS, allow_origin_regex=r"https?://.*", allow_methods=["*"], allow_headers=["*"], allow_credentials=True)
 
 # Helper for YAML/JSON response (default: JSON; optional: Accept: application/yaml)
 def is_yaml(request: Request) -> bool:
@@ -121,6 +130,7 @@ app.include_router(board_module.router, dependencies=[Depends(verify_token)])  #
 app.include_router(workers_module.router, dependencies=[Depends(verify_token)])  # Worker communication
 app.include_router(dashboard_module.router, dependencies=[Depends(verify_token)])  # Dashboard API (checks api_full internally)
 app.include_router(vnc_module.router, dependencies=[Depends(verify_token)])  # VNC API
+app.include_router(agents_module.router, dependencies=[Depends(verify_token)])  # Agents API
 from routers import cf_ai as cf_ai_module
 app.include_router(cf_ai_module.router, dependencies=[Depends(verify_token)])  # Cloudflare AI proxy
 
@@ -181,18 +191,26 @@ async def startup_event():
 
     with get_db() as conn:
         with conn.cursor() as c:
-            c.execute("SELECT pane_id, title, ttyd_port, workspace, init_script, proxy, active FROM ttyd_config WHERE active=1")
+            c.execute("SELECT pane_id, title, ttyd_port, workspace, init_script, config, tg_token, tg_chat_id, tg_enable, active FROM ttyd_config WHERE active=1")
             configs = c.fetchall()
         
         print(f"[Startup] Found {len(configs)} active pane configs in database")
         
+        from routers.tmux.router import create_ttyd_pane_common
+        
         for config in configs:
             pane_id = config["pane_id"]
             port = int(config["ttyd_port"])
-            workspace = config.get("workspace")
-            init_script = config.get("init_script")
-            proxy = config.get("proxy")
-            title = config.get("title", pane_id)
+            
+            # Parse config JSON to get proxy
+            import json
+            config_data = {}
+            if config.get("config"):
+                try:
+                    config_data = json.loads(config["config"])
+                except:
+                    pass
+            proxy = config_data.get("proxy", "")
             
             if is_port_listening(port):
                 print(f"[Startup] ttyd already running on port {port} for {pane_id}")
@@ -209,72 +227,31 @@ async def startup_event():
             
             session_exists = run_tmux_cmd(["has-session", "-t", session_name], check_session=True)
             if session_exists is None:
-                workspace_expanded = os.path.expanduser(workspace or "~")
+                workspace_expanded = os.path.expanduser(config.get("workspace") or "~")
                 print(f"[Startup] Creating tmux session {session_name} with workspace {workspace_expanded}")
                 run_tmux_cmd(["new-session", "-d", "-s", session_name, "-n", window_name, "-c", workspace_expanded])
             
-            token = AUTH_TOKEN
-            ttyd_cmd = (
-                f"nohup {TTYD_BINARY_PATH} -W -p {port} "
-                f"-c user:{token} "
-                f"tmux attach -t {pane_id} "
-                f"> /home/w3c_offical/projects/ai-workers/fast-api/logs/ttyd_{port}.log 2>&1 &"
-            )
-            run_tmux_cmd(["run-shell", ttyd_cmd])
-            print(f"[Startup] Started ttyd on port {port} for {pane_id}")
-            
-            # export X_PANE_ID
-            run_tmux_cmd(["send-keys", "-t", pane_id, f"export X_PANE_ID='{pane_id}'", "Enter"])
-
-            if proxy:
-                is_mitmproxy = proxy.startswith("mitmproxy:")
-                proxy_url = proxy[len("mitmproxy:"):] if is_mitmproxy else proxy
-                proxy_cmd = (
-                    f"export http_proxy='{proxy_url}' https_proxy='{proxy_url}' "
-                    f"HTTP_PROXY='{proxy_url}' HTTPS_PROXY='{proxy_url}' ALL_PROXY='{proxy_url}'"
+            # Reuse create_ttyd_pane_common
+            try:
+                print(f"[Startup] Starting ttyd for {pane_id}")
+                create_ttyd_pane_common(
+                    pane_id=pane_id,
+                    session_name=session_name,
+                    win_name=window_name,
+                    ttyd_port=port,
+                    workspace=config.get("workspace"),
+                    init_script=config.get("init_script") or "",
+                    proxy=proxy,
+                    title=config.get("title", pane_id),
+                    tg_token=config.get("tg_token"),
+                    tg_chat_id=config.get("tg_chat_id"),
+                    tg_enable=config.get("tg_enable", False),
+                    clear_after_init=False,
+                    no_insert_db=True
                 )
-                if is_mitmproxy:
-                    cert = "/home/w3c_offical/.mitmproxy/mitmproxy-ca-cert.pem"
-                    proxy_cmd += (
-                        f" REQUESTS_CA_BUNDLE='{cert}'"
-                        f" SSL_CERT_FILE='{cert}'"
-                        f" NODE_EXTRA_CA_CERTS='{cert}'"
-                    )
-                run_tmux_cmd(["send-keys", "-t", pane_id, proxy_cmd, "Enter"])
-            
-            # Auto cd to workspace and start kiro-cli
-            if workspace:
-                workspace_expanded = os.path.expanduser(workspace)
-                run_tmux_cmd(["send-keys", "-t", pane_id, f"cd {workspace_expanded}", "Enter"])
-            # kiro-cli will be started manually by user
-
-            if init_script:
-                for line in init_script.splitlines():
-                    line = line.strip()
-                    if not line:
-                        continue
-                    if line.startswith('sleep:'):
-                        try:
-                            secs = float(line.split(':', 1)[1])
-                            time.sleep(secs)
-                        except (ValueError, IndexError):
-                            pass
-                    elif line.startswith('key:'):
-                        key_val = line.split(':', 1)[1]
-                        run_tmux_cmd(["send-keys", "-t", pane_id, key_val])
-                    else:
-                        run_tmux_cmd(["send-keys", "-t", pane_id, line, "Enter"])
-            
-            max_wait = 30
-            elapsed = 0
-            while elapsed < max_wait:
-                if is_port_listening(port):
-                    print(f"[Startup] ttyd ready on port {port}")
-                    break
-                time.sleep(0.5)
-                elapsed += 0.5
-            else:
-                print(f"[Startup] Warning: ttyd not ready on port {port} after {max_wait}s")
+                print(f"[Startup] Started ttyd on port {port} for {pane_id}")
+            except Exception as e:
+                print(f"[Startup] Failed to start {pane_id}: {e}")
         
         print("[Startup] Finished starting all services")
 

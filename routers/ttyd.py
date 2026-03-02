@@ -181,6 +181,10 @@ async def start_ttyd(pane_id: str, request: Request):
 @router.get("/status/{pane_id:path}")
 async def get_status(pane_id: str, request: Request):
     """检查 ttyd 是否已启动"""
+    # 自动添加 :main.0 后缀（如果没有冒号）
+    if ":" not in pane_id:
+        pane_id = f"{pane_id}:main.0"
+    
     conn = get_db()
     try:
         with conn.cursor() as c:
@@ -234,6 +238,20 @@ async def list_configs(request: Request):
     finally:
         conn.close()
 
+@router.get("/config/{pane_id:path}")
+async def get_config(pane_id: str, request: Request):
+    """获取配置详情"""
+    conn = get_db()
+    try:
+        with conn.cursor(pymysql.cursors.DictCursor) as c:
+            c.execute("SELECT * FROM ttyd_config WHERE pane_id=%s", (pane_id,))
+            row = c.fetchone()
+            if not row:
+                raise HTTPException(status_code=404, detail="pane_id not found")
+            return format_response(row, request)
+    finally:
+        conn.close()
+
 @router.delete("/config/{pane_id:path}")
 async def delete_config(pane_id: str, request: Request):
     conn = get_db()
@@ -247,9 +265,9 @@ async def delete_config(pane_id: str, request: Request):
 
 @router.patch("/config/{pane_id:path}")
 async def update_config(pane_id: str, request: Request):
-    """更新配置字段（title, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable, active）"""
+    """更新配置字段（title, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable, active, agent_duty, proxy_enable, config）"""
     body = await request.json()
-    allowed = {"title", "workspace", "init_script", "proxy", "tg_token", "tg_chat_id", "tg_enable", "active"}
+    allowed = {"title", "workspace", "init_script", "proxy", "tg_token", "tg_chat_id", "tg_enable", "active", "agent_duty", "proxy_enable", "config"}
     updates = {k: v for k, v in body.items() if k in allowed}
     if not updates:
         raise HTTPException(status_code=400, detail="No valid fields to update")
@@ -270,6 +288,14 @@ async def update_config(pane_id: str, request: Request):
             if c.rowcount == 0:
                 raise HTTPException(status_code=404, detail="pane_id not found")
             conn.commit()
+            # 同步 agent_duty 到 workspace/duty.md
+            if "agent_duty" in updates:
+                c.execute("SELECT workspace FROM ttyd_config WHERE pane_id=%s", (pane_id,))
+                row = c.fetchone()
+                ws = row.get("workspace") if row else None
+                if ws and os.path.isdir(ws):
+                    with open(os.path.join(ws, "duty.md"), "w") as f:
+                        f.write("---\ninclusion: always\n---\n\n" + (updates["agent_duty"] or ""))
             return format_response({"success": True, "pane_id": pane_id, "updated": updates}, request)
     finally:
         conn.close()

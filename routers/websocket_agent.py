@@ -77,15 +77,22 @@ async def websocket_agent(websocket: WebSocket, group_id: int, token: str = Quer
                     })
                     continue
                 
-                # Echo back to sender
-                await websocket.send_json({
-                    "type": "message",
-                    "role": "assistant",
-                    "content": f"Received: {message.get('content', '')}"
-                })
-                
-                # TODO: Here you would integrate with actual AI agent
-                # For now, just echo back
+                # Call AI and stream response
+                content = message.get('content', '')
+                try:
+                    from services.cf_ai import ask_text
+                    reply = await ask_text(content)
+                    await websocket.send_json({
+                        "type": "message",
+                        "role": "assistant",
+                        "content": reply or "（AI 无响应）"
+                    })
+                except Exception as ai_err:
+                    await websocket.send_json({
+                        "type": "message",
+                        "role": "assistant",
+                        "content": f"AI error: {ai_err}"
+                    })
                 
     except WebSocketDisconnect:
         pass

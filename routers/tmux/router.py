@@ -83,6 +83,8 @@ def run_tmux(cmd, check_session=False):
     """Execute tmux command using host socket
     If check_session=True, returns None for "no server/session" errors instead of raising
     """
+    logger.debug(f"run_tmux: {cmd}")
+
     result = subprocess.run(["tmux"] + cmd, capture_output=True, text=True)
     if result.returncode != 0:
         err = result.stderr.strip().lower()
@@ -162,10 +164,14 @@ def create_ttyd_pane_common(
             token = _load_api_token()
 
             if no_insert_db is False:
-                # 3️⃣ 写入 DB
+                # 3️⃣ 写入 DB - store proxy in config JSON
+                import json
+                config_data = {"proxy": proxy} if proxy else {}
+                config_json = json.dumps(config_data)
+                
                 c.execute("""
                     INSERT INTO ttyd_config
-                    (pane_id, title, ttyd_port, workspace, init_script, proxy, tg_token, tg_chat_id, tg_enable, created_at, updated_at)
+                    (pane_id, title, ttyd_port, workspace, init_script, config, tg_token, tg_chat_id, tg_enable, created_at, updated_at)
                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s, NOW(), NOW())
                 """, (
                     pane_id,
@@ -173,7 +179,7 @@ def create_ttyd_pane_common(
                     ttyd_port,
                     workspace,
                     init_script,
-                    proxy,
+                    config_json,
                     tg_token,
                     tg_chat_id,
                     tg_enable,
@@ -216,10 +222,13 @@ def create_ttyd_pane_common(
         # 6️⃣ Auto cd to workspace
         if workspace:
             workspace_expanded = workspace.replace('~', '/home/w3c_offical')
+            run_tmux(["send-keys", "-t", pane_id, f"mkdir -p {workspace_expanded}", "Enter"])
             run_tmux(["send-keys", "-t", pane_id, f"cd {workspace_expanded}", "Enter"])
 
         # 7️⃣ init_script (multi-step: sleep:N delays, key:X sends key without Enter, regular lines → Enter)
         if init_script:
+            run_tmux(["send-keys", "-t", pane_id, "clear", "Enter"])
+            time.sleep(0.5)
             for line in init_script.splitlines():
                 line = line.strip()
                 if not line:
@@ -281,12 +290,22 @@ async def restart_pane(pane_id: str, request: Request):
     try:
         with conn.cursor() as c:
             c.execute("""
-                SELECT ttyd_port, workspace, init_script, title, proxy, tg_token, tg_chat_id, tg_enable 
+                SELECT ttyd_port, workspace, init_script, title, config, tg_token, tg_chat_id, tg_enable 
                 FROM ttyd_config WHERE pane_id=%s
             """, (pane_id,))
             row = c.fetchone()
             if not row:
                 return format_response({"success": False, "error": "数据库中未找到该 Pane 配置"}, request)
+        
+        # Parse config JSON to get proxy
+        import json
+        config_data = {}
+        if row.get("config"):
+            try:
+                config_data = json.loads(row["config"])
+            except:
+                pass
+        proxy = config_data.get("proxy", "")
 
         # --- 1. 杀掉旧的 ttyd 进程 (只杀 ttyd，不杀 tmux) ---
         port = row["ttyd_port"]
@@ -313,7 +332,7 @@ async def restart_pane(pane_id: str, request: Request):
             ttyd_port=int(port),
             workspace=row["workspace"],
             init_script=row["init_script"],
-            proxy=row["proxy"],
+            proxy=proxy,
             title=row["title"],
             tg_token=row["tg_token"],
             tg_chat_id=row["tg_chat_id"],
@@ -457,6 +476,9 @@ async def create_window(data: WindowCreate, request: Request):
     run_tmux(["set-option", "-g", "window-status-current-style", "fg=#ffffff,bg=#2d2d2d"])
     run_tmux(["set-option", "-g", "pane-active-border-style", "fg=#4a9eff"])
 
+    # Get proxy from data.proxy or fallback to empty
+    proxy = data.proxy or ""
+
     try:
         result = create_ttyd_pane_common(
             pane_id=pane_id,
@@ -465,7 +487,7 @@ async def create_window(data: WindowCreate, request: Request):
             ttyd_port=int(worker_index),
             workspace=data.workspace or workspace_expanded,
             init_script=data.init_script,
-            proxy=data.proxy,
+            proxy=proxy,
             title=title,
             dev=data.dev,
             tg_token=data.tg_token,
@@ -508,7 +530,7 @@ async def update_pane(pane_id: str, request: Request, payload: dict):
     """Update pane fields"""
     import pymysql
     
-    allowed_fields = ['title', 'workspace', 'init_script', 'proxy', 'tg_token', 'tg_chat_id', 'tg_enable', 'private_mode', 'allowed_users', 'proxy_enable']
+    allowed_fields = ['title', 'workspace', 'init_script', 'proxy', 'tg_token', 'tg_chat_id', 'tg_enable', 'private_mode', 'allowed_users', 'proxy_enable', 'agent_duty']
     updates = {k: v for k, v in payload.items() if k in allowed_fields}
     
     if not updates:
@@ -523,6 +545,15 @@ async def update_pane(pane_id: str, request: Request, payload: dict):
             values.append(pane_id)
             c.execute(f"UPDATE ttyd_config SET {set_clause} WHERE pane_id=%s", values)
         conn.commit()
+        # 同步 agent_duty 到 workspace/duty.md
+        if "agent_duty" in updates:
+            with conn.cursor() as c:
+                c.execute("SELECT workspace FROM ttyd_config WHERE pane_id=%s", (pane_id,))
+                row = c.fetchone()
+                ws = row.get("workspace") if row else None
+                if ws and os.path.isdir(ws):
+                    with open(os.path.join(ws, "duty.md"), "w") as f:
+                        f.write("---\ninclusion: always\n---\n\n" + (updates["agent_duty"] or ""))
         return format_response({"success": True, "pane_id": short_pane_id(pane_id), "updated": updates}, request)
     finally:
         conn.close()
@@ -612,6 +643,32 @@ async def send_short(request: Request, payload: dict):
     elif "keys" in payload:
         run_tmux(["send-keys", "-t", win_id, payload["keys"]])
     
+    return format_response({"success": True, "win_id": short_pane_id(win_id)}, request)
+
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+@router.post("/send-keys")
+async def send_keys(request: Request, payload: dict):
+    _require_perm(request, 'prompt')
+    """Send keys to tmux pane (literal mode for special keys)
+    Payload: {"win_id": "session:window.pane", "keys": "Backspace"} or {"win_id": "...", "keys": "Enter"}
+    """
+    logger.debug(f"send-keys: payload={payload}")
+    win_id = payload.get("win_id")
+    win_id = normalize_pane_id(win_id)
+    if not win_id:
+        return format_response({"error": "win_id required"}, request)
+    
+    keys = payload.get("keys")
+    if not keys:
+        return format_response({"error": "keys required"}, request)
+    
+   
+    logger.debug(f"send-keys: win_id={win_id}, keys={keys}")
+    
+    run_tmux(["send-keys", "-t", win_id, keys])
     return format_response({"success": True, "win_id": short_pane_id(win_id)}, request)
 
 @router.get("/tree")
@@ -797,3 +854,84 @@ async def send_wait(request: Request, payload: dict):
         "question": text,
         "error": f"Timeout after {timeout}s waiting for prompt"
     }, request)
+
+
+@router.post("/mouse/{action}")
+async def toggle_mouse_mode(action: str, request: Request):
+    """切换 tmux 鼠标模式"""
+    _require_perm(request, "ttyd_write")
+    
+    if action not in ["on", "off"]:
+        raise HTTPException(400, "action must be 'on' or 'off'")
+    
+    try:
+        run_tmux(["set", "-g", "mouse", action])
+        return format_response({
+            "success": True,
+            "mouse_mode": action,
+            "message": f"Mouse mode turned {action}"
+        }, request)
+    except HTTPException as e:
+        return format_response({
+            "success": False,
+            "error": f"Failed to toggle mouse mode: {e.detail}"
+        }, request)
+
+@router.get("/mouse/status")
+async def get_mouse_status(request: Request):
+    """获取当前鼠标模式状态"""
+    _require_perm(request, "ttyd_read")
+    
+    try:
+        output = run_tmux(["show-options", "-g", "mouse"])
+        # 输出格式: "mouse on" 或 "mouse off"
+        is_on = "on" in output.lower()
+        return format_response({
+            "success": True,
+            "mouse_mode": "on" if is_on else "off"
+        }, request)
+    except HTTPException as e:
+        return format_response({
+            "success": False,
+            "error": f"Failed to get mouse status: {e.detail}"
+        }, request)
+
+@router.post("/panes/{pane_id}/split")
+async def split_pane(pane_id: str, request: Request, direction: str = "v"):
+    """分屏: 只允许两屏"""
+    _require_perm(request, "ttyd_write")
+    if direction not in ["v", "h"]:
+        raise HTTPException(400, "direction must be 'v' or 'h'")
+    try:
+        panes = run_tmux(["list-panes", "-t", f"{pane_id}:main"]).strip().split("\n")
+        if len(panes) >= 2:
+            return format_response({"success": False, "error": "Already split"}, request)
+        run_tmux(["split-window", "-t", f"{pane_id}:main", f"-{direction}"])
+        return format_response({"success": True, "message": f"Split {direction}"}, request)
+    except Exception as e:
+        return format_response({"success": False, "error": str(e)}, request)
+
+
+@router.post("/panes/{pane_id}/unsplit")
+async def unsplit_pane(pane_id: str, request: Request):
+    """关闭分屏，只保留第一个 pane"""
+    _require_perm(request, "ttyd_write")
+    try:
+        panes = run_tmux(["list-panes", "-t", f"{pane_id}:main"]).strip().split("\n")
+        if len(panes) <= 1:
+            return format_response({"success": False, "error": "No split to close"}, request)
+        run_tmux(["kill-pane", "-t", f"{pane_id}:main.1"])
+        return format_response({"success": True, "message": "Split closed"}, request)
+    except Exception as e:
+        return format_response({"success": False, "error": str(e)}, request)
+
+
+@router.post("/panes/{pane_id}/choose-session")
+async def choose_session(pane_id: str, request: Request):
+    """打开会话选择器"""
+    _require_perm(request, "ttyd_write")
+    try:
+        run_tmux(["choose-tree", "-Zs", "-t", f"{pane_id}:main.0"])
+        return format_response({"success": True}, request)
+    except Exception as e:
+        return format_response({"success": False, "error": str(e)}, request)

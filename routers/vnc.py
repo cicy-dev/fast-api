@@ -44,7 +44,7 @@ class KeyBody(BaseModel):
 class CorrectBody(BaseModel):
     text: str
 
-HOST_IP = os.getenv("VNC_HOST_IP", "10.170.0.6")
+HOST_IP = os.getenv("VNC_HOST_IP", "127.0.0.1")
 
 # --- 端点 ---
 
@@ -58,7 +58,7 @@ async def vnc_type(body: TypeBody, request: Request):
     display_num = int(body.target.split(":")[1]) if ":" in body.target else 1
     proxy_port = 13430 + display_num
     try:
-        async with httpx.AsyncClient(timeout=10) as client:
+        async with httpx.AsyncClient(timeout=10, trust_env=False) as client:
             r = await client.post(f"http://{HOST_IP}:{proxy_port}/api/type", json={"text": body.text, "target": body.target})
             data = r.json()
             if not data.get("success"):
@@ -106,7 +106,7 @@ async def vnc_voice(request: Request, file: UploadFile = File(...)):
     _require_perm(request, "voice_to_text")
     try:
         audio_data = await file.read()
-        async with httpx.AsyncClient(timeout=30) as client:
+        async with httpx.AsyncClient(timeout=30, trust_env=False) as client:
             r = await client.post("http://127.0.0.1:15001/voice_to_text",
                 files={"file": ("audio.webm", audio_data, "audio/webm")})
             return r.json()
