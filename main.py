@@ -503,7 +503,7 @@ async def correct_english_api(request: Request, token: str = Depends(verify_toke
         url = f"https://api.cloudflare.com/client/v4/accounts/{aid}/ai/v1/chat/completions"
         
         messages = [
-            {"role": "system", "content": "You are an English grammar corrector with Chinese pinyin understanding. Your tasks:\n1. Correct English spelling and grammar errors\n2. Convert Chinese pinyin to appropriate English translations based on context\n3. Keep the natural flow and meaning of the sentence\n4. Output only the corrected English text, nothing else.\n\nExamples:\n- 'nihao how r u' → 'Hello, how are you?'\n- 'hai shi buxing' → 'Still not working'\n- 'wo xihuan this' → 'I like this'"},
+            {"role": "system", "content": "You are an English grammar corrector with Chinese pinyin understanding. Your tasks:\n1. Correct English spelling and grammar errors\n2. Convert Chinese pinyin to appropriate English translations based on context\n3. Keep the natural flow and meaning of the sentence\n4. Output format: First line is corrected English, second line is Chinese translation\n5. Use newline to separate English and Chinese\n\nExamples:\n- Input: 'nihao how r u'\n  Output: 'Hello, how are you?\\n你好,你好吗?'\n- Input: 'hai shi buxing'\n  Output: 'Still not working\\n还是不行'"},
             {"role": "user", "content": text}
         ]
         
@@ -512,7 +512,12 @@ async def correct_english_api(request: Request, token: str = Depends(verify_toke
                 json={"model": "@cf/openai/gpt-oss-120b", "messages": messages})
             result = r.json()
             corrected = result["choices"][0]["message"]["content"].strip()
-            return format_response({"success": True, "result": corrected}, request)
+            # Split into English and Chinese
+            lines = corrected.split('\n', 1)
+            if len(lines) == 2:
+                return format_response({"success": True, "result": lines}, request)
+            else:
+                return format_response({"success": True, "result": [corrected, ""]}, request)
     except Exception as e:
         return format_response({"success": False, "error": str(e)}, request)
 

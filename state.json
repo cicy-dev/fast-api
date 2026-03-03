@@ -4,7 +4,7 @@
     "log_exists": false,
     "pane_id": "w-10001",
     "lastUpdateAt": null,
-    "checkTime": 1772558059,
+    "checkTime": 1772560090,
     "timeAgo": null
   },
   "w-20073:main.0": {
@@ -25,8 +25,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526661,
-    "checkTime": 1772558059,
-    "timeAgo": 31398
+    "checkTime": 1772560090,
+    "timeAgo": 33429
   },
   "w-20074:main.0": {
     "pane_id": "w-20074",
@@ -46,8 +46,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526661,
-    "checkTime": 1772558059,
-    "timeAgo": 31398
+    "checkTime": 1772560090,
+    "timeAgo": 33429
   },
   "w-20075:main.0": {
     "pane_id": "w-20075",
@@ -67,15 +67,15 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526661,
-    "checkTime": 1772558059,
-    "timeAgo": 31398
+    "checkTime": 1772560090,
+    "timeAgo": 33429
   },
   "w-20076:main.0": {
     "active": true,
     "log_exists": false,
     "pane_id": "w-20076",
     "lastUpdateAt": null,
-    "checkTime": 1772558059,
+    "checkTime": 1772560090,
     "timeAgo": null
   },
   "w-20077:main.0": {
@@ -95,8 +95,8 @@
     "currentTask": null,
     "guess": "kiro-cli",
     "log_exists": true,
-    "lastUpdateAt": 1772558059,
-    "checkTime": 1772558059,
+    "lastUpdateAt": 1772560090,
+    "checkTime": 1772560090,
     "timeAgo": 0
   },
   "w-20078:main.0": {
@@ -117,8 +117,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772543593,
-    "checkTime": 1772558059,
-    "timeAgo": 14466
+    "checkTime": 1772560090,
+    "timeAgo": 16497
   },
   "w-20079:main.0": {
     "pane_id": "w-20079",
@@ -138,8 +138,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526661,
-    "checkTime": 1772558059,
-    "timeAgo": 31398
+    "checkTime": 1772560090,
+    "timeAgo": 33429
   },
   "w-20080:main.0": {
     "pane_id": "w-20080",
@@ -154,20 +154,20 @@
     "contextUsage": null,
     "credits": null,
     "elapsedTime": null,
-    "raw": "export X_PANE_ID='w-20080:main.0'\n~ $ export X_PANE_ID='w-20080:main.0'\n~ $ ",
+    "raw": "export X_PANE_ID='w-20080:main.0'\n~ $ export X_PANE_ID='w-20080:main.0'\n~ $ \n~ $ ",
     "currentTask": null,
     "guess": "shell",
     "log_exists": true,
-    "lastUpdateAt": 1772526661,
-    "checkTime": 1772558059,
-    "timeAgo": 31398
+    "lastUpdateAt": 1772559160,
+    "checkTime": 1772560090,
+    "timeAgo": 930
   },
   "w-20081:main.0": {
     "active": true,
     "log_exists": false,
     "pane_id": "w-20081",
     "lastUpdateAt": null,
-    "checkTime": 1772558059,
+    "checkTime": 1772560090,
     "timeAgo": null
   },
   "w-20082:main.0": {
@@ -175,7 +175,7 @@
     "log_exists": false,
     "pane_id": "w-20082",
     "lastUpdateAt": null,
-    "checkTime": 1772558059,
+    "checkTime": 1772560090,
     "timeAgo": null
   },
   "w-20083:main.0": {
@@ -191,20 +191,20 @@
     "contextUsage": 7,
     "credits": null,
     "elapsedTime": null,
-    "raw": "\u2819 Thinking...> 2+2 = 4\n \u25b8 Credits: 0.02 \u2022 Time: 2s\n7% > \n0;276;0c",
+    "raw": " \u25b8 Credits: 0.02 \u2022 Time: 2s\n7% > \n0;276;0c0;276;0c\n7% > 0;276;0c0;276;0",
     "currentTask": null,
     "guess": "unknown",
     "log_exists": true,
-    "lastUpdateAt": 1772556480,
-    "checkTime": 1772558059,
-    "timeAgo": 1579
+    "lastUpdateAt": 1772559655,
+    "checkTime": 1772560090,
+    "timeAgo": 435
   },
   "w-20084:main.0": {
     "active": true,
     "log_exists": false,
     "pane_id": "w-20084",
     "lastUpdateAt": null,
-    "checkTime": 1772558059,
+    "checkTime": 1772560090,
     "timeAgo": null
   },
   "w-20085:main.0": {
@@ -212,7 +212,7 @@
     "log_exists": false,
     "pane_id": "w-20085",
     "lastUpdateAt": null,
-    "checkTime": 1772558059,
+    "checkTime": 1772560090,
     "timeAgo": null
   },
   "w-20086:main.0": {
@@ -233,8 +233,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526661,
-    "checkTime": 1772558059,
-    "timeAgo": 31398
+    "checkTime": 1772560090,
+    "timeAgo": 33429
   },
   "w-20087:main.0": {
     "pane_id": "w-20087",
@@ -254,8 +254,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526661,
-    "checkTime": 1772558059,
-    "timeAgo": 31398
+    "checkTime": 1772560090,
+    "timeAgo": 33429
   },
   "w-20088:main.0": {
     "pane_id": "w-20088",
@@ -275,8 +275,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526661,
-    "checkTime": 1772558059,
-    "timeAgo": 31398
+    "checkTime": 1772560090,
+    "timeAgo": 33429
   },
   "w-20089:main.0": {
     "pane_id": "w-20089",
@@ -296,8 +296,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772548544,
-    "checkTime": 1772558059,
-    "timeAgo": 9515
+    "checkTime": 1772560090,
+    "timeAgo": 11546
   },
   "w-20090:main.0": {
     "pane_id": "w-20090",
@@ -312,13 +312,13 @@
     "contextUsage": null,
     "credits": null,
     "elapsedTime": null,
-    "raw": "w-20090 (main)$ 0;276;0c0;276;0c0;276;0c0;276;0c\nw-20090 (main)$ 0;276;0c0;276;0c0;276;0c0;276;0c0;276;0c\nw-20090 (main)$ 0;276;0c0;276;0c0;276;0c0;276;0c0;276;0c\nw-20090 (main)$ 0;276;0c0;276;0c0;276;0c0;276;0c0;276;0c",
+    "raw": "w-20090 (main)$ 0;276;0c0;276;0c0;276;0c0;276;0c0;276;0c\nw-20090 (main)$ 0;276;0c0;276;0c0;276;0c0;276;0c0;276;0c\nw-20090 (main)$ 0;276;0c0;276;0c0;276;0c0;276;0c0;276;0c\nw-20090 (main)$ 0;276;0c0;276;0c0;276;0c0;276;0c0;276;0c",
     "currentTask": null,
     "guess": "unknown",
     "log_exists": true,
-    "lastUpdateAt": 1772557627,
-    "checkTime": 1772558059,
-    "timeAgo": 432
+    "lastUpdateAt": 1772559200,
+    "checkTime": 1772560090,
+    "timeAgo": 890
   },
   "w-20091:main.0": {
     "pane_id": "w-20091",
@@ -338,8 +338,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526662,
-    "checkTime": 1772558059,
-    "timeAgo": 31397
+    "checkTime": 1772560090,
+    "timeAgo": 33428
   },
   "w-20092:main.0": {
     "pane_id": "w-20092",
@@ -358,9 +358,9 @@
     "currentTask": null,
     "guess": "shell",
     "log_exists": true,
-    "lastUpdateAt": 1772557270,
-    "checkTime": 1772558059,
-    "timeAgo": 789
+    "lastUpdateAt": 1772558862,
+    "checkTime": 1772560090,
+    "timeAgo": 1228
   },
   "w-20093:main.0": {
     "pane_id": "w-20093",
@@ -380,8 +380,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526662,
-    "checkTime": 1772558059,
-    "timeAgo": 31397
+    "checkTime": 1772560090,
+    "timeAgo": 33428
   },
   "w-20094:main.0": {
     "pane_id": "w-20094",
@@ -401,8 +401,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526662,
-    "checkTime": 1772558059,
-    "timeAgo": 31397
+    "checkTime": 1772560090,
+    "timeAgo": 33428
   },
   "w-20095:main.0": {
     "pane_id": "w-20095",
@@ -422,8 +422,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526662,
-    "checkTime": 1772558059,
-    "timeAgo": 31397
+    "checkTime": 1772560090,
+    "timeAgo": 33428
   },
   "w-20096:main.0": {
     "pane_id": "w-20096",
@@ -443,8 +443,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526662,
-    "checkTime": 1772558059,
-    "timeAgo": 31397
+    "checkTime": 1772560090,
+    "timeAgo": 33428
   },
   "w-20097:main.0": {
     "pane_id": "w-20097",
@@ -464,8 +464,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526662,
-    "checkTime": 1772558059,
-    "timeAgo": 31397
+    "checkTime": 1772560090,
+    "timeAgo": 33428
   },
   "w-20098:main.0": {
     "pane_id": "w-20098",
@@ -485,8 +485,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526662,
-    "checkTime": 1772558059,
-    "timeAgo": 31397
+    "checkTime": 1772560090,
+    "timeAgo": 33428
   },
   "w-20099:main.0": {
     "pane_id": "w-20099",
@@ -506,8 +506,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526662,
-    "checkTime": 1772558059,
-    "timeAgo": 31397
+    "checkTime": 1772560090,
+    "timeAgo": 33428
   },
   "w-20100:main.0": {
     "pane_id": "w-20100",
@@ -527,8 +527,8 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526662,
-    "checkTime": 1772558059,
-    "timeAgo": 31397
+    "checkTime": 1772560090,
+    "timeAgo": 33428
   },
   "w-20101:main.0": {
     "pane_id": "w-20101",
@@ -548,7 +548,7 @@
     "guess": "shell",
     "log_exists": true,
     "lastUpdateAt": 1772526662,
-    "checkTime": 1772558059,
-    "timeAgo": 31397
+    "checkTime": 1772560090,
+    "timeAgo": 33428
   }
 }
