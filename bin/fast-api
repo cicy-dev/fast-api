@@ -1,0 +1,240 @@
+#!/usr/bin/env python3
+import sys
+import json
+import re
+import requests
+from pathlib import Path
+
+API_BASE = "http://localhost:14444"
+TOKEN_FILE = Path.home() / "global.json"
+
+def load_token():
+    try:
+        with open(TOKEN_FILE) as f:
+            return json.load(f).get("api_token", "")
+    except:
+        return ""
+
+def strip_ansi(text):
+    """Remove ANSI escape codes from text"""
+    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+    return ansi_escape.sub('', text)
+
+def show_help():
+    print("""fast-api - FastAPI CLI tool
+
+Usage: 
+  fast-api [OPTIONS] <endpoint> [json_payload]
+  fast-api --tools [endpoint]
+
+Options:
+  -h, --help          Show this help message
+  --tools             List all available API endpoints
+  --tools <endpoint>  Show detailed info for specific endpoint
+
+Examples:
+  # Call API endpoints
+  fast-api /health
+  fast-api /api/health
+  fast-api /api/tmux/panes
+  fast-api /api/tmux/capture_pane '{"pane_id":"w-20077"}'
+  fast-api /api/tmux/capture_pane '{"pane_id":"w-20077","lines":20}'
+  
+  # Explore API
+  fast-api --tools                      # List all endpoints
+  fast-api --tools /health              # Show /health details
+  fast-api --tools /api/tmux/panes      # Show endpoint details
+
+Token:
+  Automatically loaded from ~/global.json (api_token field)
+
+API Base:
+  http://localhost:14444
+
+Note:
+  /api/tmux/capture_pane automatically strips ANSI escape codes from output
+""")
+
+def show_tools(endpoint=None):
+    try:
+        resp = requests.get(f"{API_BASE}/openapi.json")
+        openapi = resp.json()
+        
+        if endpoint:
+            # Show detail for specific endpoint
+            methods = openapi.get("paths", {}).get(endpoint)
+            if not methods:
+                print(f"Endpoint not found: {endpoint}", file=sys.stderr)
+                sys.exit(1)
+            
+            print(f"Endpoint: {endpoint}\n")
+            for method, details in methods.items():
+                print(f"Method: {method.upper()}")
+                print(f"Summary: {details.get('summary', 'N/A')}")
+                
+                description = details.get('description', '')
+                if description:
+                    print(f"Description: {description}")
+                
+                # Parameters
+                params = details.get('parameters', [])
+                if params:
+                    print("\nParameters:")
+                    for p in params:
+                        required = " (required)" if p.get('required') else ""
+                        print(f"  - {p.get('name')}: {p.get('schema', {}).get('type', 'any')}{required}")
+                        if p.get('description'):
+                            print(f"    {p.get('description')}")
+                
+                # Request body with schema details
+                req_body = details.get('requestBody')
+                if req_body:
+                    print("\nRequest Body:")
+                    content = req_body.get('content', {})
+                    for content_type, schema_info in content.items():
+                        print(f"  Content-Type: {content_type}")
+                        schema = schema_info.get('schema', {})
+                        schema_ref = schema.get('$ref', '')
+                        
+                        if schema_ref:
+                            schema_name = schema_ref.split('/')[-1]
+                            print(f"  Schema: {schema_name}")
+                            
+                            # Resolve schema from components
+                            components = openapi.get('components', {}).get('schemas', {})
+                            schema_def = components.get(schema_name, {})
+                            properties = schema_def.get('properties', {})
+                            required_fields = schema_def.get('required', [])
+                            
+                            if properties:
+                                print(f"\n  Fields:")
+                                for field_name, field_info in properties.items():
+                                    field_type = field_info.get('type', 'any')
+                                    field_title = field_info.get('title', '')
+                                    is_required = " (required)" if field_name in required_fields else ""
+                                    default = field_info.get('default')
+                                    default_str = f" = {default}" if default is not None else ""
+                                    print(f"    - {field_name}: {field_type}{is_required}{default_str}")
+                                    if field_title:
+                                        print(f"      {field_title}")
+                        else:
+                            # Inline schema (like dict)
+                            schema_type = schema.get('type', 'any')
+                            schema_title = schema.get('title', '')
+                            print(f"  Type: {schema_type}")
+                            if schema_title:
+                                print(f"  Title: {schema_title}")
+                            
+                            # Check if it has properties defined inline
+                            properties = schema.get('properties', {})
+                            if properties:
+                                print(f"\n  Fields:")
+                                required_fields = schema.get('required', [])
+                                for field_name, field_info in properties.items():
+                                    field_type = field_info.get('type', 'any')
+                                    is_required = " (required)" if field_name in required_fields else ""
+                                    default = field_info.get('default')
+                                    default_str = f" = {default}" if default is not None else ""
+                                    print(f"    - {field_name}: {field_type}{is_required}{default_str}")
+                
+                # Responses
+                responses = details.get('responses', {})
+                if responses:
+                    print("\nResponses:")
+                    for code, resp_info in responses.items():
+                        print(f"  {code}: {resp_info.get('description', 'N/A')}")
+                
+                print()
+        else:
+            # List all endpoints
+            print("Available API Endpoints:\n")
+            for path, methods in openapi.get("paths", {}).items():
+                for method, details in methods.items():
+                    summary = details.get("summary", "")
+                    print(f"  {method.upper():6} {path:40} {summary}")
+    except Exception as e:
+        print(f"Error fetching API docs: {e}", file=sys.stderr)
+        sys.exit(1)
+
+def call_api(endpoint, payload=None, clean=False):
+    token = load_token()
+    headers = {"Content-Type": "application/json"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    
+    url = f"{API_BASE}{endpoint}"
+    
+    try:
+        # Auto-detect method from OpenAPI if no payload provided
+        if payload is None:
+            try:
+                resp = requests.get(f"{API_BASE}/openapi.json")
+                openapi = resp.json()
+                methods = openapi.get("paths", {}).get(endpoint, {})
+                
+                # Prefer GET if available, otherwise use first method
+                if "get" in methods:
+                    method = "get"
+                else:
+                    method = list(methods.keys())[0] if methods else "get"
+                
+                if method == "get":
+                    resp = requests.get(url, headers=headers)
+                else:
+                    print(f"Error: {endpoint} requires {method.upper()} with payload", file=sys.stderr)
+                    print(f"Usage: fast-api {endpoint} '{{...}}'", file=sys.stderr)
+                    sys.exit(1)
+            except:
+                resp = requests.get(url, headers=headers)
+        else:
+            data = json.loads(payload) if isinstance(payload, str) else payload
+            resp = requests.post(url, json=data, headers=headers)
+        
+        result = resp.json()
+        
+        # Clean ANSI codes if requested
+        if clean:
+            result = clean_ansi_recursive(result)
+        
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+        sys.exit(0 if resp.status_code < 400 else 1)
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+def clean_ansi_recursive(obj):
+    """Recursively clean ANSI codes from strings in dict/list"""
+    if isinstance(obj, dict):
+        return {k: clean_ansi_recursive(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [clean_ansi_recursive(item) for item in obj]
+    elif isinstance(obj, str):
+        return strip_ansi(obj)
+    else:
+        return obj
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2 or sys.argv[1] in ["-h", "--help"]:
+        show_help()
+        sys.exit(0)
+    
+    # Parse options
+    clean = False
+    args = sys.argv[1:]
+    
+    if "--clean" in args:
+        clean = True
+        args.remove("--clean")
+    
+    if not args:
+        show_help()
+        sys.exit(0)
+    
+    if args[0] == "--tools":
+        endpoint = args[1] if len(args) > 1 else None
+        show_tools(endpoint)
+        sys.exit(0)
+    
+    endpoint = args[0]
+    payload = args[1] if len(args) > 1 else None
+    call_api(endpoint, payload, clean)

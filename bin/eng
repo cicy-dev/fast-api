@@ -1,0 +1,26 @@
+#!/bin/bash
+# English grammar correction using GPT
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+input="$*"
+if [ -z "$input" ] || [ "$input" = "-h" ] || [ "$input" = "--help" ]; then
+    echo "Usage: eng <text to correct>"
+    echo ""
+    echo "Corrects English grammar and returns the corrected sentence."
+    echo ""
+    echo "Examples:"
+    echo "  eng how r u?"
+    echo "  eng i goes to school yesterday"
+    exit 0
+fi
+
+# Call GPT with system prompt for grammar correction
+result=$("$DIR/fast-api" /api/cf/chat "{\"messages\":[{\"role\":\"system\",\"content\":\"You are an English grammar corrector. Correct spelling, grammar, and recognize Chinese pinyin words. Output format: First line is corrected English, second line is Chinese translation. Example output:\\nHello, I am a teacher.\\n你好,我是一名教师。\"},{\"role\":\"user\",\"content\":\"$input\"}]}")
+
+# Extract corrected text
+echo "$result" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+print(data['choices'][0]['message']['content'].strip())
+"

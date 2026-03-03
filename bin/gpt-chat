@@ -1,0 +1,99 @@
+#!/bin/bash
+# GPT Chat with conversation history
+
+HISTORY_FILE="$HOME/Private/data/gpt-chat-history.json"
+SYSTEM_PROMPT_FILE="$HOME/Private/data/gpt-chat-system.txt"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Ensure directory exists
+mkdir -p "$(dirname "$HISTORY_FILE")"
+
+input="$*"
+if [ -z "$input" ] || [ "$input" = "--help" ] || [ "$input" = "-h" ]; then
+    echo "Usage: gpt-chat <your message>"
+    echo ""
+    echo "Options:"
+    echo "  --clear              Clear conversation history"
+    echo "  --system <text>      Set system prompt"
+    echo "  --show-system        Show current system prompt"
+    echo "  -h, --help           Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  gpt-chat --system 'You are a helpful assistant.'"
+    echo "  gpt-chat 'Hello, how are you?'"
+    echo "  gpt-chat --show-system"
+    echo "  gpt-chat --clear"
+    exit 1
+fi
+
+# Set system prompt
+if [ "$1" = "--system" ]; then
+    shift
+    echo "$*" > "$SYSTEM_PROMPT_FILE"
+    echo "System prompt set."
+    exit 0
+fi
+
+# Show system prompt
+if [ "$input" = "--show-system" ]; then
+    if [ -f "$SYSTEM_PROMPT_FILE" ]; then
+        cat "$SYSTEM_PROMPT_FILE"
+    else
+        echo "(No system prompt set)"
+    fi
+    exit 0
+fi
+
+# Clear history
+if [ "$input" = "--clear" ]; then
+    rm -f "$HISTORY_FILE"
+    echo "Chat history cleared."
+    exit 0
+fi
+
+# Load history or create new
+if [ -f "$HISTORY_FILE" ]; then
+    messages=$(cat "$HISTORY_FILE")
+else
+    messages='[]'
+fi
+
+# Add system prompt if exists and history is empty
+if [ -f "$SYSTEM_PROMPT_FILE" ]; then
+    system_prompt=$(cat "$SYSTEM_PROMPT_FILE")
+    messages=$(echo "$messages" | python3 -c "
+import sys, json
+msgs = json.load(sys.stdin)
+if len(msgs) == 0 or msgs[0].get('role') != 'system':
+    msgs.insert(0, {'role': 'system', 'content': '''$system_prompt'''})
+print(json.dumps(msgs))
+")
+fi
+
+# Add user message
+messages=$(echo "$messages" | python3 -c "
+import sys, json
+msgs = json.load(sys.stdin)
+msgs.append({'role': 'user', 'content': '''$input'''})
+print(json.dumps(msgs))
+")
+
+# Call API
+result=$("$DIR/fast-api" /api/cf/chat "{\"messages\":$messages}")
+
+# Extract assistant reply
+reply=$(echo "$result" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+print(data['choices'][0]['message']['content'])
+")
+
+# Save history with assistant reply
+echo "$messages" | python3 -c "
+import sys, json
+msgs = json.load(sys.stdin)
+msgs.append({'role': 'assistant', 'content': '''$reply'''})
+print(json.dumps(msgs, indent=2))
+" > "$HISTORY_FILE"
+
+echo "$reply"

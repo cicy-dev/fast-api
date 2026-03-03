@@ -1,0 +1,21 @@
+#!/bin/bash
+# Simple GPT CLI wrapper
+
+input="$*"
+if [ -z "$input" ]; then
+    echo "Usage: gpt <your question>"
+    exit 1
+fi
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+result=$("$DIR/fast-api" /api/cf/ask "{\"input\":\"$input\"}")
+
+# Extract text from output.content[0].text
+echo "$result" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+for item in data.get('output', []):
+    if item.get('type') == 'message':
+        print(item['content'][0]['text'])
+        break
+"

@@ -1,0 +1,91 @@
+#!/bin/bash
+# Tmux manager CLI using fast-api
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+FAST_API="$DIR/fast-api"
+
+show_help() {
+    echo "Usage: tm <command> [args]"
+    echo ""
+    echo "Commands:"
+    echo "  msg <pane_id> <text>           Send message to pane (auto-adds Enter)"
+    echo "  msg_wait <pane_id> <text> [timeout] [prompt_type]  Send message and wait for reply (default: bash)"
+    echo "  ls                             List all panes"
+    echo "  status [pane_id]               Show pane status"
+    echo "  capture <pane_id>              Capture pane content"
+    echo "  tree                           Show tmux tree"
+    echo "  -h, --help                     Show this help"
+    echo ""
+    echo "Examples:"
+    echo "  tm msg w-10001 \"echo 'test'\""
+    echo "  tm msg_wait w-10001 \"pwd\" 30"
+    echo "  tm ls"
+    echo "  tm status w-10001"
+    echo "  tm capture w-10001"
+}
+
+if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    show_help
+    exit 0
+fi
+
+cmd="$1"
+shift
+
+case "$cmd" in
+    msg)
+        if [ $# -lt 2 ]; then
+            echo "Error: msg requires <pane_id> <text>"
+            exit 1
+        fi
+        pane_id="$1"
+        shift
+        text="$*"
+        "$FAST_API" /api/tmux/send-keys "{\"win_id\":\"$pane_id\",\"keys\":\"$text\"}"
+        "$FAST_API" /api/tmux/send-keys "{\"win_id\":\"$pane_id\",\"keys\":\"Enter\"}"
+        ;;
+    
+    msg_wait)
+        if [ $# -lt 2 ]; then
+            echo "Error: msg_wait requires <pane_id> <text> [timeout] [prompt_type]"
+            exit 1
+        fi
+        pane_id="$1"
+        shift
+        text="$1"
+        shift
+        timeout="${1:-60}"
+        prompt_type="${2:-bash}"
+        "$FAST_API" /api/tmux/send_wait "{\"target\":\"$pane_id\",\"text\":\"$text\",\"timeout\":$timeout,\"prompt_type\":\"$prompt_type\"}"
+        ;;
+    
+    ls)
+        "$FAST_API" /api/tmux/panes
+        ;;
+    
+    status)
+        if [ $# -eq 0 ]; then
+            "$FAST_API" /api/tmux/status/all
+        else
+            "$FAST_API" /api/tmux/status/"$1"
+        fi
+        ;;
+    
+    capture)
+        if [ $# -eq 0 ]; then
+            echo "Error: capture requires <pane_id>"
+            exit 1
+        fi
+        "$FAST_API" /api/tmux/capture_pane "{\"pane_id\":\"$1\"}"
+        ;;
+    
+    tree)
+        "$FAST_API" /api/tmux/tree
+        ;;
+    
+    *)
+        echo "Error: Unknown command '$cmd'"
+        echo "Run 'tm --help' for usage"
+        exit 1
+        ;;
+esac
