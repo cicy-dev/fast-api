@@ -10,7 +10,7 @@ fi
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 result=$("$DIR/fast-api" /api/cf/ask "{\"input\":\"$input\"}")
 
-# Extract text from output.content[0].text
+# Extract text from output
 echo "$result" | python3 -c "
 import sys, json
 data = json.load(sys.stdin)

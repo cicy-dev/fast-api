@@ -12,6 +12,52 @@ import re
 
 router = APIRouter(prefix="/api/tmux", tags=["tmux"])
 
+def read_pipe_log(pane_id: str, lines: int = 10) -> Optional[str]:
+    """Read and clean pipe-pane log file
+    
+    Args:
+        pane_id: Pane identifier (e.g., "w-20077" or "w-20077:main.0")
+        lines: Number of lines to read from end
+        
+    Returns:
+        Cleaned text or None if log doesn't exist
+    """
+    # Normalize pane_id to full format
+    if ':' not in pane_id:
+        pane_id = f"{pane_id}:main.0"
+    
+    log_file = f"./logs/pipe-{pane_id.replace(':', '_').replace('.', '_')}.log"
+    
+    if not os.path.exists(log_file):
+        return None
+    
+    try:
+        result = subprocess.run(
+            ["tail", "-n", str(lines), log_file],
+            capture_output=True,
+            text=True,
+            check=True,
+            cwd="/home/w3c_offical/projects/ai-workers/fast-api"
+        )
+        output = result.stdout
+        
+        # Strip ANSI escape codes
+        ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+        output = ansi_escape.sub('', output)
+        
+        # Remove carriage returns
+        output = output.replace('\r\n', '\n').replace('\r', '')
+        
+        # Remove all control characters except newline and tab
+        output = re.sub(r'[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F-\x9F]', '', output)
+        
+        # Clean up multiple blank lines
+        output = re.sub(r'\n{3,}', '\n\n', output)
+        
+        return output
+    except:
+        return None
+
 def _get_token_perms(request: Request) -> list:
     """从请求中提取 token 权限列表"""
     from routers.auth import _verify_token_from_db
@@ -189,21 +235,32 @@ def create_ttyd_pane_common(
 
                 conn.commit()
 
+
+        import os
+        os.makedirs("./logs", exist_ok=True)
         # 4️⃣ 启动 ttyd (run-shell runs on host, bypassing docker PID isolation;
         #    send-keys fails from Python subprocess with "no current client")
+        import os
+        os.makedirs("./logs", exist_ok=True)
         ttyd_cmd = (
             f"nohup {TTYD_BINARY_PATH} -W -p {ttyd_port} "
             f"-c user:{token} "
             f"tmux attach -t {pane_id} "
-            f"> /tmp/ttyd_{ttyd_port}.log 2>&1 &"
+            f"> ./logs/ttyd_{ttyd_port}.log 2>&1 &"
         )
 
         run_tmux(["run-shell", ttyd_cmd])
 
-        # 5️⃣ export X_PANE_ID
+        # 5️⃣ Start pipe-pane to capture output (skip for TUI apps)
+        skip_pipe_apps = ["opencode", "oc", "vim", "nano", "htop", "top"]
+        if not any(app in (init_script or "").lower() for app in skip_pipe_apps):
+            log_file = f"./logs/pipe-{pane_id.replace(':', '_').replace('.', '_')}.log"
+            run_tmux(["pipe-pane", "-t", pane_id, "-o", f"cat >> {log_file}"])
+
+        # 6️⃣ export X_PANE_ID
         run_tmux(["send-keys", "-t", pane_id, f"export X_PANE_ID='{pane_id}'", "Enter"])
 
-        # 5.5️⃣ proxy env vars (applied before init_script)
+        # 7️⃣ proxy env vars (applied before init_script)
         # Format: "http://host:port" (plain) or "mitmproxy:http://host:port" (adds REQUESTS_CA_BUNDLE)
         if proxy:
             is_mitmproxy = proxy.startswith("mitmproxy:")
@@ -223,11 +280,37 @@ def create_ttyd_pane_common(
 
         # 6️⃣ Auto cd to workspace
         if workspace:
-            workspace_expanded = workspace.replace('~', '/home/w3c_offical')
+            # workspace_expanded = workspace.replace('~', '/home/w3c_offical')
             run_tmux(["send-keys", "-t", pane_id, f"mkdir -p {workspace_expanded}", "Enter"])
             run_tmux(["send-keys", "-t", pane_id, f"cd {workspace_expanded}", "Enter"])
 
-        # 7️⃣ init_script (multi-step: sleep:N delays, key:X sends key without Enter, regular lines → Enter)
+        # 7️⃣ 等待 ttyd ready and start WS logger
+        max_wait = 30
+        elapsed = 0
+        log_file = f"/tmp/ttyd_{pane_id.replace(':', '_').replace('.', '_')}.log"
+
+        while elapsed < max_wait:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1)
+            if sock.connect_ex(("127.0.0.1", port)) == 0:
+                sock.close()
+                
+                # 8️⃣ Start WebSocket logger BEFORE init_script
+                ws_logger_cmd = (
+                    f"nohup python3 /home/w3c_offical/projects/ai-workers/fast-api/ttyd_ws_logger.py "
+                    f"{port} {token} {pane_id} {log_file} "
+                    f"> /tmp/ws_logger_{port}.log 2>&1 &"
+                )
+                subprocess.run(ws_logger_cmd, shell=True)
+                break
+            sock.close()
+            time.sleep(0.5)
+            elapsed += 0.5
+        
+        if elapsed >= max_wait:
+            raise Exception("ttyd start timeout")
+
+        # 9️⃣ Run init_script
         if init_script:
             run_tmux(["send-keys", "-t", pane_id, "clear", "Enter"])
             time.sleep(0.5)
@@ -247,28 +330,15 @@ def create_ttyd_pane_common(
                 else:
                     run_tmux(["send-keys", "-t", pane_id, line, "Enter"])
 
-        # 7.5️⃣ Run agent_type command if set
+        # 10️⃣ Run agent_type command if set
         if agent_type:
             run_tmux(["send-keys", "-t", pane_id, agent_type, "Enter"])
-
-        # 7️⃣ 等待 ttyd ready
-        max_wait = 30
-        elapsed = 0
-
-        while elapsed < max_wait:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(1)
-            if sock.connect_ex(("127.0.0.1", port)) == 0:
-                sock.close()
-                return {
-                    "port": port,
-                    "token": token
-                }
-            sock.close()
-            time.sleep(0.5)
-            elapsed += 0.5
-
-        raise Exception("ttyd start timeout")
+        
+        return {
+            "port": port,
+            "token": token,
+            "log_file": log_file
+        }
 
     finally:
         conn.close()
@@ -724,41 +794,136 @@ async def clear_all(request: Request):
 
 @router.post("/capture_pane")
 async def capture_pane(request: Request, payload: dict):
-    _require_perm(request, 'ttyd_read')
-    """Capture pane output
-    Payload: {"pane_id": "session:window.pane", "start": -100, "end": -1}
+    """Capture pane output from pipe-pane log
+    
+    Reads the last N lines from the pane's pipe-pane log file.
+    
+    Payload:
+    - pane_id (str, required): Pane identifier (e.g., "w-20077" or "w-20077:main.0")
+    - lines (int, optional): Number of lines to read from end of log (default: 10)
+    
+    Example: {"pane_id": "w-20077", "lines": 20}
     """
+    _require_perm(request, 'ttyd_read')
+    
     pane_id = payload.get("pane_id")
     pane_id = normalize_pane_id(pane_id)
     if not pane_id:
         return format_response({"error": "pane_id required"}, request)
     
-    start = payload.get("start", "")
-    end = payload.get("end", "")
+    lines = payload.get("lines", 10)
+    output = read_pipe_log(pane_id, lines)
     
-    cmd = ["capture-pane", "-t", pane_id, "-p"]
-    if start:
-        cmd.extend(["-S", str(start)])
-    if end:
-        cmd.extend(["-E", str(end)])
+    if output is None:
+        return format_response({"error": "log file not found or pipe-pane not enabled"}, request)
     
-    output = run_tmux(cmd)
-    
-    # Filter out ttyd debug logs (lines starting with timestamp like [2026/02/18...])
-    lines = output.split('\n')
-    filtered_lines = [line for line in lines if not line.strip().startswith('[')]
-    filtered_output = '\n'.join(filtered_lines)
-    
-    return format_response({"pane_id": short_pane_id(pane_id), "output": filtered_output}, request)
+    return format_response({"pane_id": short_pane_id(pane_id), "output": output}, request)
 
-@router.get("/pane/agent/status/{pane_id}")
-async def agent_status(request: Request, pane_id: str):
+
+
+def _get_redis_status_map():
+    """Get pane status map from Redis"""
+    import redis
+    import json
+    r = redis.Redis(
+        host=os.getenv("REDIS_HOST", "127.0.0.1"),
+        port=int(os.getenv("REDIS_PORT", "6379")),
+        db=int(os.getenv("REDIS_DB", "0"))
+    )
+    data = r.get("pane_status_map")
+    return json.loads(data) if data else None
+
+
+@router.get("/status")
+async def get_pane_status(request: Request, id: str = None):
+    """Get pane status from Redis cache
+    
+    If id parameter is provided, returns status for that specific pane.
+    If id is not provided, returns status for all panes.
+    
+    Query Parameters:
+        id: Optional pane identifier (e.g., "w-20077" or "w-20077:main.0")
+    
+    Examples:
+        /api/tmux/status              -> Returns all panes
+        /api/tmux/status?id=w-20077   -> Returns w-20077 status
+    
+    Response format (single pane):
+    {
+      "pane_id": "w-20077",
+      "active": true,
+      "log_exists": true,
+      "status": "idle" | "thinking" | "wait_auth" | "compacting" | null,
+      "agent_type": "kiro-cli" | "opencode" | "",
+      "guess": "kiro-cli" | "opencode" | "shell" | "unknown",
+      "contextUsage": 21,  // percentage, null if not available
+      "credits": 0.57,     // null if not available
+      "elapsedTime": 10,   // seconds, null if not available
+      "timeAgo": 14529,    // seconds since last log update
+      "checkTime": 1772541190,  // unix timestamp when checked
+      "lastUpdateAt": 1772526661,  // unix timestamp of last log update
+      "isThinking": false,
+      "isWaitingAuth": false,
+      "isCompacting": false,
+      "isIdle": true,
+      "raw": "..."  // last few lines of output
+    }
+    
+    Response format (all panes):
+    {
+      "w-10001:main.0": { ... },
+      "w-20077:main.0": { ... },
+      ...
+    }
+    
+    Status values:
+    - "idle": Pane is at prompt, ready for input
+    - "thinking": Agent is processing/working
+    - "wait_auth": Waiting for user confirmation (y/n)
+    - "compacting": Creating context summary
+    - null: Status unknown or not detected
+    
+    Cache is updated every 5 seconds by background cron job.
+    """
     _require_perm(request, 'ttyd_read')
-    from services.pane_status import check_pane
-    pane_id = normalize_pane_id(pane_id)
-    if not pane_id:
-        return format_response({"error": "pane_id required"}, request)
-    return format_response(check_pane(pane_id), request)
+    
+    try:
+        status_map = _get_redis_status_map()
+        
+        if not status_map:
+            return format_response({"error": "No cached data"}, request)
+        
+        # If id provided, return single pane
+        if id:
+            pane_id = normalize_pane_id(id)
+            if not pane_id:
+                return format_response({"error": "Invalid pane_id"}, request)
+            
+            target = f"{pane_id}:main.0" if ':' not in pane_id else pane_id
+            if target in status_map:
+                return format_response(status_map[target], request)
+            
+            # Fallback to live check
+            from services.pane_status import check_pane_active
+            return format_response(check_pane_active(pane_id), request)
+        
+        # No id provided, return all
+        return format_response(status_map, request)
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/status/all")
+async def get_all_panes_statuses(request: Request):
+    """Get status of all registered panes from Redis cache (deprecated, use /status)"""
+    return await get_pane_status(request, id=None)
+
+
+@router.get("/status/{pane_id}")
+async def agent_status(request: Request, pane_id: str):
+    """Get status of a specific pane (deprecated, use /status?id=pane_id)"""
+    return await get_pane_status(request, id=pane_id)
 
 @router.post("/send_wait")
 async def send_wait(request: Request, payload: dict):
@@ -944,26 +1109,3 @@ async def choose_session(pane_id: str, request: Request):
         return format_response({"success": True}, request)
     except Exception as e:
         return format_response({"success": False, "error": str(e)}, request)
-
-
-@router.get("/pane/agent/statuses")
-@router.get("/panes/status")
-async def get_all_panes_statuses(
-    request: Request,
-    lines: int = 4,
-    include_inactive: bool = False,
-    agent_type: str | None = None
-):
-    """Get status of all registered panes"""
-    _require_perm(request, 'ttyd_read')
-    from services.pane_status import get_all_panes_status
-    
-    try:
-        statuses = get_all_panes_status(
-            lines=lines,
-            include_inactive=include_inactive,
-            agent_type=agent_type
-        )
-        return format_response({"panes": statuses}, request)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))

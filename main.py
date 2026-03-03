@@ -488,16 +488,31 @@ def _fallback_correct(text: str) -> str:
 
 @app.post("/api/correctEnglish")
 async def correct_english_api(request: Request, token: str = Depends(verify_token)):
-    """Correct English text via Cloudflare AI."""
+    """Correct English text (English only)."""
+    import httpx, json
     body = await request.json()
     text = body.get("text", "")
     if not text:
         return format_response({"success": False, "error": "no text"}, request)
+    
     try:
-        from services.cf_ai import correct_english as cf_correct
-        corrected = await cf_correct(text)
-        if corrected:
-            return format_response({"success": True, "correctedText": corrected}, request)
-    except Exception:
-        pass
-    return format_response({"success": True, "correctedText": _fallback_correct(text)}, request)
+        # Use chat API with system prompt
+        with open("/home/w3c_offical/global.json") as f:
+            d = json.load(f)
+        aid, token_cf = d["CLOUDFLARE_ACCOUNT_ID_CICYBOT"], d["CLOUDFLARE_API_TOKEN_CICYBOT"]
+        url = f"https://api.cloudflare.com/client/v4/accounts/{aid}/ai/v1/chat/completions"
+        
+        messages = [
+            {"role": "system", "content": "You are an English grammar corrector with Chinese pinyin understanding. Your tasks:\n1. Correct English spelling and grammar errors\n2. Convert Chinese pinyin to appropriate English translations based on context\n3. Keep the natural flow and meaning of the sentence\n4. Output only the corrected English text, nothing else.\n\nExamples:\n- 'nihao how r u' → 'Hello, how are you?'\n- 'hai shi buxing' → 'Still not working'\n- 'wo xihuan this' → 'I like this'"},
+            {"role": "user", "content": text}
+        ]
+        
+        async with httpx.AsyncClient(timeout=60) as c:
+            r = await c.post(url, headers={"Authorization": f"Bearer {token_cf}"},
+                json={"model": "@cf/openai/gpt-oss-120b", "messages": messages})
+            result = r.json()
+            corrected = result["choices"][0]["message"]["content"].strip()
+            return format_response({"success": True, "result": corrected}, request)
+    except Exception as e:
+        return format_response({"success": False, "error": str(e)}, request)
+

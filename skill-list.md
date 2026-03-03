@@ -105,18 +105,34 @@ tm tree
 
 ## 5. eng
 
-English grammar correction using GPT.
+English grammar correction using GPT. Returns corrected English text only.
 
 **Usage:**
 ```bash
 eng <text to correct>
 ```
 
+**Output Format:**
+```
+Corrected English text
+```
+
 **Examples:**
 ```bash
-eng "how r u?"                      # Output: How are you?
-eng "i goes to school yesterday"   # Output: I went to school yesterday.
-eng "she dont like apples"          # Output: She doesn't like apples.
+eng "how r u?"
+# Output: How are you?
+
+eng "nishao i am a teacch"
+# Output: Hello, I am a teacher.
+
+eng "she dont like apples"
+# Output: She doesn't like apples.
+```
+
+**API Endpoint:**
+```bash
+fast-api /api/correctEnglish '{"text":"how r u"}'
+# Output: {"success": true, "result": "How are you?"}
 ```
 
 **Location:** `./bin/eng` → `~/.local/bin/eng` (global)

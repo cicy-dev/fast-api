@@ -24,6 +24,38 @@ def get_worker_panes() -> list[str]:
     return [s for s in out.split('\n') if s.startswith('w-')]
 
 
+def _guess_agent_type(text: str, lines: list[str]) -> str:
+    """Guess agent type from output patterns"""
+    # Kiro CLI patterns (check first - more specific)
+    kiro_patterns = [
+        "I will run the following command",
+        "Purpose:",
+        "\\(using tool:",
+        "Looking up symbols",
+        "Found.*symbols",
+        "Completed in.*s"
+    ]
+    if any(re.search(pattern, text) for pattern in kiro_patterns):
+        return "kiro-cli"
+    
+    # OpenCode patterns (check after kiro-cli)
+    opencode_patterns = [
+        "▣.*Build.*trinity",
+        "Build.*Trinity.*OpenCode",
+        "█▀▀█ █▀▀█ █▀▀█",
+        "Ask anything"
+    ]
+    if any(re.search(pattern, text, re.IGNORECASE) for pattern in opencode_patterns):
+        return "opencode"
+    
+    # Shell patterns
+    last_line = lines[-1] if lines else ""
+    if last_line.rstrip().endswith('$') or last_line.rstrip().endswith('#'):
+        return "shell"
+    
+    return "unknown"
+
+
 def _make_status(agent_type: str | None = None, active: bool = True) -> dict:
     """Return standardized status template"""
     return {
@@ -41,6 +73,7 @@ def _make_status(agent_type: str | None = None, active: bool = True) -> dict:
         "elapsedTime": None,
         "raw": None,
         "currentTask": None,
+        "guess": None,  # Guessed agent type
     }
 
 
@@ -119,7 +152,8 @@ def _parse_opencode(pane_id: str, text: str, last2: str, lines: list[str]) -> di
     status_dict["isThinking"] = is_thinking
     status_dict["isWaitingAuth"] = is_waiting_auth
     status_dict["isIdle"] = is_idle
-    status_dict["raw"] = text
+    # Limit raw output for OpenCode (keep last 10 lines)
+    status_dict["raw"] = "\n".join(text.split("\n")[-10:])
     
     return status_dict
 
@@ -176,8 +210,26 @@ PARSERS = {
 }
 
 
+from functools import lru_cache
+import time
+
+# Cache with TTL
+_pane_config_cache = {}
+_cache_ttl = 30  # 30 seconds
+
+@lru_cache(maxsize=128)
 def get_pane_config(pane_id: str) -> dict | None:
-    """Get pane configuration from ttyd_config table"""
+    """Get pane configuration from ttyd_config table (cached)"""
+    cache_key = pane_id
+    now = time.time()
+    
+    # Check cache first
+    if cache_key in _pane_config_cache:
+        cached_data, timestamp = _pane_config_cache[cache_key]
+        if now - timestamp < _cache_ttl:
+            return cached_data
+    
+    # Fetch from database
     conn = get_db()
     try:
         with conn.cursor(pymysql.cursors.DictCursor) as c:
@@ -188,6 +240,7 @@ def get_pane_config(pane_id: str) -> dict | None:
             )
             result = c.fetchone()
             if result:
+                _pane_config_cache[cache_key] = (result, now)
                 return result
             
             # If not found and doesn't contain ':', try with :main.0
@@ -196,15 +249,21 @@ def get_pane_config(pane_id: str) -> dict | None:
                     "SELECT pane_id, title, agent_type FROM ttyd_config WHERE pane_id=%s",
                     (f"{pane_id}:main.0",)
                 )
-                return c.fetchone()
+                result = c.fetchone()
+                _pane_config_cache[cache_key] = (result, now)
+                return result
             
+            _pane_config_cache[cache_key] = (None, now)
             return None
     finally:
         conn.close()
 
 
 def check_pane(pane_id: str, lines: int = 4) -> dict:
+    return {}
     """Check single pane status"""
+    from routers.tmux.router import read_pipe_log
+    
     target = f"{pane_id}:main.0" if ':' not in pane_id else pane_id
     active = session_exists(pane_id.split(':')[0])
     
@@ -216,29 +275,101 @@ def check_pane(pane_id: str, lines: int = 4) -> dict:
             status_dict["agent_type"] = config.get("agent_type")
         return status_dict
     
-    raw = run_tmux(["capture-pane", "-t", target, "-p"])
+    # Try to read from pipe-pane log first
+    raw = read_pipe_log(target, lines * 3)  # Read more lines to account for control chars
+    
+    if raw is None:
+        # Fallback to capture-pane
+        raw = run_tmux(["capture-pane", "-t", target, "-p"])
+    
     pane_lines = [l for l in raw.split('\n') if l.strip()]
     text = '\n'.join(pane_lines[-lines:])
     last2 = ' '.join(pane_lines[-2:]) if len(pane_lines) >= 2 else ' '.join(pane_lines)
     
+    # First guess agent type from output
+    guess = _guess_agent_type(raw, pane_lines)
+    
+    # Get config for fallback
     clean_pane_id = pane_id.replace(":main.0", "")
     config = get_pane_config(clean_pane_id)
-    agent_type = config.get("agent_type") if config else None
+    config_agent_type = config.get("agent_type") if config else None
     
-    parser = PARSERS.get(agent_type, _parse_default)
+    # Use guess first, fallback to config, then default
+    detected_type = guess if guess != "unknown" else config_agent_type
+    parser = PARSERS.get(detected_type, _parse_default)
+    
     status_dict = parser(clean_pane_id, text, last2, pane_lines)
     status_dict["active"] = True
-    status_dict["agent_type"] = agent_type
+    status_dict["agent_type"] = config_agent_type  # Keep original config
+    status_dict["guess"] = guess
     
     return status_dict
 
+
+def check_pane_active(pane_id: str, lines: int = 4) -> dict:
+    """Check pane status only if active and log exists"""
+    from routers.tmux.router import read_pipe_log
+    import os
+    
+    target = f"{pane_id}:main.0" if ':' not in pane_id else pane_id
+    active = session_exists(pane_id.split(':')[0])
+    
+    if not active:
+        return {"active": False, "pane_id": pane_id.replace(":main.0", "")}
+    
+    # Get log file path and check mtime
+    log_file = f"./logs/pipe-{target.replace(':', '_').replace('.', '_')}.log"
+    lastUpdateAt = None
+    if os.path.exists(log_file):
+        lastUpdateAt = int(os.path.getmtime(log_file))
+    
+    raw = read_pipe_log(target, lines * 3)
+    if raw is None:
+        return {"active": True, "log_exists": False, "pane_id": pane_id.replace(":main.0", ""), "lastUpdateAt": lastUpdateAt}
+    
+    pane_lines = [l for l in raw.split('\n') if l.strip()]
+    text = '\n'.join(pane_lines[-lines:])
+    last2 = ' '.join(pane_lines[-2:]) if len(pane_lines) >= 2 else ' '.join(pane_lines)
+    
+    guess = _guess_agent_type(raw, pane_lines)
+    clean_pane_id = pane_id.replace(":main.0", "")
+    config = get_pane_config(clean_pane_id)
+    config_agent_type = config.get("agent_type") if config else None
+    
+    detected_type = guess if guess != "unknown" else config_agent_type
+    parser = PARSERS.get(detected_type, _parse_default)
+    
+    status_dict = parser(clean_pane_id, text, last2, pane_lines)
+    status_dict["active"] = True
+    status_dict["log_exists"] = True
+    status_dict["agent_type"] = config_agent_type
+    status_dict["guess"] = guess
+    status_dict["lastUpdateAt"] = lastUpdateAt
+    
+    return status_dict
+
+
+import time
+
+_status_cache = {}
+_cache_ttl = 3  # 3秒缓存
 
 def get_all_panes_status(
     lines: int = 4,
     include_inactive: bool = False,
     agent_type: str | None = None
 ) -> list[dict]:
-    """Get status of all registered panes"""
+    """Get status of all registered panes (with cache)"""
+    cache_key = f"{lines}_{include_inactive}_{agent_type}"
+    now = time.time()
+    
+    # Check cache
+    if cache_key in _status_cache:
+        cached_time, cached_data = _status_cache[cache_key]
+        if now - cached_time < _cache_ttl:
+            return cached_data
+    
+    # Fetch real data
     conn = get_db()
     try:
         with conn.cursor(pymysql.cursors.DictCursor) as c:
@@ -262,6 +393,8 @@ def get_all_panes_status(
         if include_inactive or status["active"]:
             statuses.append(status)
     
+    # Update cache
+    _status_cache[cache_key] = (now, statuses)
     return statuses
 
 
