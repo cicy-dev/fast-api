@@ -271,56 +271,6 @@ async def verify_auth(request: Request, token: str = Depends(verify_token)):
         }, request)
     return format_response({"valid": True, "token": token[:8] + "..."}, request)
 
-@app.post("/api/test/login")
-async def test_login(request: Request, token: str = Depends(verify_token)):
-    return format_response({
-        "success": True,
-        "message": "Login simulation - token stored in localStorage on client",
-        "token_prefix": token[:8]
-    }, request)
-
-@app.get("/api/test/ui-state")
-async def get_ui_state(request: Request, token: str = Depends(verify_token)):
-    conn = get_db()
-    try:
-        with conn.cursor() as c:
-            c.execute("SELECT pane_id, ttyd_port, ttyd_token FROM ttyd_config")
-            configs = c.fetchall()
-        return format_response({
-            "logged_in": True,
-            "panes_count": len(configs),
-            "configs": configs,
-            "frontend_token_check": "Use /api/auth/verify to check token validity"
-        }, request)
-    finally:
-        conn.close()
-
-@app.get("/api/test/check-auth")
-async def check_auth_endpoint(request: Request, token: str = Depends(verify_token)):
-    return format_response({
-        "status": "ok",
-        "message": "Auth works - token is valid",
-        "token_prefix": token[:8]
-    }, request)
-
-@app.get("/api/test/debug-login")
-async def debug_login(request: Request):
-    """Debug endpoint - no auth required"""
-    return format_response({
-        "message": "Debug login endpoint - use /api/auth/verify for actual auth",
-        "endpoints": {
-            "verify": "/api/auth/verify (requires auth)",
-            "health": "/health (no auth)",
-            "test_ui_state": "/api/test/ui-state (requires auth)"
-        }
-    }, request)
-
-@app.get("/api/test/errors")
-async def get_test_errors(request: Request, token: str = Depends(verify_token)):
-    return format_response({
-        "errors": [],
-        "message": "No UI errors - frontend running correctly"
-    }, request)
 
 @app.get("/ping")
 async def ping(request: Request):

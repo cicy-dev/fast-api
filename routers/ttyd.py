@@ -288,13 +288,15 @@ async def update_config(pane_id: str, request: Request):
             if c.rowcount == 0:
                 raise HTTPException(status_code=404, detail="pane_id not found")
             conn.commit()
-            # 同步 agent_duty 到 workspace/duty.md
+            # 同步 agent_duty 到 workspace/.kiro/steering/duty.md
             if "agent_duty" in updates:
                 c.execute("SELECT workspace FROM ttyd_config WHERE pane_id=%s", (pane_id,))
                 row = c.fetchone()
                 ws = row.get("workspace") if row else None
                 if ws and os.path.isdir(ws):
-                    with open(os.path.join(ws, "duty.md"), "w") as f:
+                    duty_dir = os.path.join(ws, ".kiro", "steering")
+                    os.makedirs(duty_dir, exist_ok=True)
+                    with open(os.path.join(duty_dir, "duty.md"), "w") as f:
                         f.write("---\ninclusion: always\n---\n\n" + (updates["agent_duty"] or ""))
             return format_response({"success": True, "pane_id": pane_id, "updated": updates}, request)
     finally:
