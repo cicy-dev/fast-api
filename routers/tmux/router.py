@@ -280,7 +280,7 @@ def create_ttyd_pane_common(
 
         # 6️⃣ Auto cd to workspace
         if workspace:
-            # workspace_expanded = workspace.replace('~', '/home/w3c_offical')
+            workspace_expanded = os.path.expanduser(workspace)
             run_tmux(["send-keys", "-t", pane_id, f"mkdir -p {workspace_expanded}", "Enter"])
             run_tmux(["send-keys", "-t", pane_id, f"cd {workspace_expanded}", "Enter"])
 
@@ -428,6 +428,40 @@ async def restart_pane(pane_id: str, request: Request):
             "message": "Pane 软重启完成"
         }, request)
 
+    except Exception as e:
+        return format_response({"success": False, "error": str(e)}, request)
+    finally:
+        conn.close()
+
+
+@router.post("/restart_all")
+async def restart_all_panes(request: Request):
+    """Restart all active panes"""
+    _require_perm(request, 'prompt')
+    
+    import pymysql
+    conn = pymysql.connect(
+        host=MYSQL_HOST, port=MYSQL_PORT,
+        user=MYSQL_USER, password=MYSQL_PASSWORD,
+        database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor
+    )
+    
+    results = []
+    try:
+        with conn.cursor() as c:
+            c.execute("SELECT pane_id FROM ttyd_config WHERE active=1")
+            panes = c.fetchall()
+        
+        for pane in panes:
+            pane_id = pane["pane_id"]
+            try:
+                # Call restart_pane for each pane
+                result = await restart_pane(pane_id, request)
+                results.append({"pane_id": pane_id, "success": True})
+            except Exception as e:
+                results.append({"pane_id": pane_id, "success": False, "error": str(e)})
+        
+        return format_response({"success": True, "results": results, "total": len(panes)}, request)
     except Exception as e:
         return format_response({"success": False, "error": str(e)}, request)
     finally:

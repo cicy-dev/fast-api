@@ -95,13 +95,6 @@ def main():
                 except Exception as e:
                     log(f"redis write error: {e}")
             
-            # Always write to state.json
-            try:
-                with open("state.json", "w") as f:
-                    json.dump(status_map, f, indent=2, default=str)
-            except Exception as e:
-                log(f"state.json write error: {e}")
-                
         except Exception as e:
             log(f"error: {e}")
         if once:

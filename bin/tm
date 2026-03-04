@@ -1,91 +1,90 @@
 #!/bin/bash
-# Tmux manager CLI using fast-api
+# Tmux management CLI tool
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-FAST_API="$DIR/fast-api"
-
-show_help() {
-    echo "Usage: tm <command> [args]"
-    echo ""
-    echo "Commands:"
-    echo "  msg <pane_id> <text>           Send message to pane (auto-adds Enter)"
-    echo "  msg_wait <pane_id> <text> [timeout] [prompt_type]  Send message and wait for reply (default: bash)"
-    echo "  ls                             List all panes"
-    echo "  status [pane_id]               Show pane status"
-    echo "  capture <pane_id>              Capture pane content"
-    echo "  tree                           Show tmux tree"
-    echo "  -h, --help                     Show this help"
-    echo ""
-    echo "Examples:"
-    echo "  tm msg w-10001 \"echo 'test'\""
-    echo "  tm msg_wait w-10001 \"pwd\" 30"
-    echo "  tm ls"
-    echo "  tm status w-10001"
-    echo "  tm capture w-10001"
-}
-
-if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    show_help
-    exit 0
-fi
 
 cmd="$1"
 shift
 
 case "$cmd" in
-    msg)
-        if [ $# -lt 2 ]; then
-            echo "Error: msg requires <pane_id> <text>"
-            exit 1
-        fi
-        pane_id="$1"
-        shift
-        text="$*"
-        "$FAST_API" /api/tmux/send-keys "{\"win_id\":\"$pane_id\",\"keys\":\"$text\"}"
-        "$FAST_API" /api/tmux/send-keys "{\"win_id\":\"$pane_id\",\"keys\":\"Enter\"}"
-        ;;
+  create)
+    name="$1"
+    if [ -z "$name" ]; then
+      echo "Usage: tm create <name>"
+      exit 1
+    fi
     
-    msg_wait)
-        if [ $# -lt 2 ]; then
-            echo "Error: msg_wait requires <pane_id> <text> [timeout] [prompt_type]"
-            exit 1
-        fi
-        pane_id="$1"
-        shift
-        text="$1"
-        shift
-        timeout="${1:-60}"
-        prompt_type="${2:-bash}"
-        "$FAST_API" /api/tmux/send_wait "{\"target\":\"$pane_id\",\"text\":\"$text\",\"timeout\":$timeout,\"prompt_type\":\"$prompt_type\"}"
-        ;;
+    # Create new pane via API
+    "$DIR/fast-api" /api/tmux/create "{\"win_name\":\"$name\",\"dev\":false}"
+    ;;
     
-    ls)
-        "$FAST_API" /api/tmux/panes
-        ;;
+  restart)
+    pane_id="$1"
+    if [ -z "$pane_id" ]; then
+      echo "Usage: tm restart <pane_id|all>"
+      exit 1
+    fi
     
-    status)
-        if [ $# -eq 0 ]; then
-            "$FAST_API" /api/tmux/status/all
-        else
-            "$FAST_API" /api/tmux/status/"$1"
-        fi
-        ;;
+    if [ "$pane_id" = "all" ]; then
+      # Restart all panes
+      "$DIR/fast-api" /api/tmux/restart_all
+    else
+      # Restart single pane
+      "$DIR/fast-api" /api/tmux/restart "{\"pane_id\":\"$pane_id\"}"
+    fi
+    ;;
     
-    capture)
-        if [ $# -eq 0 ]; then
-            echo "Error: capture requires <pane_id>"
-            exit 1
-        fi
-        "$FAST_API" /api/tmux/capture_pane "{\"pane_id\":\"$1\"}"
+  ttyd)
+    subcmd="$1"
+    case "$subcmd" in
+      list)
+        # List all ttyd processes
+        echo "TTYD Processes:"
+        ps aux | grep '[t]tyd' | awk '{print $2, $11, $12, $13, $14, $15}' | while read line; do
+          pid=$(echo "$line" | awk '{print $1}')
+          port=$(echo "$line" | grep -oP '\-p \K[0-9]+')
+          echo "PID: $pid  Port: $port  Command: $line"
+        done
+        echo ""
+        echo "Database Config:"
+        "$DIR/fast-api" /api/ttyd/list
         ;;
-    
-    tree)
-        "$FAST_API" /api/tmux/tree
-        ;;
-    
-    *)
-        echo "Error: Unknown command '$cmd'"
-        echo "Run 'tm --help' for usage"
+      *)
+        echo "Usage: tm ttyd <command>"
+        echo ""
+        echo "Commands:"
+        echo "  list    List all ttyd processes and ports"
         exit 1
         ;;
+    esac
+    ;;
+  
+  help|--help|-h)
+    echo "Usage: tm <command> [args]"
+    echo ""
+    echo "Commands:"
+    echo "  create <name>         Create a new pane"
+    echo "  restart <pane_id>     Restart a pane"
+    echo "  restart all           Restart all active panes"
+    echo "  ttyd list             List all ttyd processes and ports"
+    echo "  help                  Show this help message"
+    echo ""
+    echo "Other available tools:"
+    echo "  eng <text>            Correct English grammar with Chinese translation"
+    echo "  gpt <prompt>          Quick GPT query"
+    echo "  gpt-chat              Interactive GPT chat session"
+    echo "  fast-api <endpoint>   Direct API call to fast-api server"
+    exit 0
+    ;;
+    
+  *)
+    echo "Usage: tm <command> [args]"
+    echo ""
+    echo "Commands:"
+    echo "  create <name>         Create a new pane"
+    echo "  restart <pane_id>     Restart a pane"
+    echo "  restart all           Restart all active panes"
+    echo "  ttyd list             List all ttyd processes and ports"
+    exit 1
+    ;;
 esac

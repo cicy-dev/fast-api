@@ -165,22 +165,8 @@ def qa_detail(record_id: int, token: str = Depends(verify_token)):
 @app.on_event("startup")
 async def startup_event():
     """Start all tmux sessions and ttyd services from database config on startup"""
-    import subprocess
     import socket
-    import time
-
-    TTYD_BINARY_PATH = os.getenv("TTYD_BINARY_PATH", "ttyd")
-    TTYD_BASE_URL = os.getenv("TTYD_BASE_URL", "")
-
-    def run_tmux_cmd(cmd, check_session=False):
-        result = subprocess.run(["tmux"] + cmd, capture_output=True, text=True)
-        if result.returncode != 0:
-            err = result.stderr.strip().lower()
-            if check_session and ("no server running" in err or "can't find session" in err or "can't find window" in err):
-                return None
-            print(f"tmux error: {result.stderr.strip()}")
-            return None
-        return result.stdout.strip()
+    from routers.tmux.router import create_ttyd_pane_common, run_tmux
 
     def is_port_listening(port):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -191,26 +177,14 @@ async def startup_event():
 
     with get_db() as conn:
         with conn.cursor() as c:
-            c.execute("SELECT pane_id, title, ttyd_port, workspace, init_script, config, tg_token, tg_chat_id, tg_enable, active FROM ttyd_config WHERE active=1")
+            c.execute("SELECT pane_id, title, ttyd_port, workspace, init_script, config, tg_token, tg_chat_id, tg_enable, active, agent_type FROM ttyd_config WHERE active=1")
             configs = c.fetchall()
         
         print(f"[Startup] Found {len(configs)} active pane configs in database")
         
-        from routers.tmux.router import create_ttyd_pane_common
-        
         for config in configs:
             pane_id = config["pane_id"]
             port = int(config["ttyd_port"])
-            
-            # Parse config JSON to get proxy
-            import json
-            config_data = {}
-            if config.get("config"):
-                try:
-                    config_data = json.loads(config["config"])
-                except:
-                    pass
-            proxy = config_data.get("proxy", "")
             
             if is_port_listening(port):
                 print(f"[Startup] ttyd already running on port {port} for {pane_id}")
@@ -225,11 +199,22 @@ async def startup_event():
             window_part = parts[1]
             window_name = window_part.split(".")[0] if "." in window_part else window_part
             
-            session_exists = run_tmux_cmd(["has-session", "-t", session_name], check_session=True)
+            # Check if session exists using common function
+            session_exists = run_tmux(["has-session", "-t", session_name], check_session=True)
             if session_exists is None:
                 workspace_expanded = os.path.expanduser(config.get("workspace") or "~")
                 print(f"[Startup] Creating tmux session {session_name} with workspace {workspace_expanded}")
-                run_tmux_cmd(["new-session", "-d", "-s", session_name, "-n", window_name, "-c", workspace_expanded])
+                run_tmux(["new-session", "-d", "-s", session_name, "-n", window_name, "-c", workspace_expanded])
+            
+            # Parse config JSON to get proxy
+            import json
+            config_data = {}
+            if config.get("config"):
+                try:
+                    config_data = json.loads(config["config"])
+                except:
+                    pass
+            proxy = config_data.get("proxy", "")
             
             # Reuse create_ttyd_pane_common
             try:
