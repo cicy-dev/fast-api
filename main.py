@@ -133,6 +133,10 @@ app.include_router(vnc_module.router, dependencies=[Depends(verify_token)])  # V
 app.include_router(agents_module.router, dependencies=[Depends(verify_token)])  # Agents API
 from routers import cf_ai as cf_ai_module
 app.include_router(cf_ai_module.router, dependencies=[Depends(verify_token)])  # Cloudflare AI proxy
+from routers import settings as settings_module
+app.include_router(settings_module.router, dependencies=[Depends(verify_token)])  # Settings API
+from routers import utils as utils_module
+app.include_router(utils_module.router, dependencies=[Depends(verify_token)])  # Utils API
 
 from db_pool import get_db as get_pool_db
 

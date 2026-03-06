@@ -833,15 +833,15 @@ async def clear_all(request: Request):
 
 @router.post("/capture_pane")
 async def capture_pane(request: Request, payload: dict):
-    """Capture pane output from pipe-pane log
+    """Capture pane output using tmux capture-pane
     
-    Reads the last N lines from the pane's pipe-pane log file.
+    Uses native tmux capture-pane command to get pane content.
     
     Payload:
     - pane_id (str, required): Pane identifier (e.g., "w-20077" or "w-20077:main.0")
-    - lines (int, optional): Number of lines to read from end of log (default: 10)
+    - lines (int, optional): Number of lines to capture from end (default: 100)
     
-    Example: {"pane_id": "w-20077", "lines": 20}
+    Example: {"pane_id": "w-20077", "lines": 50}
     """
     _require_perm(request, 'ttyd_read')
     
@@ -850,13 +850,27 @@ async def capture_pane(request: Request, payload: dict):
     if not pane_id:
         return format_response({"error": "pane_id required"}, request)
     
-    lines = payload.get("lines", 10)
-    output = read_pipe_log(pane_id, lines)
+    lines = payload.get("lines", 100)
     
-    if output is None:
-        return format_response({"error": "log file not found or pipe-pane not enabled"}, request)
-    
-    return format_response({"pane_id": short_pane_id(pane_id), "output": output}, request)
+    try:
+        # Use tmux capture-pane -p to print to stdout
+        result = subprocess.run(
+            ["tmux", "capture-pane", "-t", pane_id, "-p", "-S", f"-{lines}"],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        
+        if result.returncode != 0:
+            return format_response({"error": f"tmux capture failed: {result.stderr}"}, request)
+        
+        output = result.stdout
+        return format_response({"pane_id": short_pane_id(pane_id), "output": output}, request)
+        
+    except subprocess.TimeoutExpired:
+        return format_response({"error": "capture timeout"}, request)
+    except Exception as e:
+        return format_response({"error": str(e)}, request)
 
 
 

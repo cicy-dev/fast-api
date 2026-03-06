@@ -15,7 +15,7 @@ try:
 except ImportError:
     REDIS_ENABLED = False
 
-INTERVAL = int(os.getenv("PANE_CHECK_INTERVAL", "5"))
+INTERVAL = int(os.getenv("PANE_CHECK_INTERVAL", "2"))
 COMPACT_THRESHOLD = int(os.getenv("COMPACT_THRESHOLD", "70"))
 REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
 REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
@@ -69,6 +69,12 @@ def main():
                         d["timeAgo"] = check_time - d["lastUpdateAt"]
                     else:
                         d["timeAgo"] = None
+                    
+                    # Add title from config
+                    from services.pane_status import get_pane_config
+                    config = get_pane_config(p)
+                    if config:
+                        d["title"] = config.get("title")
                     
                     status_map[p] = d
                     
