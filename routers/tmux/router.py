@@ -137,7 +137,7 @@ def run_tmux(cmd, check_session=False):
         err = result.stderr.strip().lower()
     
         # If checking session existence, return None for not found errors
-        if check_session and ("no server running" in err or "can't find session" in err or "can't find window" in err):
+        if check_session and ("no server running" in err or "can't find session" in err or "can't find window" in err or "error connecting to" in err):
             # call #/panes/{pane_id}/restart and return run_tmux
             return None
         raise HTTPException(status_code=400, detail=result.stderr.strip())
@@ -259,6 +259,12 @@ def create_ttyd_pane_common(
 
         # 6️⃣ export X_PANE_ID
         run_tmux(["send-keys", "-t", pane_id, f"export X_PANE_ID='{pane_id}'", "Enter"])
+
+        # 6.5️⃣ Auto configure git user.email and user.name
+        git_email = f"{session_name}@cicy.de5.net"
+        git_username = session_name
+        run_tmux(["send-keys", "-t", pane_id, f"git config --global user.email '{git_email}'", "Enter"])
+        run_tmux(["send-keys", "-t", pane_id, f"git config --global user.name '{git_username}'", "Enter"])
 
         # 7️⃣ proxy env vars (applied before init_script)
         # Format: "http://host:port" (plain) or "mitmproxy:http://host:port" (adds REQUESTS_CA_BUNDLE)
@@ -645,8 +651,7 @@ async def update_pane(pane_id: str, request: Request, payload: dict):
     """Update pane fields"""
     import pymysql
     
-    allowed_fields = ['title', 'workspace', 'init_script', 'proxy', 'tg_token', 'tg_chat_id', 'tg_enable', 'private_mode', 'allowed_users', 'proxy_enable', 'agent_duty']
-    updates = {k: v for k, v in payload.items() if k in allowed_fields}
+    updates = {k: v for k, v in payload.items() if k != 'pane_id'}
     
     if not updates:
         return format_response({"success": False, "error": "No valid fields to update"}, request)
@@ -686,7 +691,8 @@ async def get_pane(pane_id: str, request: Request):
         with conn.cursor() as c:
             c.execute("""
                 SELECT t.pane_id, t.title, t.ttyd_port, t.workspace, t.init_script, 
-                       t.proxy, t.tg_token, t.tg_chat_id, t.tg_enable, gp.group_id
+                       t.proxy, t.tg_token, t.tg_chat_id, t.tg_enable, t.active,
+                       t.agent_type, t.agent_duty, t.config, t.ttyd_preview, t.common_prompt, gp.group_id
                 FROM ttyd_config t
                 LEFT JOIN group_windows gp ON t.pane_id = gp.win_id
                 WHERE t.pane_id = %s
@@ -704,6 +710,12 @@ async def get_pane(pane_id: str, request: Request):
                 "tg_token": row.get("tg_token"),
                 "tg_chat_id": row.get("tg_chat_id"),
                 "tg_enable": row.get("tg_enable", False),
+                "active": row.get("active", 1),
+                "agent_type": row.get("agent_type"),
+                "agent_duty": row.get("agent_duty"),
+                "config": row.get("config"),
+                "common_prompt": row.get("common_prompt"),
+                "ttyd_preview": row.get("ttyd_preview"),
                 "group_id": row.get("group_id")
             }, request)
 

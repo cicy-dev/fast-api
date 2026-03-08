@@ -170,7 +170,38 @@ def qa_detail(record_id: int, token: str = Depends(verify_token)):
 async def startup_event():
     """Start all tmux sessions and ttyd services from database config on startup"""
     import socket
+    import time
     from routers.tmux.router import create_ttyd_pane_common, run_tmux
+
+    # Wait for MySQL/Redis to be ready (infinite retry)
+    retry_delay = 2
+    attempt = 0
+    while True:
+        attempt += 1
+        try:
+            conn = get_pool_db()
+            conn.close()
+            logger.info(f"✓ MySQL connected (attempt {attempt})")
+            break
+        except Exception as e:
+            logger.warning(f"MySQL not ready (attempt {attempt}): {e}")
+            time.sleep(retry_delay)
+
+    # 迁移: 添加 common_prompt 列
+    try:
+        conn = get_pool_db()
+        with conn.cursor() as c:
+            c.execute("""
+                ALTER TABLE ttyd_config 
+                ADD COLUMN common_prompt LONGTEXT DEFAULT NULL
+            """)
+        conn.commit()
+        logger.info("✓ 成功添加 common_prompt 列")
+    except Exception as e:
+        if "Duplicate column" in str(e):
+            logger.info("✓ common_prompt 列已存在")
+        else:
+            logger.warning(f"迁移失败: {e}")
 
     def is_port_listening(port):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
