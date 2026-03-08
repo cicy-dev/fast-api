@@ -331,6 +331,7 @@ def check_pane_active(pane_id: str, lines: int = 4, config: dict = None) -> dict
         # Fallback to capture-pane when pipe log doesn't exist
         try:
             raw = run_tmux(["capture-pane", "-t", target, "-p"])
+            lastUpdateAt = int(time.time())
         except Exception:
             return {"active": True, "log_exists": False, "pane_id": pane_id.replace(":main.0", ""), "lastUpdateAt": lastUpdateAt}
     
