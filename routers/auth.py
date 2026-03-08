@@ -2,7 +2,6 @@
 import os
 from fastapi import APIRouter, Request, HTTPException, Depends
 from fastapi.responses import RedirectResponse, JSONResponse
-import pymysql
 import time
 from typing import Dict, Optional
 
@@ -197,15 +196,9 @@ _token_cache: Dict[str, dict] = {}
 CACHE_TTL = 30  # seconds
 
 def _get_db_connection():
-    """Get MySQL connection using environment variables"""
-    return pymysql.connect(
-        host=os.getenv("MYSQL_HOST", "127.0.0.1"),
-        port=int(os.getenv("MYSQL_PORT", "3306")),
-        user=os.getenv("MYSQL_USER", "root"),
-        password=os.getenv("MYSQL_PASSWORD", ""),
-        database=os.getenv("MYSQL_DATABASE", "tts_bot"),
-        cursorclass=pymysql.cursors.DictCursor
-    )
+    """Get MySQL connection from pool"""
+    from db_pool import get_db
+    return get_db()
 
 def _verify_token_from_db(token: str) -> Optional[dict]:
     """Query token from database, with global.json fallback"""

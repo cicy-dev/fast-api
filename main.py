@@ -23,7 +23,6 @@ for name in ["uvicorn", "uvicorn.access", "uvicorn.error"]:
     log.setLevel(getattr(logging, LOG_LEVEL))
 logger = logging.getLogger(__name__)
 
-import pymysql
 import json
 import yaml
 from fastapi import FastAPI, Depends, HTTPException, Request
@@ -140,22 +139,12 @@ app.include_router(utils_module.router, dependencies=[Depends(verify_token)])  #
 
 from db_pool import get_db as get_pool_db
 
-DB = dict(
-    host=os.getenv("MYSQL_HOST", "127.0.0.1"),
-    port=int(os.getenv("MYSQL_PORT", "3306")),
-    user=os.getenv("MYSQL_USER", "root"),
-    password=os.getenv("MYSQL_PASSWORD", ""),
-    database=os.getenv("MYSQL_DATABASE", "tts_bot"),
-    charset="utf8mb4"
-)
-
 def get_db():
     """Get database connection from pool"""
     return get_pool_db()
 
 @app.get("/api/qa/{record_id}")
 def qa_detail(record_id: int, token: str = Depends(verify_token)):
-    qa_db = {**DB, "database": "llm_qa_history"}
     with get_pool_db() as conn:
         with conn.cursor() as c:
             c.execute("SELECT * FROM llm_qa_history WHERE id=%s", (record_id,))

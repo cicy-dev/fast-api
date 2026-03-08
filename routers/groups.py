@@ -8,28 +8,14 @@ win_type: agent_ttyd | app_frame
 """
 
 import os
-import pymysql
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 from typing import List, Optional
 import yaml
+from db_pool import get_db
 
 router = APIRouter(prefix="/api/groups", tags=["groups"])
-
-MYSQL_HOST = os.getenv("MYSQL_HOST", "127.0.0.1")
-MYSQL_PORT = int(os.getenv("MYSQL_PORT", "3306"))
-MYSQL_USER = os.getenv("MYSQL_USER", "root")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")
-MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "tts_bot")
-
-
-def get_db():
-    return pymysql.connect(
-        host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER,
-        password=MYSQL_PASSWORD, database=MYSQL_DATABASE,
-        cursorclass=pymysql.cursors.DictCursor,
-    )
 
 
 def _check_group_permission(request: Request, group_id: int):

@@ -32,8 +32,9 @@ def read_pipe_log(pane_id: str, lines: int = 10) -> Optional[str]:
         return None
     
     try:
+        # Use tail -c to limit bytes first (prevent mega-lines), then tail -n for lines
         result = subprocess.run(
-            ["tail", "-n", str(lines), log_file],
+            ["tail", "-c", "32768", log_file],
             capture_output=True,
             text=True,
             check=True,
@@ -84,12 +85,6 @@ def _require_perm(request: Request, perm: str):
         return
     if perm not in perms:
         raise HTTPException(403, f"Requires {perm} permission")
-
-MYSQL_HOST = os.getenv("MYSQL_HOST", "127.0.0.1")
-MYSQL_PORT = int(os.getenv("MYSQL_PORT", "3306"))
-MYSQL_USER = os.getenv("MYSQL_USER", "root")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")
-MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "tts_bot")
 
 TTYD_PORT_RANGE_DEV = os.getenv("TTYD_PORT_RANGE_DEV", "15100-15300")
 TTYD_PORT_RANGE_PROD = os.getenv("TTYD_PORT_RANGE_PROD", "15100-15300")
@@ -192,19 +187,12 @@ def create_ttyd_pane_common(
     no_insert_db: bool = False,
     agent_type: str = None,
 ):
-    import pymysql
     import socket
     import time
     port = ttyd_port
 
-    conn = pymysql.connect(
-        host=MYSQL_HOST,
-        port=MYSQL_PORT,
-        user=MYSQL_USER,
-        password=MYSQL_PASSWORD,
-        database=MYSQL_DATABASE,
-        cursorclass=pymysql.cursors.DictCursor
-    )
+    from db_pool import get_db as _get_db
+    conn = _get_db()
 
     try:
         with conn.cursor() as c:
@@ -363,14 +351,10 @@ async def restart_pane(pane_id: str, request: Request):
     4. 重新执行环境变量设置和 init_script
     5. 重新拉起 ttyd
     """
-    import pymysql
     import time
 
-    conn = pymysql.connect(
-        host=MYSQL_HOST, port=MYSQL_PORT,
-        user=MYSQL_USER, password=MYSQL_PASSWORD,
-        database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor
-    )
+    from db_pool import get_db as _get_db
+    conn = _get_db()
 
     try:
         with conn.cursor() as c:
@@ -448,12 +432,8 @@ async def restart_all_panes(request: Request):
     """Restart all active panes"""
     _require_perm(request, 'prompt')
     
-    import pymysql
-    conn = pymysql.connect(
-        host=MYSQL_HOST, port=MYSQL_PORT,
-        user=MYSQL_USER, password=MYSQL_PASSWORD,
-        database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor
-    )
+    from db_pool import get_db as _get_db
+    conn = _get_db()
     
     results = []
     try:
@@ -478,15 +458,8 @@ async def restart_all_panes(request: Request):
 
 
 def _get_next_worker_index() -> int:
-    import pymysql
-    conn = pymysql.connect(
-        host=MYSQL_HOST,
-        port=MYSQL_PORT,
-        user=MYSQL_USER,
-        password=MYSQL_PASSWORD,
-        database=MYSQL_DATABASE,
-        cursorclass=pymysql.cursors.DictCursor
-    )
+    from db_pool import get_db as _get_db
+    conn = _get_db()
     try:
         with conn.cursor() as c:
             c.execute("SELECT value FROM global_vars WHERE key_name='worker_index'")
@@ -557,7 +530,6 @@ async def create_window(data: WindowCreate, request: Request):
     _require_perm(request, 'agent_manage')
     """Create tmux session and start ttyd (each pane has its own unique session)"""
     import os
-    import pymysql
     
     worker_index = _get_next_worker_index()
     unique_session = f"w-{worker_index}"
@@ -567,14 +539,8 @@ async def create_window(data: WindowCreate, request: Request):
     workspace_expanded = os.path.expanduser(workspace)
 
     os.makedirs(workspace_expanded, exist_ok=True)
-    conn = pymysql.connect(
-        host=MYSQL_HOST,
-        port=MYSQL_PORT,
-        user=MYSQL_USER,
-        password=MYSQL_PASSWORD,
-        database=MYSQL_DATABASE,
-        cursorclass=pymysql.cursors.DictCursor
-    )
+    from db_pool import get_db as _get_db
+    conn = _get_db()
     try:
         with conn.cursor() as c:
             c.execute("SELECT pane_id FROM ttyd_config WHERE pane_id=%s", (f"{unique_session}:main.0",))
@@ -649,15 +615,14 @@ async def update_pane(pane_id: str, request: Request, payload: dict):
     _require_perm(request, 'agent_manage')
     pane_id = normalize_pane_id(pane_id)
     """Update pane fields"""
-    import pymysql
     
     updates = {k: v for k, v in payload.items() if k != 'pane_id'}
     
     if not updates:
         return format_response({"success": False, "error": "No valid fields to update"}, request)
     
-    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=MYSQL_PASSWORD, 
-                          database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor)
+    from db_pool import get_db as _get_db
+    conn = _get_db()
     try:
         with conn.cursor() as c:
             set_clause = ", ".join([f"{k}=%s" for k in updates.keys()])
@@ -724,10 +689,9 @@ async def delete_pane(pane_id: str, request: Request):
     _require_perm(request, 'agent_manage')
     pane_id = normalize_pane_id(pane_id)
     """Delete pane - kill tmux session and remove database record"""
-    import pymysql
     
-    conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, password=MYSQL_PASSWORD, 
-                          database=MYSQL_DATABASE, cursorclass=pymysql.cursors.DictCursor)
+    from db_pool import get_db as _get_db
+    conn = _get_db()
     try:
         with conn.cursor() as c:
             c.execute("SELECT ttyd_port FROM ttyd_config WHERE pane_id=%s", (pane_id,))
@@ -903,50 +867,12 @@ def _get_redis_status_map():
 async def get_pane_status(request: Request, id: str = None):
     """Get pane status from Redis cache
     
-    If id parameter is provided, returns status for that specific pane.
-    If id is not provided, returns status for all panes.
-    
     Query Parameters:
         id: Optional pane identifier (e.g., "w-20077" or "w-20077:main.0")
     
     Examples:
         /api/tmux/status              -> Returns all panes
         /api/tmux/status?id=w-20077   -> Returns w-20077 status
-    
-    Response format (single pane):
-    {
-      "pane_id": "w-20077",
-      "active": true,
-      "log_exists": true,
-      "status": "idle" | "thinking" | "wait_auth" | "compacting" | null,
-      "agent_type": "kiro-cli" | "opencode" | "",
-      "guess": "kiro-cli" | "opencode" | "shell" | "unknown",
-      "contextUsage": 21,  // percentage, null if not available
-      "credits": 0.57,     // null if not available
-      "elapsedTime": 10,   // seconds, null if not available
-      "timeAgo": 14529,    // seconds since last log update
-      "checkTime": 1772541190,  // unix timestamp when checked
-      "lastUpdateAt": 1772526661,  // unix timestamp of last log update
-      "isThinking": false,
-      "isWaitingAuth": false,
-      "isCompacting": false,
-      "isIdle": true,
-      "raw": "..."  // last few lines of output
-    }
-    
-    Response format (all panes):
-    {
-      "w-10001:main.0": { ... },
-      "w-20077:main.0": { ... },
-      ...
-    }
-    
-    Status values:
-    - "idle": Pane is at prompt, ready for input
-    - "thinking": Agent is processing/working
-    - "wait_auth": Waiting for user confirmation (y/n)
-    - "compacting": Creating context summary
-    - null: Status unknown or not detected
     
     Cache is updated every 5 seconds by background cron job.
     """
@@ -958,37 +884,15 @@ async def get_pane_status(request: Request, id: str = None):
         if not status_map:
             return format_response({"error": "No cached data"}, request)
         
-        # If id provided, return single pane
         if id:
             pane_id = normalize_pane_id(id)
-            if not pane_id:
-                return format_response({"error": "Invalid pane_id"}, request)
-            
             target = f"{pane_id}:main.0" if ':' not in pane_id else pane_id
-            if target in status_map:
-                return format_response(status_map[target], request)
-            
-            # Fallback to live check
-            from services.pane_status import check_pane_active
-            return format_response(check_pane_active(pane_id), request)
+            return format_response(status_map.get(target, {"error": "not found", "pane_id": id}), request)
         
-        # No id provided, return all
         return format_response(status_map, request)
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
-@router.get("/status/all")
-async def get_all_panes_statuses(request: Request):
-    """Get status of all registered panes from Redis cache (deprecated, use /status)"""
-    return await get_pane_status(request, id=None)
-
-
-@router.get("/status/{pane_id}")
-async def agent_status(request: Request, pane_id: str):
-    """Get status of a specific pane (deprecated, use /status?id=pane_id)"""
-    return await get_pane_status(request, id=pane_id)
 
 @router.post("/send_wait")
 async def send_wait(request: Request, payload: dict):
@@ -1002,7 +906,6 @@ async def send_wait(request: Request, payload: dict):
     }
     """
     import time
-    import pymysql
     
     target = payload.get("target")
     text = payload.get("text")
@@ -1016,9 +919,8 @@ async def send_wait(request: Request, payload: dict):
     pane_id = target
     if target.startswith("@"):
         title = target[1:]
-        conn = pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER, 
-                              password=MYSQL_PASSWORD, database=MYSQL_DATABASE, 
-                              cursorclass=pymysql.cursors.DictCursor)
+        from db_pool import get_db as _get_db
+        conn = _get_db()
         try:
             with conn.cursor() as c:
                 c.execute("SELECT pane_id FROM ttyd_config WHERE title=%s LIMIT 1", (title,))

@@ -5,18 +5,12 @@ Ttyd Service - 按需启动 ttyd
 
 import os
 import subprocess
-import pymysql
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import PlainTextResponse
 import yaml
+from db_pool import get_db
 
 router = APIRouter(prefix="/api/ttyd", tags=["ttyd"])
-
-MYSQL_HOST = os.getenv("MYSQL_HOST", "127.0.0.1")
-MYSQL_PORT = int(os.getenv("MYSQL_PORT", "3306"))
-MYSQL_USER = os.getenv("MYSQL_USER", "root")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")
-MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "tts_bot")
 
 TTYD_PORT_RANGE_DEV = os.getenv("TTYD_PORT_RANGE_DEV", "15100-15300")
 TTYD_PORT_RANGE_PROD = os.getenv("TTYD_PORT_RANGE_PROD", "15100-15300")
@@ -33,16 +27,6 @@ def _load_api_token() -> str:
         except Exception:
             pass
     return ""
-
-def get_db():
-    return pymysql.connect(
-        host=MYSQL_HOST,
-        port=MYSQL_PORT,
-        user=MYSQL_USER,
-        password=MYSQL_PASSWORD,
-        database=MYSQL_DATABASE,
-        cursorclass=pymysql.cursors.DictCursor
-    )
 
 def format_response(data: dict, request: Request = None):
     if request and "application/yaml" in request.headers.get("accept", "").lower():

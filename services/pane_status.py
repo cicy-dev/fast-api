@@ -26,6 +26,9 @@ def get_worker_panes() -> list[str]:
 
 def _guess_agent_type(text: str, lines: list[str]) -> str:
     """Guess agent type from output patterns"""
+    # Only check last 2000 chars to avoid regex on huge TUI output
+    sample = text[-2000:] if len(text) > 2000 else text
+    
     # Kiro CLI patterns (check first - more specific)
     kiro_patterns = [
         "I will run the following command",
@@ -35,7 +38,7 @@ def _guess_agent_type(text: str, lines: list[str]) -> str:
         "Found.*symbols",
         "Completed in.*s"
     ]
-    if any(re.search(pattern, text) for pattern in kiro_patterns):
+    if any(re.search(pattern, sample) for pattern in kiro_patterns):
         return "kiro-cli"
     
     # OpenCode patterns (check after kiro-cli)
@@ -45,7 +48,7 @@ def _guess_agent_type(text: str, lines: list[str]) -> str:
         "█▀▀█ █▀▀█ █▀▀█",
         "Ask anything"
     ]
-    if any(re.search(pattern, text, re.IGNORECASE) for pattern in opencode_patterns):
+    if any(re.search(pattern, sample, re.IGNORECASE) for pattern in opencode_patterns):
         return "opencode"
     
     # Shell patterns
@@ -306,7 +309,7 @@ def check_pane(pane_id: str, lines: int = 4) -> dict:
     return status_dict
 
 
-def check_pane_active(pane_id: str, lines: int = 4) -> dict:
+def check_pane_active(pane_id: str, lines: int = 4, config: dict = None) -> dict:
     """Check pane status only if active and log exists"""
     from routers.tmux.router import read_pipe_log
     import os
@@ -325,6 +328,13 @@ def check_pane_active(pane_id: str, lines: int = 4) -> dict:
     
     raw = read_pipe_log(target, lines * 3)
     if raw is None:
+        # Fallback to capture-pane when pipe log doesn't exist
+        try:
+            raw = run_tmux(["capture-pane", "-t", target, "-p"])
+        except Exception:
+            return {"active": True, "log_exists": False, "pane_id": pane_id.replace(":main.0", ""), "lastUpdateAt": lastUpdateAt}
+    
+    if not raw:
         return {"active": True, "log_exists": False, "pane_id": pane_id.replace(":main.0", ""), "lastUpdateAt": lastUpdateAt}
     
     pane_lines = [l for l in raw.split('\n') if l.strip()]
@@ -333,7 +343,8 @@ def check_pane_active(pane_id: str, lines: int = 4) -> dict:
     
     guess = _guess_agent_type(raw, pane_lines)
     clean_pane_id = pane_id.replace(":main.0", "")
-    config = get_pane_config(clean_pane_id)
+    if config is None:
+        config = get_pane_config(clean_pane_id)
     config_agent_type = config.get("agent_type") if config else None
     
     detected_type = guess if guess != "unknown" else config_agent_type

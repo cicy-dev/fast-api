@@ -1,5 +1,5 @@
 """Cron: 自动处理 tmux pane 状态 — auto yes, auto compact"""
-import time, os, sys, pymysql, json
+import time, os, sys, json
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from pathlib import Path
 env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
@@ -22,18 +22,12 @@ REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
 REDIS_DB = int(os.getenv("REDIS_DB", "0"))
 
 def get_active_panes():
-    conn = pymysql.connect(
-        host=os.getenv("MYSQL_HOST", "127.0.0.1"),
-        port=int(os.getenv("MYSQL_PORT", "3306")),
-        user=os.getenv("MYSQL_USER", "root"),
-        password=os.getenv("MYSQL_PASSWORD", ""),
-        database=os.getenv("MYSQL_DATABASE", "tts_bot"),
-        cursorclass=pymysql.cursors.DictCursor
-    )
+    from db_pool import get_db
+    conn = get_db()
     try:
         with conn.cursor() as c:
-            c.execute("SELECT pane_id FROM ttyd_config WHERE active=1")
-            return [r["pane_id"] for r in c.fetchall()]
+            c.execute("SELECT pane_id, title, agent_type FROM ttyd_config WHERE active=1")
+            return c.fetchall()
     finally:
         conn.close()
 
@@ -59,9 +53,10 @@ def main():
             panes = get_active_panes()
             status_map = {}
             
-            for p in panes:
+            for row in panes:
+                p = row["pane_id"]
                 try:
-                    d = check_pane_active(p)
+                    d = check_pane_active(p, config=row)
                     
                     # Add checkTime and timeAgo
                     d["checkTime"] = check_time
@@ -70,11 +65,7 @@ def main():
                     else:
                         d["timeAgo"] = None
                     
-                    # Add title from config
-                    from services.pane_status import get_pane_config
-                    config = get_pane_config(p)
-                    if config:
-                        d["title"] = config.get("title")
+                    d["title"] = row.get("title")
                     
                     status_map[p] = d
                     

@@ -4,29 +4,14 @@ Dashboard API - requires api_full permission
 prefix: /api/dashboard
 """
 
-import os
-import pymysql
 from fastapi import APIRouter, HTTPException, Request
-from typing import List, Dict
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
-MYSQL_HOST = os.getenv("MYSQL_HOST", "127.0.0.1")
-MYSQL_PORT = int(os.getenv("MYSQL_PORT", "3306"))
-MYSQL_USER = os.getenv("MYSQL_USER", "root")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")
-MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "tts_bot")
-
 
 def get_db():
-    return pymysql.connect(
-        host=MYSQL_HOST,
-        port=MYSQL_PORT,
-        user=MYSQL_USER,
-        password=MYSQL_PASSWORD,
-        database=MYSQL_DATABASE,
-        cursorclass=pymysql.cursors.DictCursor
-    )
+    from db_pool import get_db as _get_db
+    return _get_db()
 
 
 def _check_api_full_permission(request: Request) -> str:

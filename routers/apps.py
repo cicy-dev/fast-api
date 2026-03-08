@@ -2,25 +2,12 @@
 Desktop Apps CRUD API
 prefix: /api/apps
 """
-import os
-import pymysql
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
+from db_pool import get_db
 
 router = APIRouter(prefix="/api/apps", tags=["apps"])
-
-MYSQL_HOST = os.getenv("MYSQL_HOST", "127.0.0.1")
-MYSQL_PORT = int(os.getenv("MYSQL_PORT", "3306"))
-MYSQL_USER = os.getenv("MYSQL_USER", "root")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")
-MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "tts_bot")
-
-
-def get_db():
-    return pymysql.connect(host=MYSQL_HOST, port=MYSQL_PORT, user=MYSQL_USER,
-                           password=MYSQL_PASSWORD, database=MYSQL_DATABASE,
-                           cursorclass=pymysql.cursors.DictCursor)
 
 
 class AppCreate(BaseModel):
