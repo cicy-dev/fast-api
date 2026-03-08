@@ -86,6 +86,26 @@ def process_pane(pane_id, r, config=None):
 
     return d
 
+def ensure_pipe_pane(pane_id):
+    """确保 pipe-pane 在运行，没有则自动开启"""
+    import subprocess
+    target = f"{pane_id}:main.0" if ':' not in pane_id else pane_id
+    try:
+        pp = subprocess.run(
+            ["tmux", "display-message", "-t", target, "-p", "#{pane_pipe}"],
+            capture_output=True, text=True, timeout=5
+        )
+        if pp.stdout.strip() == "0":
+            log_file = os.path.join(LOG_DIR, f"pipe-{target.replace(':', '_').replace('.', '_')}.log")
+            subprocess.run(
+                ["tmux", "pipe-pane", "-t", target, f"cat >> {log_file}"],
+                capture_output=True, timeout=5
+            )
+            return True
+    except Exception:
+        pass
+    return False
+
 def full_sync(r):
     """全量同步：刷新 config 缓存 + 更新所有 pane 状态"""
     global _config_cache
@@ -94,8 +114,11 @@ def full_sync(r):
     _config_cache = new_cache
 
     status_map = {}
+    restored = 0
     for pane_id, config in new_cache.items():
         try:
+            if ensure_pipe_pane(pane_id):
+                restored += 1
             check_time = int(time.time())
             d = check_pane_active(pane_id, config=config)
             d["checkTime"] = check_time
@@ -124,7 +147,10 @@ def full_sync(r):
 
     with _lock:
         r.set(REDIS_KEY, json.dumps(status_map, default=str))
-    log(f"full sync: {len(status_map)} panes")
+    if restored:
+        log(f"full sync: {len(status_map)} panes, restored {restored} pipe-pane")
+    else:
+        log(f"full sync: {len(status_map)} panes")
 
 
 class PipeLogHandler(FileSystemEventHandler):
