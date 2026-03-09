@@ -1076,3 +1076,31 @@ async def choose_session(pane_id: str, request: Request):
         return format_response({"success": True}, request)
     except Exception as e:
         return format_response({"success": False, "error": str(e)}, request)
+
+
+@router.get("/ttyd/status/{pane_id:path}")
+async def get_ttyd_status(pane_id: str, request: Request):
+    """检查 ttyd 是否已启动"""
+    # 自动添加 :main.0 后缀（如果没有冒号）
+    if ":" not in pane_id:
+        pane_id = f"{pane_id}:main.0"
+    
+    conn = get_db()
+    try:
+        with conn.cursor() as c:
+            c.execute("SELECT ttyd_port FROM ttyd_config WHERE pane_id=%s", (pane_id,))
+            row = c.fetchone()
+            
+            if not row:
+                raise HTTPException(status_code=404, detail="pane_id not found")
+            
+            port = row["ttyd_port"]
+            listening = is_port_listening(port)
+            
+            return format_response({
+                "pane_id": pane_id,
+                "port": port,
+                "status": "running" if listening else "stopped"
+            }, request)
+    finally:
+        conn.close()

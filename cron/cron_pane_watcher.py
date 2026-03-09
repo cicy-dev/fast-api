@@ -70,6 +70,10 @@ def process_pane(pane_id, r, config=None):
     with _lock:
         raw = r.get(REDIS_KEY)
         status_map = json.loads(raw) if raw else {}
+        prev = status_map.get(pane_id, {})
+        # thinking 状态保护：只有明确 idle/wait_auth/compacting 才能解除
+        if prev.get("status") == "thinking" and d.get("status") not in ("idle", "wait_auth", "compacting"):
+            d["status"] = "thinking"
         status_map[pane_id] = d
         r.set(REDIS_KEY, json.dumps(status_map, default=str))
 
@@ -115,6 +119,10 @@ def full_sync(r):
 
     status_map = {}
     restored = 0
+    # 读取上一次的状态用于 thinking 保护
+    with _lock:
+        prev_raw = r.get(REDIS_KEY)
+        prev_map = json.loads(prev_raw) if prev_raw else {}
     for pane_id, config in new_cache.items():
         try:
             if ensure_pipe_pane(pane_id):
@@ -127,6 +135,10 @@ def full_sync(r):
             else:
                 d["timeAgo"] = None
             d["title"] = config.get("title")
+            # thinking 状态保护
+            prev = prev_map.get(pane_id, {})
+            if prev.get("status") == "thinking" and d.get("status") not in ("idle", "wait_auth", "compacting"):
+                d["status"] = "thinking"
             status_map[pane_id] = d
 
             s, ctx = d.get("status"), d.get("contextUsage")

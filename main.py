@@ -34,7 +34,7 @@ from typing import Optional
 
 # Import routers
 from routers.tmux import router as tmux_router
-from routers import ttyd
+# from routers import ttyd
 from routers import groups as groups_module
 from routers import apps as apps_module
 from routers import auth as auth_module
@@ -120,7 +120,7 @@ def verify_token(cred: HTTPAuthorizationCredentials = Depends(security)):
 
 # Include routers with authentication
 app.include_router(tmux_router, dependencies=[Depends(verify_token)])
-app.include_router(ttyd.router)  # No auth for internal cache
+# app.include_router(ttyd.router)  # Deprecated: moved to /api/tmux/ttyd/*
 app.include_router(groups_module.router, dependencies=[Depends(verify_token)])
 app.include_router(apps_module.router, dependencies=[Depends(verify_token)])
 app.include_router(auth_module.router)  # Auth endpoints don't need token verification
