@@ -23,6 +23,10 @@ REDIS_KEY = "pane_status_map"
 _config_cache = {}
 _lock = threading.Lock()
 
+# pane_id -> last action timestamp, prevent duplicate sends
+_action_cooldown = {}
+ACTION_COOLDOWN_SEC = 3  # 同一 pane 的 auto action 至少间隔 3 秒
+
 def get_redis():
     return _redis.Redis(
         host=os.getenv("REDIS_HOST", "127.0.0.1"),
@@ -54,6 +58,25 @@ def get_active_panes():
     finally:
         conn.close()
 
+def _do_auto_action(pane_id, d):
+    """统一 auto action，带 cooldown 防重复"""
+    s, ctx = d.get("status"), d.get("contextUsage")
+    now = time.time()
+    last = _action_cooldown.get(pane_id, 0)
+    if now - last < ACTION_COOLDOWN_SEC:
+        return
+    if s == "wait_auth":
+        log(f"{pane_id}: wait_auth → t (trust)")
+        _action_cooldown[pane_id] = now
+        send_keys(pane_id, "t")
+        time.sleep(0.5)
+        send_keys(pane_id, "Enter")
+    elif s == "idle" and ctx and ctx > COMPACT_THRESHOLD:
+        log(f"{pane_id}: ctx={ctx}% → /compact")
+        _action_cooldown[pane_id] = now
+        send_text(pane_id, "/compact")
+
+
 def process_pane(pane_id, r, config=None):
     """检查单个 pane 状态并更新 Redis"""
     check_time = int(time.time())
@@ -77,17 +100,7 @@ def process_pane(pane_id, r, config=None):
         status_map[pane_id] = d
         r.set(REDIS_KEY, json.dumps(status_map, default=str))
 
-    # auto actions
-    s, ctx = d.get("status"), d.get("contextUsage")
-    if s == "wait_auth":
-        log(f"{pane_id}: wait_auth → yes")
-        send_keys(pane_id, "y")
-        time.sleep(0.5)
-        send_keys(pane_id, "Enter")
-    elif s == "idle" and ctx and ctx > COMPACT_THRESHOLD:
-        log(f"{pane_id}: ctx={ctx}% → /compact")
-        send_text(pane_id, "/compact")
-
+    _do_auto_action(pane_id, d)
     return d
 
 def ensure_pipe_pane(pane_id):
@@ -141,18 +154,7 @@ def full_sync(r):
                 d["status"] = "thinking"
             status_map[pane_id] = d
 
-            s, ctx = d.get("status"), d.get("contextUsage")
-            if s == "wait_auth":
-                log(f"{pane_id}: wait_auth → yes")
-                send_keys(pane_id, "y")
-                time.sleep(0.5)
-                send_keys(pane_id, "Enter")
-                time.sleep(3)
-            elif s == "idle" and ctx and ctx > COMPACT_THRESHOLD:
-                log(f"{pane_id}: ctx={ctx}% → /compact")
-                send_text(pane_id, "/compact")
-            else:
-                log(f"{pane_id}: {s} ctx={ctx}")
+            _do_auto_action(pane_id, d)
         except Exception as e:
             log(f"{pane_id}: error - {e}")
             status_map[pane_id] = {"error": str(e), "pane_id": pane_id, "checkTime": int(time.time())}
